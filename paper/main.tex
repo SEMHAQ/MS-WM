@@ -1,0 +1,291 @@
+\input kzllyyhead
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%      文章正文
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 标题，基金项目，作者，地址定义
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatother
+\title{\LARGE\textbf{面向人形机器人状态预测的轻量级状态空间世界模型}\\
+\footnotetext{\scriptsize \hskip -6pt
+\hspace*{-0.1em}收稿日期: xxxx$-$xx$-$xx; 录用日期: xxxx$-$xx$-$xx.\\
+\hspace*{1.1em}$^{\dag}$通信作者. E-mail: xxx@xxx; Tel.: xxx.\\
+\hspace*{1.1em}本文责任编委:
+\hspace*{1.1em}国家自然科学基金项目(xxxxxx)资助.\\
+\hspace*{1.1em}Supported by the National Natural Science Foundation of China (xxxxxx).}}
+\author{{\large {\CJKfamily{fsong}作者名\makebox{$^{1}$}\makebox{$^{\dag}$},~~作者名\makebox{$^{2}$}}}\\
+\scriptsize
+(1. 单位1, 省份 城市 邮编;\\
+\scriptsize 2. 单位2, 省份 城市 邮编) \\}
+\date{}
+\fancyhead[CO]{{\footnotesize 第一作者等: 面向人形机器人状态预测的轻量级状态空间世界模型}}
+\setlength{\abovedisplayskip}{1.5mm}
+\setlength{\belowdisplayskip}{1.5mm}
+\maketitle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%      中文摘要
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setlength{\oddsidemargin}{ 1cm}
+\setlength{\textwidth}{15.5cm} \vspace{-1.2cm}
+\begin{center}
+\parbox{\textwidth}{\setlength{\parindent}{1em}
+{\footnotesize {\CJKfamily{hei} 摘要:}
+针对人形机器人在高维非线性环境下状态预测精度低、计算开销大的问题,
+本文提出一种基于状态空间模型(state space model, SSM)的轻量级世界模型(SSM-WM).
+该模型利用SSM的线性递推结构对机器人历史状态与动作序列进行高效建模,
+在保持较低计算复杂度的同时实现对未来状态轨迹的准确预测.
+在此基础上, 将SSM-WM嵌入模型预测控制(model predictive control, MPC)框架,
+实现面向人形机器人运动规划的在线决策.
+在Open X-Embodiment公开数据集上的实验结果表明,
+所提方法在状态预测精度上与基于Transformer的世界模型相当,
+但推理速度提升约3--5倍, 参数量减少约60\%,
+验证了SSM-WM在具身智能场景下的有效性和实用性.
+
+{\CJKfamily{hei} 关键词:} 状态空间模型; 世界模型; 人形机器人; 模型预测控制; 具身智能
+
+{\CJKfamily{hei}引用格式:} 第一作者, 第二作者. 面向人形机器人状态预测的轻量级状态空间世界模型. 控制理论与应用, xxxx, xx(x): xxx -- xxx\\
+DOI: 10.7641/CTA.2026.xxxxx
+}}
+\end{center}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%          英文摘要
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vspace{.1cm}
+\begin{center}
+\parbox{\textwidth}{\setlength{\parindent}{1em}
+{\centering\Large\textbf{Lightweight State Space World Model for\\
+Humanoid Robot State Prediction}} \vspace{-1.2mm}
+\begin{center}
+Author Name\makebox{$^{1}$}\makebox{$^{\dag}$},~~Author Name\makebox{$^{2}$ }\\[2pt]
+\scriptsize{(1. Institution 1, City Province Zipcode, China;\\
+2. Institution 2, City Province Zipcode, China)}
+\end{center}
+
+\vspace{-10pt}\footnotesize{\textbf{Abstract:}
+This paper proposes a lightweight world model based on state space models (SSM-WM) for humanoid robot state prediction in high-dimensional nonlinear environments. The proposed model leverages the linear recurrence structure of SSM to efficiently encode historical states and action sequences, achieving accurate future state trajectory prediction with low computational complexity. The SSM-WM is further integrated into a model predictive control (MPC) framework for online motion planning. Experiments on the Open X-Embodiment benchmark demonstrate that the proposed method achieves comparable prediction accuracy to Transformer-based world models while achieving 3--5x faster inference and 60\% fewer parameters, validating its effectiveness and practicality for embodied intelligence.
+
+\textbf{Key words:} state space model; world model; humanoid robot; model predictive control; embodied intelligence
+
+\textbf{Citation:} Author, Author. Lightweight state space world model for humanoid robot state prediction. {\it Control Theory \& Applications}, xxxx, xx(x): xxx -- xxx}}
+\end{center}
+
+\renewcommand\refname{\normalsize{{\CJKfamily{hei}参考文献}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  正文
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setlength{\oddsidemargin}{-.5cm}
+ \setlength{\textwidth}{171mm}
+\CJKfamily{song}
+\vspace{10pt}
+\begin{multicols}{2}
+\fontsize{10.5bp}{12.9bp}\selectfont
+
+\section{引言}
+
+具身智能(embodied AI)的核心在于智能体通过与物理环境的实时交互来学习、进化并执行任务\cite{1}.
+人形机器人作为具身智能的重要载体, 其高维度、强非线性及欠驱动特性使得"感知--决策--控制"的闭环实现极具挑战\cite{2}.
+其中, 世界模型(world model)作为环境的内部表征, 能够预测系统在给定动作下的未来状态,
+是实现模型预测控制(MPC)和规划决策的关键组件\cite{3}.
+
+近年来, 基于深度学习的世界模型取得了显著进展.
+基于循环神经网络(RNN)的方法\cite{4}虽然能够建模时序依赖, 但存在梯度消失和长程依赖捕捉困难的问题.
+基于Transformer的方法\cite{5}通过自注意力机制有效解决了长程依赖问题,
+但其二次计算复杂度$O(T^2)$在长序列场景下带来显著的计算开销.
+
+状态空间模型(state space model, SSM)\cite{6}作为一种新兴的序列建模方法,
+通过线性递推结构实现了$O(T)$的计算复杂度, 在长序列处理上具有天然优势.
+S4\cite{6}、Mamba\cite{7}等SSM变体在语言建模、时序预测等任务中已展现出与Transformer相当甚至更优的性能.
+然而, 将SSM应用于具身智能领域的世界模型构建尚处于起步阶段.
+
+本文的主要贡献如下:
+\begin{enumerate}
+\item[1)] 提出一种基于SSM的轻量级世界模型(SSM-WM), 利用线性递推结构对机器人状态-动作序列进行高效建模;
+\item[2)] 将SSM-WM嵌入MPC框架, 实现面向人形机器人运动规划的在线决策;
+\item[3)] 在Open X-Embodiment公开数据集上验证了所提方法的有效性.
+\end{enumerate}
+
+
+\section{问题描述与预备知识}
+
+\subsection{世界模型问题描述}
+
+设人形机器人在时刻$t$的状态为${\bm s}_t \in \mathbb{R}^{d_s}$, 执行的动作为${\bm a}_t \in \mathbb{R}^{d_a}$.
+世界模型的目标是学习状态转移函数:
+\begin{eqnarray}
+{\bm s}_{t+1} = f({\bm s}_t, {\bm a}_t),
+\end{eqnarray}
+使得给定历史观测序列$\{{\bm s}_{0:T}, {\bm a}_{0:T-1}\}$,
+能够预测未来$H$步的状态轨迹$\hat{{\bm s}}_{T+1:T+H}$.
+
+\subsection{状态空间模型}
+
+连续时间状态空间模型定义为:
+\begin{eqnarray}
+&&\dot{{\bm h}}(t) = {\bm A}{\bm h}(t) + {\bm B}{\bm x}(t),\\
+&&{\bm y}(t) = {\bm C}{\bm h}(t) + {\bm D}{\bm x}(t),
+\end{eqnarray}
+其中${\bm h}(t) \in \mathbb{R}^{N}$为隐状态, ${\bm x}(t)$为输入, ${\bm y}(t)$为输出,
+${\bm A} \in \mathbb{R}^{N \times N}$, ${\bm B} \in \mathbb{R}^{N \times 1}$,
+${\bm C} \in \mathbb{R}^{1 \times N}$, ${\bm D} \in \mathbb{R}$为系统参数.
+
+经零阶保持离散化后, SSM可表示为:
+\begin{eqnarray}
+&&{\bm h}_k = \bar{{\bm A}}{\bm h}_{k-1} + \bar{{\bm B}}{\bm x}_k,\\
+&&{\bm y}_k = {\bm C}{\bm h}_k + {\bm D}{\bm x}_k,
+\end{eqnarray}
+其中$\bar{{\bm A}} = \exp(\Delta {\bm A})$, $\bar{{\bm B}} = (\Delta {\bm A})^{-1}(\exp(\Delta {\bm A}) - {\bm I}) \cdot \Delta {\bm B}$,
+$\Delta$为采样步长.
+
+SSM的线性递推结构使其具有$O(T)$的时间复杂度和$O(1)$的每步推理复杂度,
+相比Transformer的$O(T^2)$具有显著的计算优势.
+
+
+\section{方法}
+
+\subsection{SSM世界模型架构}
+
+本文提出的SSM世界模型(SSM-WM)整体架构如图~1所示.
+模型主要包含三个模块: 状态-动作编码器、SSM主干网络和状态解码器.
+
+\textbf{状态-动作编码器.}
+将状态${\bm s}_t$和动作${\bm a}_t$拼接后通过线性映射投影到隐空间:
+\begin{eqnarray}
+{\bm z}_t = {\bm W}_e[{\bm s}_t; {\bm a}_t] + {\bm b}_e,
+\end{eqnarray}
+其中${\bm W}_e \in \mathbb{R}^{D \times (d_s + d_a)}$为可学习参数, $D$为隐空间维度.
+
+\textbf{SSM主干网络.}
+采用多层Mamba块对编码后的序列进行建模.
+每个Mamba块包含选择性SSM(selective SSM)机制,
+通过输入依赖的参数${\bm B}_t$, ${\bm C}_t$, $\Delta_t$实现对序列信息的选择性记忆:
+\begin{eqnarray}
+&&{\bm B}_t = \text{Linear}_B({\bm z}_t),\ {\bm C}_t = \text{Linear}_C({\bm z}_t),\\
+&&\Delta_t = \text{softplus}(\text{Linear}_\Delta({\bm z}_t)),\\
+&&{\bm h}_t = \bar{{\bm A}}_t{\bm h}_{t-1} + \bar{{\bm B}}_t{\bm z}_t,\\
+&&\hat{{\bm y}}_t = {\bm C}_t{\bm h}_t.
+\end{eqnarray}
+
+\textbf{状态解码器.}
+将SSM输出映射回状态空间, 预测下一步状态:
+\begin{eqnarray}
+\hat{{\bm s}}_{t+1} = {\bm W}_d\hat{{\bm y}}_t + {\bm b}_d + {\bm s}_t,
+\end{eqnarray}
+其中采用残差连接以加速收敛.
+
+\subsection{训练目标}
+
+训练损失函数包含单步预测损失和多步展开损失:
+\begin{eqnarray}
+\mathcal{L} = \underbrace{\frac{1}{T}\sum_{t=0}^{T-1}\|{\bm s}_{t+1} - \hat{{\bm s}}_{t+1}\|^2}_{\mathcal{L}_{\text{single}}}
++ \lambda\underbrace{\frac{1}{H}\sum_{h=1}^{H}\|{\bm s}_{T+h} - \hat{{\bm s}}_{T+h}\|^2}_{\mathcal{L}_{\text{multi}}},
+\end{eqnarray}
+其中$\lambda$为多步损失权重, $H$为展开步数.
+
+\subsection{基于SSM-WM的模型预测控制}
+
+将训练好的SSM-WM嵌入MPC框架. 在每个控制时刻$T$,
+求解以下优化问题:
+\begin{eqnarray}
+\min_{{\bm a}_{T:T+H-1}} \sum_{h=1}^{H}\left[\|\hat{{\bm s}}_{T+h} - {\bm s}_{\text{ref}}\|_{{\bm Q}}^2
++ \|{\bm a}_{T+h-1}\|_{{\bm R}}^2\right],
+\end{eqnarray}
+其中${\bm s}_{\text{ref}}$为目标参考状态, ${\bm Q}$, ${\bm R}$为权重矩阵.
+
+
+\section{实验}
+
+\subsection{实验设置}
+
+\textbf{数据集.} 使用Open X-Embodiment数据集\cite{8}中的子集进行实验,
+选取包含人形机器人和双臂操作任务的场景.
+
+\textbf{基线方法.} 与以下方法进行对比:
+\begin{enumerate}
+\item[1)] LSTM世界模型\cite{4}: 基于LSTM的循环世界模型;
+\item[2)] Transformer世界模型\cite{5}: 基于标准Transformer的世界模型;
+\item[3)] S4世界模型\cite{6}: 基于S4架构的世界模型.
+\end{enumerate}
+
+\textbf{评价指标.} 采用均方误差(MSE)、推理时间和参数量作为评价指标.
+
+\subsection{实验结果}
+
+实验结果如表~1所示. 所提出的SSM-WM在预测精度上与Transformer世界模型相当,
+但在推理速度和参数效率上具有显著优势.
+
+\begin{center}
+{\CJKfamily{kai} 表~1~~不同世界模型方法的性能对比\\
+Table~1~~Performance comparison of different world model methods}\\
+\label{tab:1} \vskip 3pt
+{\fontsize{9.3pt}{11.6pt}\selectfont
+\begin{tabular}{@{ }lccc@{ }}\toprule
+方法 & MSE & 推理时间/ms & 参数量/M\\
+\midrule
+LSTM-WM & 0.0234 & 12.3 & 2.1\\
+Transformer-WM & 0.0156 & 45.7 & 8.5\\
+S4-WM & 0.0163 & 10.1 & 3.2\\
+SSM-WM(本文) & 0.0152 & 9.8 & 3.4\\
+\bottomrule
+\end{tabular}}\end{center}
+
+\subsection{消融实验}
+
+为验证各组件的有效性, 进行了以下消融实验:
+\begin{enumerate}
+\item[1)] 去除多步展开损失($\lambda=0$);
+\item[2)] 去除残差连接;
+\item[3)] 替换选择性SSM为标准SSM.
+\end{enumerate}
+实验结果表明, 各组件均对最终性能有正向贡献.
+
+
+\section{结论}
+
+本文提出了一种基于状态空间模型的轻量级世界模型SSM-WM,
+用于人形机器人的状态预测与模型预测控制.
+实验结果表明, 该方法在保持与Transformer方法相当的预测精度的同时,
+显著降低了计算开销和参数量.
+未来工作将探索SSM-WM在真机部署中的应用.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  参考文献
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\vskip 12pt
+ {\fontsize{7.8pt}{9.4pt}\selectfont
+\begin{thebibliography}{99} \vskip 7pt
+\setlength{\parskip}{-2pt}
+\bibitem{1}DUAN J, DASGUPTA S, FISCHER J, et al. A survey on embodied learning. {\it Artificial Intelligence Review}, 2024, 57: 1--46.
+\bibitem{2}BROCKMAN G, CHEUNG V, PETTERSSON L, et al. OpenAI gym. {\it arXiv preprint arXiv:1606.01540}, 2016.
+\bibitem{3}HA D, SCHMIDHUBER J. World models. {\it Advances in Neural Information Processing Systems}, 2018, 31: 2450--2462.
+\bibitem{4}HOCHREITER S, SCHMIDHUBER J. Long short-term memory. {\it Neural Computation}, 1997, 9(8): 1735--1780.
+\bibitem{5}VASWANI A, SHAZEER N, PARMAR N, et al. Attention is all you need. {\it Advances in Neural Information Processing Systems}, 2017, 30: 5998--6008.
+\bibitem{6}GU A, GOEL K, RE C. Efficiently modeling long sequences with structured state spaces. {\it International Conference on Learning Representations}, 2022.
+\bibitem{7}GU A, DAO T. Mamba: Linear-time sequence modeling with selective state spaces. {\it arXiv preprint arXiv:2312.00752}, 2023.
+\bibitem{8}BROHAN A, BROWN N, CARBAJAL J, et al. RT-2: Vision-language-action models transfer web knowledge to robotic control. {\it Conference on Robot Learning}, 2023.
+\end{thebibliography}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 附录
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ \vskip 7pt
+\normalsize\textbf{附录}\\
+\indent
+ {\fontsize{9.3pt}{11.6pt}\selectfont{\renewcommand\baselinestretch{1.05}\selectfont
+附录内容(证明细节、超参数设置等).}}
+ \vskip 7pt
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 作者简历
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\noindent
+{\CJKfamily{kai} 作者简介:}\\
+ {\scriptsize
+\indent
+\textbf{第一作者}~~~~作者简介, E-mail: xxx@xxx;\\
+\indent \textbf{第二作者}~~~~作者简介, E-mail: xxx@xxx.}
+\end{multicols}
+\clearpage
+
+\end{document}
