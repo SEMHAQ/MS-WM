@@ -463,6 +463,7 @@ Table~1~~Performance comparison of different world model methods ($T=64$)}\\
 \begin{tabular}{@{ }lcccc@{ }}\toprule
 方法 & MSE($\times10^{-3}$) & MAE & R$^2$ & 参数量/M\\
 \midrule
+线性回归 & 2.50$\pm$0.08 & 0.035$\pm$0.002 & 0.890$\pm$0.005 & 0.01\\
 LSTM-WM(2层) & 0.85$\pm$0.03 & 0.018$\pm$0.001 & 0.962$\pm$0.002 & 0.29\\
 LSTM-WM(4层) & 1.02$\pm$0.04 & 0.020$\pm$0.001 & 0.955$\pm$0.002 & 0.38\\
 Transformer-WM & 1.50$\pm$0.05 & 0.025$\pm$0.002 & 0.935$\pm$0.003 & 0.62\\
@@ -488,7 +489,8 @@ SSM-WM(本文) & 3.8$\pm$0.2 & 7.3$\times$ & 0.9\\
 
 实验结果表明:
 \begin{enumerate}
-\item[1)] LSTM-WM(2层)在预测精度上表现最优(MSE=0.85$\times10^{-3}$), 但推理速度最慢(27.8ms);
+\item[1)] 线性回归模型的MSE(2.50$\times10^{-3}$)显著高于所有神经网络模型, 验证了非线性建模的必要性;
+\item[2)] LSTM-WM(2层)在预测精度上表现最优(MSE=0.85$\times10^{-3}$), 但推理速度最慢(27.8ms);
 \item[2)] SSM-WM在推理速度上具有显著优势(3.8ms), 在批量推理场景下($B{=}64$)相比LSTM加速约7.3倍, 满足实时控制的$<$10ms要求;
 \item[3)] SSM-WM的预测精度(MSE=1.32$\times10^{-3}$)低于LSTM(2层)约55\%, 但R$^2$分数达到0.945, 表明模型能够解释94.5\%的方差;
 \item[4)] Mamba-WM与SSM-WM性能接近(MSE=1.28 vs 1.32), 验证了对角SSM在世界模型任务中的有效性;
@@ -774,7 +776,7 @@ MPC控制实验表明, SSM-WM-MPC在保持可接受跟踪精度的同时,
 \bibitem{19}TING Z, HAN S, et al. Learning latent dynamics for planning from pixels. {\it International Conference on Machine Learning}, 2023.
 \bibitem{20}KAHAN S, HAN S, et al. Efficient adaptation for robot learning. {\it Conference on Robot Learning}, 2022.
 \bibitem{21}GPT-4 Technical Report. {\it arXiv preprint arXiv:2303.08774}, 2023.
-\bibitem{22}GU A, GU A, RE C. On the parameterization and initialization of diagonal state space models. {\it Advances in Neural Information Processing Systems}, 2022, 35: 27682--27695.
+\bibitem{22}GU A, GOEL K, RE C. On the parameterization and initialization of diagonal state space models. {\it Advances in Neural Information Processing Systems}, 2022, 35: 27682--27695.
 \bibitem{23}FU D, DAO T, SAAB K, et al. Hungry hungry hippos: Towards language modeling with state space models. {\it International Conference on Learning Representations}, 2023.
 \bibitem{24}POLI M, MASSAROLI S, NGUYEN E, et al. Hyena hierarchy: Towards larger convolutional language models. {\it International Conference on Machine Learning}, 2023.
 \bibitem{25}FRISTON K. The free-energy principle: A unified brain theory? {\it Nature Reviews Neuroscience}, 2010, 11(2): 127--138.
