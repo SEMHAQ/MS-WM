@@ -1,0 +1,82 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+*.whl
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+logs/
+runs/
+wandb/
+
+# Data (track by LFS or download script, not git)
+data/
+*.h5
+*.hdf5
+*.pkl
+*.npy
+*.npz
+
+# Model weights
+checkpoints/
+*.pth
+*.pt
+*.ckpt
+*.bin
+*.safetensors
+
+# OS
+.DS_Store
+Thumbs.db
+
+# LaTeX auxiliary
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.out
+*.toc
+*.lof
+*.lot
+*.nav
+*.snm
+*.vrb
+*.bcf
+*.run.xml
+*.xdv
+*.dvi
+
+# Compiled
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.svg
+
+# Exceptions - keep important figures/tables in paper/
+!paper/figures/*.pdf
+!paper/figures/*.png
