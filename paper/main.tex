@@ -50,7 +50,7 @@ SSM-WM结合S4D风格的对角SSM参数化与Mamba风格的门控块结构,
 
 {\CJKfamily{hei}引用格式:} 周新民, 余焕杰. 面向人形机器人状态预测的轻量级状态空间世界模型. 控制理论与应用, xxxx, xx(x): xxx -- xxx\\\vspace*{-16pt}
 
-DOI: 10.7641/CTA.2026.0456
+DOI: 10.7641/CTA.202x.xxxxx
 }}
 \end{center}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -68,7 +68,7 @@ ZHOU Xin-min$^{1,\,2\dagger}$,~~YU Huan-jie$^{3}$\\[2pt]
 \end{center}
 
 \vspace{-10pt}\footnotesize{\textbf{Abstract:}
-This paper proposes a lightweight world model SSM-WM based on diagonal state space models, achieving 7.3x faster inference than LSTM world models in batched mode with inference time reduced from 27.8ms to 3.8ms and 17\\% fewer parameters, while simultaneously achieving approximately 6\\% better prediction accuracy than LSTM-WM and 13\\% better than Transformer-WM on the MuJoCo Humanoid simulation dataset. SSM-WM combines S4D-style diagonal SSM parameterization with Mamba-style gated blocks, leveraging FFT convolution to efficiently encode historical states and action sequences with $O(T\\log T)$ training complexity and $O(1)$ per-step inference latency. When integrated into a model predictive control MPC framework, SSM-WM-MPC achieves 5.1Hz control frequency on synthetic datasets and 2.1Hz on MuJoCo Humanoid. A gating threshold function comparison experiment demonstrates that soft-threshold gating outperforms hard thresholding with 6.4\\% MSE reduction and Garrote thresholding with 2.1\\% reduction in contact dynamics scenarios, validating the unique advantages of gated SSM for world model tasks. Training converges within 20 epochs with no overfitting observed.
+This paper proposes a lightweight world model SSM-WM based on diagonal state space models, achieving 7.3x faster inference than LSTM world models in batched mode with inference time reduced from 27.8ms to 3.8ms and 17\% fewer parameters, while simultaneously achieving approximately 6\% better prediction accuracy than LSTM-WM and 13\% better than Transformer-WM on the MuJoCo Humanoid simulation dataset. SSM-WM combines S4D-style diagonal SSM parameterization with Mamba-style gated blocks, leveraging FFT convolution to efficiently encode historical states and action sequences with $O(T\\log T)$ training complexity and $O(1)$ per-step inference latency. When integrated into a model predictive control MPC framework, SSM-WM-MPC achieves 5.1Hz control frequency on synthetic datasets and 2.1Hz on MuJoCo Humanoid. A gating threshold function comparison experiment demonstrates that soft-threshold gating outperforms hard thresholding with 6.4\% MSE reduction and Garrote thresholding with 2.1\% reduction in contact dynamics scenarios, validating the unique advantages of gated SSM for world model tasks. Training converges within 20 epochs with no overfitting observed.
 
 \textbf{Key words:} state space model; world model; humanoid robot; model predictive control; embodied intelligence
 
