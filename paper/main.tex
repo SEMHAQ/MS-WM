@@ -12,10 +12,13 @@
 \footnotetext{\scriptsize \hskip -6pt
 \hspace*{-0.1em}收稿日期: xxxx$-$xx$-$xx; 录用日期: xxxx$-$xx$-$xx.\\
 \hspace*{1.1em}$^{\dag}$通讯作者. E-mail: semhaqx@gmail.com.\\
-\hspace*{1.1em}责任编辑: XXX.\\
-\hspace*{1.1em}国家社会科学基金项目(21BGL231); 湘江实验室重大项目(23XJ01001)资助.\\
-\hspace*{1.1em}Supported by National Social Science Foundation of China (21BGL231); Xiangjiang Laboratory Major Project (23XJ01001).}}
-\author{{\large 周新民\makebox{$^{1,\,2}$}\makebox{$^{\dag}$},~~余焕杰\makebox{$^{3}$}}\\[3pt]{\scriptsize (1. 湖南工商大学~人工智能与先进计算学院, 湖南~长沙~410205; 2. 湘江实验室, 湖南~长沙~410205; 3. 湖南工商大学~计算机学院, 湖南~长沙~410205)}}
+\hspace*{1.1em}本文责任编委: XXX.\\
+\hspace*{1.1em}国家社会科学基金项目(21BGL231), 湘江实验室重大项目(23XJ01001)资助.\\
+\hspace*{1.1em}Supported by the National Social Science Foundation of China (21BGL231) and the\\
+Xiangjiang Laboratory Major Project (23XJ01001).}}
+\author{{\large 周新民\makebox{$^{1,\,2}$},~~余焕杰\makebox{$^{3}$}\makebox{$^{\dag}$}}\\[3pt]{\scriptsize (1. 湖南工商大学~人工智能与先进计算学院, 湖南~长沙~410205;\\
+2. 湘江实验室, 湖南~长沙~410205;\\
+3. 湖南工商大学~计算机学院, 湖南~长沙~410205)}}
 \date{}
 \fancyhead[CO]{{\footnotesize 周新民等: 面向人形机器人状态预测的轻量级状态空间世界模型}}
 \setlength{\abovedisplayskip}{1.5mm}
@@ -29,21 +32,22 @@
 \begin{center}
 \parbox{\textwidth}{\setlength{\parindent}{1em}
 {\footnotesize {\CJKfamily{hei} 摘要:}
-本文提出了一种基于对角状态空间模型的轻量级世界模型(SSM-WM),
-在批量推理场景下较LSTM世界模型实现7.3倍加速(3.8ms vs 27.8ms), 参数量减少17\%,
-同时在MuJoCo Humanoid仿真数据集上预测精度优于LSTM-WM(提升约6\%)和Transformer-WM(提升约13\%).
+本文提出了一种基于对角状态空间模型的轻量级世界模型SSM-WM,
+在批量推理场景下较LSTM世界模型实现7.3倍加速, 推理时间从27.8ms降至3.8ms, 参数量减少17\%,
+同时在MuJoCo Humanoid仿真数据集上预测精度优于LSTM-WM约6\%, 优于Transformer-WM约13\%.
 SSM-WM结合S4D风格的对角SSM参数化与Mamba风格的门控块结构,
 利用FFT卷积对机器人历史状态与动作序列进行高效建模,
-实现$O(T\log T)$的训练复杂度和$O(1)$的单步推理延迟.
-将SSM-WM嵌入模型预测控制(MPC)框架后, 实现了5.1Hz的控制频率,
+实现$O(T\\log T)$的训练复杂度和$O(1)$的单步推理延迟.
+将SSM-WM嵌入模型预测控制MPC框架后, 实现了5.1Hz的控制频率,
 在MuJoCo Humanoid数据集上进一步实现2.1Hz控制频率.
-门控阈值函数对比实验表明, 软阈值门控在接触动力学场景下优于硬阈值(降低6.4\%)和Garrote阈值(降低2.1\%),
+门控阈值函数对比实验表明, 软阈值门控在接触动力学场景下优于硬阈值降低6.4\%, 优于Garrote阈值降低2.1\%,
 验证了门控SSM在世界模型任务中的独特优势.
 训练过程在20个epoch内收敛, 验证损失与训练损失趋势一致, 未出现明显过拟合.
 
 {\CJKfamily{hei} 关键词:} 状态空间模型; 世界模型; 人形机器人; 模型预测控制; 具身智能
 
-{\CJKfamily{hei}引用格式:} 周新民, 余焕杰. 面向人形机器人状态预测的轻量级状态空间世界模型. 控制理论与应用, xxxx, xx(x): xxx -- xxx\\
+{\CJKfamily{hei}引用格式:} 周新民, 余焕杰. 面向人形机器人状态预测的轻量级状态空间世界模型. 控制理论与应用, xxxx, xx(x): xxx -- xxx\\\vspace*{-16pt}
+
 DOI: 10.7641/CTA.2026.0456
 }}
 \end{center}
@@ -62,7 +66,7 @@ ZHOU Xin-min$^{1,\,2\dagger}$,~~YU Huan-jie$^{3}$\\[2pt]
 \end{center}
 
 \vspace{-10pt}\footnotesize{\textbf{Abstract:}
-This paper proposes a lightweight world model (SSM-WM) based on diagonal state space models, achieving 7.3x faster inference than LSTM world models in batched mode (3.8ms vs 27.8ms) with 17\% fewer parameters, while simultaneously achieving approximately 6\% better prediction accuracy than LSTM-WM and 13\% better than Transformer-WM on the MuJoCo Humanoid simulation dataset. SSM-WM combines S4D-style diagonal SSM parameterization with Mamba-style gated blocks, leveraging FFT convolution to efficiently encode historical states and action sequences with $O(T\log T)$ training complexity and $O(1)$ per-step inference latency. When integrated into a model predictive control (MPC) framework, SSM-WM-MPC achieves 5.1Hz control frequency on synthetic datasets and 2.1Hz on MuJoCo Humanoid. A gating threshold function comparison experiment demonstrates that soft-threshold gating outperforms hard thresholding (6.4\% MSE reduction) and Garrote thresholding (2.1\% reduction) in contact dynamics scenarios, validating the unique advantages of gated SSM for world model tasks. Training converges within 20 epochs with no overfitting observed.
+This paper proposes a lightweight world model SSM-WM based on diagonal state space models, achieving 7.3x faster inference than LSTM world models in batched mode with inference time reduced from 27.8ms to 3.8ms and 17\\% fewer parameters, while simultaneously achieving approximately 6\\% better prediction accuracy than LSTM-WM and 13\\% better than Transformer-WM on the MuJoCo Humanoid simulation dataset. SSM-WM combines S4D-style diagonal SSM parameterization with Mamba-style gated blocks, leveraging FFT convolution to efficiently encode historical states and action sequences with $O(T\\log T)$ training complexity and $O(1)$ per-step inference latency. When integrated into a model predictive control MPC framework, SSM-WM-MPC achieves 5.1Hz control frequency on synthetic datasets and 2.1Hz on MuJoCo Humanoid. A gating threshold function comparison experiment demonstrates that soft-threshold gating outperforms hard thresholding with 6.4\\% MSE reduction and Garrote thresholding with 2.1\\% reduction in contact dynamics scenarios, validating the unique advantages of gated SSM for world model tasks. Training converges within 20 epochs with no overfitting observed.
 
 \textbf{Key words:} state space model; world model; humanoid robot; model predictive control; embodied intelligence
 
