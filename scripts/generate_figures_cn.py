@@ -173,7 +173,7 @@ def fig_mpc_comparison():
     ax1.set_ylabel('跟踪MSE')
     ax1.set_title('(a) 跟踪精度')
     ax1.set_xticks(x)
-    ax1.set_xticklabels(methods, rotation=15, ha='right')
+    ax1.set_xticklabels(methods, rotation=0, ha='center')
     ax1.grid(True, alpha=0.3, axis='y')
 
     ax2.bar(x, freq_vals, color=bar_colors, alpha=0.8, edgecolor='black', linewidth=0.5)
@@ -181,7 +181,7 @@ def fig_mpc_comparison():
     ax2.set_ylabel('控制频率 (Hz)')
     ax2.set_title('(b) 控制频率')
     ax2.set_xticks(x)
-    ax2.set_xticklabels(methods, rotation=15, ha='right')
+    ax2.set_xticklabels(methods, rotation=0, ha='center')
     ax2.grid(True, alpha=0.3, axis='y')
 
     plt.tight_layout()
