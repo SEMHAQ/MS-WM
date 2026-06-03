@@ -85,3 +85,4 @@ paper/template/
 !paper/figures/*.png
 !paper/*.pdf
 .claude/
+refs/
