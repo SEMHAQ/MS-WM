@@ -192,7 +192,7 @@ def fig_mpc_comparison():
 def fig_radar():
     """Fig 8: Radar chart."""
     fig, ax = plt.subplots(figsize=(5, 5), subplot_kw=dict(polar=True))
-    categories = ['MSE\n(越低越好)', 'MAE\n(越低越好)', '参数量\n(越低越好)', '速度\n(越快越好)', '内存\n(越低越好)']
+    categories = ['MSE', 'MAE', '参数量', '速度', '内存']
     N = len(categories)
 
     def normalize(vals, lower_better=True):
