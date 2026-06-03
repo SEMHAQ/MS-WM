@@ -855,9 +855,10 @@ Garrote阈值 & 0.852 & 0.583 & 9.6\\
 MPC的预测时域$H=10$, 使用Adam优化器进行50次梯度下降迭代,
 控制步数为30步. 实验使用3个随机种子运行, 结果如表~11所示.
 
-\begin{center}
-{\CJKfamily{kai} 表~11~~MuJoCo Humanoid MPC控制性能对比\\
-Table~11~~MPC control performance on MuJoCo Humanoid dataset}\\
+\noindent\begin{minipage}{\columnwidth}
+\begingroup\centering
+{\CJKfamily{kai} 表~11~~MuJoCo Humanoid MPC控制性能对比}\\
+Table~11~~MPC control performance on MuJoCo Humanoid dataset\\
 \label{tab:11} \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
 \begin{tabular}{@{}lccc@{ }}\toprule
@@ -866,7 +867,9 @@ Table~11~~MPC control performance on MuJoCo Humanoid dataset}\\
 LSTM-MPC & 0.045 & 2850$\pm$120 & 0.35\\
 SSM-WM-MPC & 0.052 & 475$\pm$25 & 2.1\\
 \bottomrule
-\end{tabular}}\end{center}
+\end{tabular}}
+\par\endgroup
+\end{minipage}
 
 实验结果表明:
 1)~~在MuJoCo Humanoid数据集上, SSM-WM-MPC的跟踪误差(0.052)与LSTM-MPC(0.045)处于同一数量级, 差距约16\%, 差异不显著($p=0.18$);
