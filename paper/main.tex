@@ -836,7 +836,7 @@ $L=6$层 & 0.818 & 0.601 & 12.8\\
 为深入理解SSM-WM中门控机制的作用机理,
 对比了三种不同的阈值函数对门控信号的处理效果, 结果如表~10所示.
 软阈值(soft threshold)采用sigmoid函数$\sigma(x)$, 产生连续的门控信号;
-硬阈值(hard threshold)采用阶跃函数$\mathbf{1}(x>0)$, 产生二值门控信号;
+硬阈值(hard threshold)采用阶跃函数$h(x)=\begin{cases}1,&x>0\\0,&x\leq0\end{cases}$, 产生二值门控信号;
 Garrote阈值采用非负Garrote函数$\max(0, x - \tau^2/x)$\textsuperscript{\cite{24}}, 产生稀疏但连续的门控信号.
 实验在$T=32$的MuJoCo Humanoid数据集上进行.
 
@@ -850,7 +850,7 @@ Table~10~~Comparison of different threshold functions for gating mechanism (MuJo
 阈值函数 & MSE$^{\text{a}}$ & $R^2$ & 时间$^{\text{b}}$\\
 \midrule
 软阈值$\sigma(x)$(本文) & 0.834 & 0.592 & 9.5\\
-硬阈值$\mathbf{1}(x>0)$ & 0.891 & 0.564 & 9.2\\
+硬阈值$h(x)\in\{0,1\}$ & 0.891 & 0.564 & 9.2\\
 Garrote阈值 & 0.852 & 0.583 & 9.6\\
 \bottomrule
 \end{tabular}}
