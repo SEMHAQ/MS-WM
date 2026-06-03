@@ -563,10 +563,11 @@ $H$ & SSM-WM & LSTM-WM & Mamba-WM\\
 在$T=16/32/64/128/256/512$下进行了对比实验, 结果如表~4所示.
 由于Transformer在长序列下推理时间过长, 仅对SSM-WM和LSTM-WM进行对比, 结果如表~4所示.
 
-\begingroup\centering
+\begin{table}[t]
+\centering
 {\CJKfamily{kai} 表~4~~不同序列长度下的性能对比\\
 Table~4~~Performance comparison under different sequence lengths}\\
-\label{tab:4} \vskip 3pt
+\vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
 \begin{tabular}{@{}lcccc@{}}\toprule
 & \multicolumn{2}{c}{MSE$^{\text{a}}$} & \multicolumn{2}{c}{时间$^{\text{b}}$}\\
@@ -580,7 +581,9 @@ $T$ & SSM-WM & LSTM-WM & SSM-WM & LSTM-WM\\
 256 & 2.10 & 0.90 & 7.8  & 112.6\\
 512 & 1.96 & 0.85 & 12.1  & 228.4\\
 \bottomrule
-\end{tabular}}\par\endgroup
+\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}\times10^{-3}$; $^{\text{b}}$ms, $B{=}64$. 均值$\pm$标准差见正文.}
+\end{tabular}}
+\end{table}
 
 结果表明:
 1)~~SSM-WM的推理时间随序列长度增长缓慢(如图~2所示), 体现了$O(T\log T)$计算复杂度的优势;
