@@ -457,7 +457,7 @@ SSM-WM的FFT卷积操作在GPU上具有良好的并行性, 但在嵌入式平台
 
 实验结果如表~1所示. 序列长度设置为$T=64$, 批大小为64.
 
-\begin{table}[t]
+\begin{table}[H]
 \centering
 {\CJKfamily{kai} 表~1~~不同世界模型方法的性能对比($T=64$)\\
 Table~1~~Performance comparison of different world model methods ($T=64$)}\\
@@ -499,7 +499,7 @@ SSM-WM(本文) & \textbf{2.72} & \textbf{0.998} & \textbf{3.8} & \textbf{0.24} \
 为评估模型在实际部署场景下的推理性能,
 在不同批次大小($B=1, 8, 32, 64$)下测量了推理时间, 结果如表~2所示.
 
-\begin{table}[t]
+\begin{table}[H]
 \centering
 {\CJKfamily{kai} 表~2~~不同批次大小下的推理时间($T=64$, 单位: ms)\\
 Table~2~~Inference time under different batch sizes ($T=64$, unit: ms)}\\
@@ -563,7 +563,7 @@ $H$ & SSM-WM & LSTM-WM & Mamba-WM\\
 在$T=16/32/64/128/256/512$下进行了对比实验, 结果如表~4所示.
 由于Transformer在长序列下推理时间过长, 仅对SSM-WM和LSTM-WM进行对比, 结果如表~4所示.
 
-\begin{table}[t]
+\begin{table}[H]
 \centering
 {\CJKfamily{kai} 表~4~~不同序列长度下的性能对比\\
 Table~4~~Performance comparison under different sequence lengths}\\
