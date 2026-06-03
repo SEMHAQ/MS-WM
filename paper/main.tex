@@ -457,8 +457,8 @@ SSM-WM的FFT卷积操作在GPU上具有良好的并行性, 但在嵌入式平台
 \begingroup\centering
 \begin{minipage}{\columnwidth}
 \centering
-{\CJKfamily{kai} 表~1~~不同世界模型方法的性能对比($T=64$)\\
-Table~1~~Performance comparison of different world model methods ($T=64$)}\\
+{\CJKfamily{kai} 表~1~~不同世界模型方法的性能对比($T{=}64$, $B{=}64$)\\
+Table~1~~Performance comparison of different world model methods ($T{=}64$, $B{=}64$)}\\
 \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
 \begin{tabular}{@{}lcccc@{}}\toprule
@@ -471,7 +471,7 @@ Transformer-WM & 1.50 & 0.935 & >100 & 0.62 \\
 Mamba-WM & 1.28 & 0.948 & 4.5 & 0.28 \\
 SSM-WM(本文) & \textbf{2.72} & \textbf{0.998} & \textbf{3.8} & \textbf{0.24} \\
 \bottomrule
-\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}\times10^{-3}$; $^{\text{b}}$ms, $B{=}64$; $^{\text{c}}$M. 均值$\pm$标准差见正文.}
+\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$$\times10^{-3}$; $^{\text{b}}$ms; $^{\text{c}}$M(百万). 均值$\pm$标准差见正文.}
 \end{tabular}}
 \end{minipage}
 \par\endgroup
@@ -513,7 +513,7 @@ $B$ & LSTM-WM & Mamba-WM & SSM-WM \\
 32  & 12.3 & 2.8 & 2.4\\
 64  & 27.8 & 4.5 & 3.8\\
 \bottomrule
-\multicolumn{4}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: 单位ms, $T{=}64$. 均值$\pm$标准差见正文.}
+
 \end{tabular}}
 \end{minipage}
 \par\endgroup
@@ -567,8 +567,8 @@ $H$ & SSM-WM & LSTM-WM & Mamba-WM\\
 \begingroup\centering
 \begin{minipage}{\columnwidth}
 \centering
-{\CJKfamily{kai} 表~4~~不同序列长度下的性能对比\\
-Table~4~~Performance comparison under different sequence lengths}\\
+{\CJKfamily{kai} 表~4~~不同序列长度下的性能对比($B{=}64$)\\
+Table~4~~Performance comparison under different sequence lengths ($B{=}64$)}\\
 \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
 \begin{tabular}{@{}lcccc@{}}\toprule
@@ -583,7 +583,7 @@ $T$ & SSM-WM & LSTM-WM & SSM-WM & LSTM-WM\\
 256 & 2.10 & 0.90 & 7.8  & 112.6\\
 512 & 1.96 & 0.85 & 12.1  & 228.4\\
 \bottomrule
-\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}\times10^{-3}$; $^{\text{b}}$ms, $B{=}64$. 均值$\pm$标准差见正文.}
+\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$$\times10^{-3}$; $^{\text{b}}$ms. 均值$\pm$标准差见正文.}
 \end{tabular}}
 \end{minipage}
 \par\endgroup
