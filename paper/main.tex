@@ -10,17 +10,14 @@
 \makeatother
 \title{\LARGE\textbf{面向人形机器人状态预测的轻量级状态空间世界模型}\\
 \footnotetext{\scriptsize \hskip -6pt
-\hspace*{-0.1em}收稿日期: 2026$-$03$-$15; 录用日期: 2026$-$06$-$xx.\\
-\hspace*{1.1em}$^{\dag}$通信作者. E-mail: liuyang@ia.ac.cn; Tel.: +86-10-82544XXX.\\
-\hspace*{1.1em}本文责任编委:
-\hspace*{1.1em}国家自然科学基金项目(62203456)资助.\\
-\hspace*{1.1em}Supported by the National Natural Science Foundation of China (62203456).}}
-\author{{\large {\CJKfamily{fsong}刘洋\makebox{$^{1}$}\makebox{$^{\dag}$},~~张伟\makebox{$^{2}$}}}\\
-\scriptsize
-(1. 中国科学院自动化研究所, 北京 100190;\\
-\scriptsize 2. 清华大学计算机科学与技术系, 北京 100084) \\}
+\hspace*{-0.1em}收稿日期: xxxx$-$xx$-$xx; 录用日期: xxxx$-$xx$-$xx.\\
+\hspace*{1.1em}$^{\dag}$通讯作者. E-mail: semhaqx@gmail.com.\\
+\hspace*{1.1em}责任编辑: XXX.\\
+\hspace*{1.1em}国家社会科学基金项目(21BGL231); 湘江实验室重大项目(23XJ01001)资助.\\
+\hspace*{1.1em}Supported by National Social Science Foundation of China (21BGL231); Xiangjiang Laboratory Major Project (23XJ01001).}}
+\author{{\large 周新民\makebox{$^{1,\,2}$}\makebox{$^{\dag}$},~~余焕杰\makebox{$^{3}$}}\\[3pt]{\scriptsize (1. 湖南工商大学~人工智能与先进计算学院, 湖南~长沙~410205; 2. 湘江实验室, 湖南~长沙~410205; 3. 湖南工商大学~计算机学院, 湖南~长沙~410205)}}
 \date{}
-\fancyhead[CO]{{\footnotesize 刘洋等: 面向人形机器人状态预测的轻量级状态空间世界模型}}
+\fancyhead[CO]{{\footnotesize 周新民等: 面向人形机器人状态预测的轻量级状态空间世界模型}}
 \setlength{\abovedisplayskip}{1.5mm}
 \setlength{\belowdisplayskip}{1.5mm}
 \maketitle
@@ -46,7 +43,7 @@ SSM-WM结合S4D风格的对角SSM参数化与Mamba风格的门控块结构,
 
 {\CJKfamily{hei} 关键词:} 状态空间模型; 世界模型; 人形机器人; 模型预测控制; 具身智能
 
-{\CJKfamily{hei}引用格式:} 刘洋, 张伟. 面向人形机器人状态预测的轻量级状态空间世界模型. 控制理论与应用, xxxx, xx(x): xxx -- xxx\\
+{\CJKfamily{hei}引用格式:} 周新民, 余焕杰. 面向人形机器人状态预测的轻量级状态空间世界模型. 控制理论与应用, xxxx, xx(x): xxx -- xxx\\
 DOI: 10.7641/CTA.2026.0456
 }}
 \end{center}
@@ -58,9 +55,10 @@ DOI: 10.7641/CTA.2026.0456
 \parbox{\textwidth}{\setlength{\parindent}{1em}
 {\centering\Large\textbf{Lightweight State Space World Model for Humanoid\\Robot State Prediction}} \vspace{-1.2mm}
 \begin{center}
-Yang Liu\makebox{$^{1}$}\makebox{$^{\dag}$},~~Wei Zhang\makebox{$^{2}$ }\\[2pt]
-\scriptsize{(1. Institute of Automation, Chinese Academy of Sciences, Beijing 100190, China;\\
-2. Department of Computer Science and Technology, Tsinghua University, Beijing 100084, China)}
+ZHOU Xin-min$^{1,\,2\dagger}$,~~YU Huan-jie$^{3}$\\[2pt]
+\scriptsize{(1. School of Artificial Intelligence and Advanced Computing, Hunan University of Technology and Business, Changsha Hunan 410205, China;\\
+2. Xiangjiang Laboratory, Changsha Hunan 410205, China;\\
+3. School of Computer Science, Hunan University of Technology and Business, Changsha Hunan 410205, China)}
 \end{center}
 
 \vspace{-10pt}\footnotesize{\textbf{Abstract:}
@@ -68,7 +66,7 @@ This paper proposes a lightweight world model (SSM-WM) based on diagonal state s
 
 \textbf{Key words:} state space model; world model; humanoid robot; model predictive control; embodied intelligence
 
-\textbf{Citation:} Y. Liu, W. Zhang. Lightweight state space world model for humanoid robot state prediction. {\it Control Theory \& Applications}, xxxx, xx(x): xxx -- xxx}}
+\textbf{Citation:} X. Zhou, H. Yu. Lightweight state space world model for humanoid robot state prediction. {\it Control Theory \& Applications}, xxxx, xx(x): xxx -- xxx}}
 \end{center}
 
 \renewcommand\refname{\normalsize{{\CJKfamily{hei}参考文献}}}
@@ -273,7 +271,7 @@ SSM主干网络采用Mamba\textsuperscript{\cite{8}}风格的门控SSM块结构,
 结合S4D\textsuperscript{\cite{7}}风格的对角SSM参数化, 在世界模型任务中实现了高效的序列建模.
 
 \begin{center}
-\includegraphics[width=0.95\columnwidth]{figures/architecture.eps}\\
+\includegraphics[width=0.95\columnwidth]{figures/architecture.pdf}\\
 {\fontsize{9.3pt}{11.6pt}\selectfont 图~1~~SSM世界模型架构\\
 Fig.~1~~Architecture of SSM world model}
 \end{center}
@@ -518,7 +516,7 @@ $B$ & LSTM-WM & Mamba-WM & SSM-WM \\
 \end{enumerate}
 
 \begin{center}
-\includegraphics[width=0.95\columnwidth]{figures/batch_inference.eps}\\
+\includegraphics[width=0.95\columnwidth]{figures/batch_inference.pdf}\\
 {\fontsize{9.3pt}{11.6pt}\selectfont 图~3~~不同批次大小下的推理时间对比\\
 Fig.~3~~Inference time comparison under different batch sizes}
 \end{center}
@@ -589,13 +587,13 @@ $T$ & SSM-WM & LSTM-WM & SSM-WM & LSTM-WM\\
 表明模型对历史信息长度有较强依赖. 在部署时建议使用$T \geq 32$的历史窗口.
 
 \begin{center}
-\includegraphics[width=0.95\columnwidth]{figures/inference_vs_seqlen.eps}\\
+\includegraphics[width=0.95\columnwidth]{figures/inference_vs_seqlen.pdf}\\
 {\fontsize{9.3pt}{11.6pt}\selectfont 图~4~~推理时间随序列长度变化趋势\\
 Fig.~4~~Inference time vs. sequence length}
 \end{center}
 
 \begin{center}
-\includegraphics[width=0.95\columnwidth]{figures/mse_vs_seqlen.eps}\\
+\includegraphics[width=0.95\columnwidth]{figures/mse_vs_seqlen.pdf}\\
 {\fontsize{9.3pt}{11.6pt}\selectfont 图~5~~预测MSE随序列长度变化趋势\\
 Fig.~5~~Prediction MSE vs. sequence length}
 \end{center}
@@ -636,7 +634,7 @@ $D=256$ & 2.58$\pm$0.03 & 0.85 & 6.8$\pm$0.4\\
 \end{enumerate}
 
 \begin{center}
-\includegraphics[width=0.95\columnwidth]{figures/ablation_results.eps}\\
+\includegraphics[width=0.95\columnwidth]{figures/ablation_results.pdf}\\
 {\fontsize{9.3pt}{11.6pt}\selectfont 图~6~~消融实验结果可视化\\
 Fig.~6~~Ablation study results visualization}
 \end{center}
@@ -677,7 +675,7 @@ $\lambda{=}1.0$ & 2.84$\pm$0.05 & 6.90$\pm$0.32 & 20\\
 有助于模型在损失平坦区域继续优化.
 
 \begin{center}
-\includegraphics[width=0.95\columnwidth]{figures/training_curves.eps}\\
+\includegraphics[width=0.95\columnwidth]{figures/training_curves.pdf}\\
 {\fontsize{9.3pt}{11.6pt}\selectfont 图~2~~SSM-WM训练曲线(合成数据集)\\
 Fig.~2~~Training curves of SSM-WM (synthetic dataset)}
 \end{center}
@@ -715,7 +713,7 @@ SSM-WM-MPC & 0.0043$\pm$0.0004 & 195$\pm$10 & 5.1$\pm$0.3\\
 在大多数运动规划任务的可接受范围内.
 
 \begin{center}
-\includegraphics[width=0.95\columnwidth]{figures/mpc_comparison.eps}\\
+\includegraphics[width=0.95\columnwidth]{figures/mpc_comparison.pdf}\\
 {\fontsize{9.3pt}{11.6pt}\selectfont 图~7~~MPC控制性能对比\\
 Fig.~7~~MPC control performance comparison}
 \end{center}
@@ -756,7 +754,7 @@ SSM-WM(本文) & 0.834$\pm$0.029 & 0.592$\pm$0.014 & 9.5$\pm$0.5\\
 \end{enumerate}
 
 \begin{center}
-\includegraphics[width=0.95\columnwidth]{figures/radar_comparison.eps}\\
+\includegraphics[width=0.95\columnwidth]{figures/radar_comparison.pdf}\\
 {\fontsize{9.3pt}{11.6pt}\selectfont 图~8~~各方法多维度性能雷达图对比\\
 Fig.~8~~Multi-dimensional radar chart comparison of different methods}
 \end{center}
@@ -1040,11 +1038,11 @@ MPC控制实验表明, SSM-WM-MPC在保持可接受跟踪精度的同时,
 % 作者简历
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \noindent
-{\CJKfamily{kai} 作者简介:}\\
+{\kaishu 作者简介:}\\
  {\scriptsize
 \indent
-\textbf{刘洋}~~~~中国科学院自动化研究所助理研究员, 研究方向为具身智能与机器人控制, E-mail: liuyang@ia.ac.cn;\\
-\indent \textbf{张伟}~~~~清华大学计算机科学与技术系教授, 研究方向为机器人学习与智能控制, E-mail: zhangwei@tsinghua.edu.cn.}
+\textbf{周新民}~~~~博士, 教授, 博士生导师, 主要从事新型智慧城市、商务智能与大数据、人工智能大模型等方面的研究. E-mail: zhouxinmin2699@163.com;\\
+\indent \textbf{余焕杰}~~~~硕士研究生, 主要从事人工智能大模型、计算机视觉等方面的研究. E-mail: semhaqx@gmail.com.}
 \end{multicols}
 \clearpage
 
