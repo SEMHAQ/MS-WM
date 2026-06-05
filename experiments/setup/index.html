@@ -642,7 +642,7 @@
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        数据集
+        两个数据集，两个目的
       
     </span>
   </a>
@@ -653,7 +653,7 @@
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        基线方法
+        对比方法
       
     </span>
   </a>
@@ -665,17 +665,6 @@
     <span class="md-ellipsis">
       
         评价指标
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        实现细节
       
     </span>
   </a>
@@ -901,7 +890,7 @@
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        数据集
+        两个数据集，两个目的
       
     </span>
   </a>
@@ -912,7 +901,7 @@
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        基线方法
+        对比方法
       
     </span>
   </a>
@@ -924,17 +913,6 @@
     <span class="md-ellipsis">
       
         评价指标
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        实现细节
       
     </span>
   </a>
@@ -962,55 +940,58 @@
 
 
 <h1 id="_1">实验设置<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<h2 id="_2">数据集<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<p><strong>合成数据集</strong>: 500条episode，每条约200步，状态维度376，动作维度17。每条episode具有不同的随机动力学参数，模拟不同任务场景。400条训练，100条验证。</p>
-<p><strong>MuJoCo Humanoid</strong>: 使用MuJoCo物理仿真器的Humanoid-v4环境，200条episode，状态维度376（关节角度、角速度、身体姿态），动作维度17（关节力矩），包含真实接触动力学、摩擦力和碰撞响应。</p>
-<h2 id="_3">基线方法<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<h2 id="_2">两个数据集，两个目的<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>方法</th>
-<th>说明</th>
-<th>参数量</th>
+<th></th>
+<th>合成数据集</th>
+<th>MuJoCo Humanoid</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>LSTM-WM (2层)</td>
-<td>2层LSTM，隐层128</td>
-<td>0.29M</td>
+<td><strong>目的</strong></td>
+<td>验证计算效率和MPC</td>
+<td>验证预测精度</td>
 </tr>
 <tr>
-<td>LSTM-WM (4层)</td>
-<td>4层LSTM，隐层128</td>
-<td>0.38M</td>
+<td><strong>动力学</strong></td>
+<td>近线性（简单）</td>
+<td>真实接触+摩擦+碰撞（复杂）</td>
 </tr>
 <tr>
-<td>Transformer-WM</td>
-<td>标准Transformer，隐层128</td>
-<td>0.62M</td>
+<td><strong>状态维度</strong></td>
+<td>376</td>
+<td>376</td>
 </tr>
 <tr>
-<td>Mamba-WM</td>
-<td>官方mamba-ssm库实现</td>
-<td>0.28M</td>
+<td><strong>动作维度</strong></td>
+<td>17</td>
+<td>17</td>
 </tr>
 <tr>
-<td>SSM-WM (本文)</td>
-<td>S4D对角SSM + Mamba门控</td>
-<td>0.24M</td>
+<td><strong>数据量</strong></td>
+<td>500条episode</td>
+<td>200条episode</td>
 </tr>
 </tbody>
 </table>
+<p><strong>为什么用两个？</strong> 因为速度优势和精度优势可能来自不同场景。用两个数据集分别验证，比一个数据集同时验证更严谨。</p>
+<h2 id="_3">对比方法<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>LSTM-WM</strong>：经典基线，2层和4层版本</li>
+<li><strong>Transformer-WM</strong>：注意力机制，精度好但慢</li>
+<li><strong>Mamba-WM</strong>：SSM的热门变体，需要CUDA算子</li>
+<li><strong>线性回归</strong>：最简单的baseline，验证非线性建模的必要性</li>
+</ul>
 <h2 id="_4">评价指标<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>均方误差 (MSE)</strong>: <span class="arithmatex">\(\times 10^{-3}\)</span></li>
-<li><strong>决定系数 (R²)</strong>: 模型解释方差比例</li>
-<li><strong>推理时间</strong>: 单批次前向传播时间 (ms)</li>
-<li><strong>参数量</strong>: 可训练参数数量 (M)</li>
+<li><strong>MSE</strong>：预测误差，越小越好（单位 ×10⁻³）</li>
+<li><strong>R²</strong>：模型解释了多少方差，越接近1越好</li>
+<li><strong>推理时间</strong>：越快越好（ms）</li>
+<li><strong>参数量</strong>：越少越好（M = 百万）</li>
 </ul>
-<h2 id="_5">实现细节<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
-<p>所有模型训练20个epoch，使用AdamW优化器，初始学习率 <span class="arithmatex">\(1\times10^{-4}\)</span>，余弦退火调度，梯度裁剪阈值1.0。推理时间在卷积模式下测量，批次大小64。每组实验5个随机种子。</p>
 
 
 

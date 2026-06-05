@@ -695,10 +695,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#5" class="md-nav__link">
+  <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        架构消融 (表5, 合成数据集)
+        核心问题：每个组件到底贡献了多少？
       
     </span>
   </a>
@@ -706,10 +706,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6" class="md-nav__link">
+  <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        训练损失消融 (表6)
+        门控机制：贡献最大
       
     </span>
   </a>
@@ -717,10 +717,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#10-mujoco" class="md-nav__link">
+  <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        门控阈值对比 (表10, MuJoCo)
+        网络深度和宽度
       
     </span>
   </a>
@@ -728,10 +728,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#mujoco-9" class="md-nav__link">
+  <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        MuJoCo消融 (表9)
+        门控阈值：软阈值最优
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        训练损失：多步损失很关键
       
     </span>
   </a>
@@ -898,10 +909,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#5" class="md-nav__link">
+  <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        架构消融 (表5, 合成数据集)
+        核心问题：每个组件到底贡献了多少？
       
     </span>
   </a>
@@ -909,10 +920,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6" class="md-nav__link">
+  <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        训练损失消融 (表6)
+        门控机制：贡献最大
       
     </span>
   </a>
@@ -920,10 +931,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#10-mujoco" class="md-nav__link">
+  <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        门控阈值对比 (表10, MuJoCo)
+        网络深度和宽度
       
     </span>
   </a>
@@ -931,10 +942,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#mujoco-9" class="md-nav__link">
+  <a href="#_5" class="md-nav__link">
     <span class="md-ellipsis">
       
-        MuJoCo消融 (表9)
+        门控阈值：软阈值最优
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        训练损失：多步损失很关键
       
     </span>
   </a>
@@ -962,167 +984,130 @@
 
 
 <h1 id="_1">消融实验<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<h2 id="5">架构消融 (表5, 合成数据集)<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
+<h2 id="_2">核心问题：每个组件到底贡献了多少？<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>消融实验就是"拆零件"——把模型的一个组件去掉，看精度掉多少。</p>
+<h2 id="_3">门控机制：贡献最大<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>去掉什么</th>
+<th>合成数据集MSE变化</th>
+<th>MuJoCo MSE变化</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>去掉门控</td>
+<td>+2.2%</td>
+<td>+4.6%</td>
+</tr>
+<tr>
+<td>去掉残差连接</td>
+<td>+1.5%</td>
+<td>+2.6%</td>
+</tr>
+</tbody>
+</table>
+<p>门控在MuJoCo上贡献更大——因为接触动力学有更多"不连续"，需要门控来选择性过滤信息。</p>
+<h2 id="_4">网络深度和宽度<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
 <th>配置</th>
 <th>MSE</th>
-<th>参数 (M)</th>
-<th>时间 (ms)</th>
+<th>说明</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>完整SSM-WM</td>
-<td>2.72</td>
-<td>0.24</td>
-<td>3.8</td>
-</tr>
-<tr>
-<td>去除门控</td>
-<td>2.78</td>
-<td>0.22</td>
-<td>3.5</td>
-</tr>
-<tr>
-<td>去除残差</td>
-<td>2.76</td>
-<td>0.24</td>
-<td>3.8</td>
-</tr>
-<tr>
 <td>L=2层</td>
 <td>2.99</td>
-<td>0.12</td>
-<td>2.9</td>
+<td>太浅，建模能力不足</td>
+</tr>
+<tr>
+<td><strong>L=4层（默认）</strong></td>
+<td><strong>2.72</strong></td>
+<td>平衡点</td>
 </tr>
 <tr>
 <td>L=6层</td>
 <td>2.64</td>
-<td>0.36</td>
-<td>4.7</td>
-</tr>
-<tr>
-<td>N=32</td>
-<td>2.68</td>
-<td>0.25</td>
-<td>3.9</td>
+<td>再加层收益很小</td>
 </tr>
 <tr>
 <td>D=64</td>
 <td>2.93</td>
-<td>0.08</td>
-<td>2.1</td>
+<td>太窄</td>
+</tr>
+<tr>
+<td><strong>D=128（默认）</strong></td>
+<td><strong>2.72</strong></td>
+<td>平衡点</td>
 </tr>
 <tr>
 <td>D=256</td>
 <td>2.58</td>
-<td>0.85</td>
-<td>6.8</td>
+<td>参数量增3.5倍，精度只改善5%</td>
 </tr>
 </tbody>
 </table>
-<p><strong>门控贡献2.2%，残差贡献1.5%，D=128是性能饱和点。</strong></p>
-<h2 id="6">训练损失消融 (表6)<a class="headerlink" href="#6" title="Permanent link">&para;</a></h2>
+<p><strong>结论：L=4, N=16, D=128是最佳平衡点。</strong></p>
+<h2 id="_5">门控阈值：软阈值最优<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>配置</th>
+<th>阈值类型</th>
+<th>MSE</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>软阈值（sigmoid）</strong></td>
+<td><strong>0.834</strong></td>
+<td>连续输出，适应渐变</td>
+</tr>
+<tr>
+<td>Garrote</td>
+<td>0.852</td>
+<td>稀疏但连续</td>
+</tr>
+<tr>
+<td>硬阈值（0/1）</td>
+<td>0.891</td>
+<td>二值信号，无法表达连续变化</td>
+</tr>
+</tbody>
+</table>
+<p>硬阈值差6.4%——因为接触力是渐变的，不是"有或没有"。</p>
+<h2 id="_6">训练损失：多步损失很关键<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>λ</th>
 <th>单步MSE</th>
 <th>多步MSE (H=8)</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>λ=0 (仅单步)</td>
+<td>0（仅单步）</td>
 <td>2.64</td>
 <td>9.99</td>
 </tr>
 <tr>
-<td>λ=0.1</td>
-<td>2.68</td>
-<td>8.07</td>
-</tr>
-<tr>
-<td>λ=0.5, H=4</td>
-<td>2.74</td>
-<td>7.52</td>
-</tr>
-<tr>
-<td><strong>λ=0.5, H=8</strong></td>
+<td><strong>0.5（默认）</strong></td>
 <td><strong>2.72</strong></td>
 <td><strong>7.17</strong></td>
 </tr>
 <tr>
-<td>λ=1.0</td>
+<td>1.0</td>
 <td>2.84</td>
 <td>7.05</td>
 </tr>
 </tbody>
 </table>
-<p>多步损失对多步精度贡献显著 (降28.2%)，对单步精度影响较小。</p>
-<h2 id="10-mujoco">门控阈值对比 (表10, MuJoCo)<a class="headerlink" href="#10-mujoco" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>阈值函数</th>
-<th>MSE</th>
-<th>R²</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>软阈值 σ(x)</strong></td>
-<td><strong>0.834</strong></td>
-<td><strong>0.592</strong></td>
-</tr>
-<tr>
-<td>Garrote</td>
-<td>0.852</td>
-<td>0.583</td>
-</tr>
-<tr>
-<td>硬阈值</td>
-<td>0.891</td>
-<td>0.564</td>
-</tr>
-</tbody>
-</table>
-<p>软阈值比硬阈值好6.4%，比Garrote好2.1%。三种阈值推理时间无显著差异。</p>
-<h2 id="mujoco-9">MuJoCo消融 (表9)<a class="headerlink" href="#mujoco-9" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>配置</th>
-<th>MSE</th>
-<th>R²</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>完整SSM-WM</td>
-<td>0.834</td>
-<td>0.592</td>
-</tr>
-<tr>
-<td>去除门控</td>
-<td>0.872</td>
-<td>0.573</td>
-</tr>
-<tr>
-<td>去除残差</td>
-<td>0.856</td>
-<td>0.581</td>
-</tr>
-<tr>
-<td>L=2层</td>
-<td>0.912</td>
-<td>0.554</td>
-</tr>
-</tbody>
-</table>
-<p>各组件在MuJoCo上的贡献比合成数据集更显著，说明架构设计对高维非线性建模更关键。</p>
+<p>λ=0.5在单步精度和多步稳定性之间取得最佳平衡。多步损失让模型学会"自己的误差会怎么累积"。</p>
 
 
 

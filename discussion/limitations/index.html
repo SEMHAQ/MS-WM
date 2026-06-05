@@ -813,7 +813,7 @@
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        局限性
+        我们承认的问题
       
     </span>
   </a>
@@ -824,29 +824,7 @@
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        失败模式
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        未来工作
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        开源
+        失败场景
       
     </span>
   </a>
@@ -899,7 +877,7 @@
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        局限性
+        我们承认的问题
       
     </span>
   </a>
@@ -910,29 +888,7 @@
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        失败模式
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        未来工作
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_5" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        开源
+        失败场景
       
     </span>
   </a>
@@ -959,30 +915,33 @@
   
 
 
-<h1 id="_1">局限性与未来工作<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<h2 id="_2">局限性<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<p>虽然在MuJoCo Humanoid仿真数据上进行了验证，但与真机部署仍存在一定差距。</p>
-<p>SSM-WM在合成数据集上的预测精度低于LSTM-WM (差距约167%)，但在MuJoCo数据集上反而优于LSTM (差距约6%)。在推理速度方面，SSM-WM在高维状态空间 (376维) 下的推理时间 (9.5ms) 高于LSTM (5.0ms)，主要受FFT卷积在高维状态下的开销影响。</p>
-<p>SSM-WM在MuJoCo数据集上的R²分数为0.592，约41%的方差未被解释，对于需要精确预测接触力的激进操作任务可能精度不足。</p>
-<p>当前模型仅处理状态-动作序列，未涉及视觉输入，限制了其在端到端控制中的应用。</p>
-<h2 id="_3">失败模式<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
-<p>SSM-WM在以下场景可能表现不佳:</p>
+<h1 id="_1">局限性<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h2 id="_2">我们承认的问题<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>极短序列</strong> (T&lt;16): 无法充分利用长程依赖，预测精度显著下降</li>
-<li><strong>高度不连续动力学</strong>: SSM的线性状态转移假设在剧烈碰撞场景下可能失效</li>
-<li><strong>分布外泛化</strong>: 训练与测试数据分布差异大时精度急剧下降</li>
+<li><strong>还没在真机上验证</strong>：MuJoCo再真实也是仿真，和真机有差距</li>
+<li><strong>合成数据集上精度低</strong>：LSTM在简单场景下确实更好</li>
+<li><strong>R²只有0.592</strong>：约41%方差未被解释，但这是任务本身的挑战（LSTM只有0.566）</li>
+<li><strong>推理时间比LSTM长</strong>：在MuJoCo上9.5ms vs 5.0ms，FFT在高维状态下有开销</li>
+<li><strong>没做视觉输入</strong>：目前只处理状态向量，不是端到端</li>
 </ul>
-<h2 id="_4">未来工作<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h2 id="_3">失败场景<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<ul>
+<li>极短序列（T&lt;16）：SSM无法充分利用长程依赖</li>
+<li>剧烈碰撞：SSM的线性假设在不连续动力学下可能失效</li>
+<li>分布外数据：训练和测试分布差异大时精度急剧下降</li>
+</ul>
+<h1 id="_4">未来工作<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h1>
+<h2 id="_5">六个方向<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>视觉输入扩展</strong> — 结合CNN或ViT进行视觉状态预测</li>
-<li><strong>真机验证</strong> — 在MuJoCo物理仿真器和真机人形机器人上实验</li>
-<li><strong>嵌入式部署</strong> — NVIDIA Jetson上推理时间和能效分析</li>
-<li><strong>多模态融合</strong> — 视觉、触觉和本体感觉</li>
-<li><strong>结构化稀疏参数化</strong> — 利用关节耦合拓扑设计特定的A矩阵结构</li>
-<li><strong>强化学习结合</strong> — 端到端感知-决策-控制一体化框架</li>
+<li><strong>视觉输入</strong> — 结合CNN/ViT，从图像直接预测状态</li>
+<li><strong>真机验证</strong> — 在物理机器人上测试</li>
+<li><strong>嵌入式部署</strong> — NVIDIA Jetson上测量实际性能</li>
+<li><strong>多模态融合</strong> — 视觉+触觉+本体感觉</li>
+<li><strong>结构化参数化</strong> — 利用关节耦合拓扑设计SSM矩阵</li>
+<li><strong>强化学习结合</strong> — 端到端感知-决策-控制</li>
 </ol>
-<h2 id="_5">开源<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
-<p>本文代码已开源: <a href="https://github.com/SEMHAQ/SSM-World-Model">:fontawesome-brands-github: SEMHAQ/SSM-World-Model</a></p>
+<h2 id="_6">开源<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<p>代码已开源：<a href="https://github.com/SEMHAQ/SSM-World-Model">:fontawesome-brands-github: SEMHAQ/SSM-World-Model</a></p>
 
 
 

@@ -25,7 +25,7 @@
     
     
       
-        <title>问题描述与预备知识 - SSM-World-Model</title>
+        <title>背景概念 - SSM-World-Model</title>
       
     
     
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              问题描述与预备知识
+              背景概念
             
           </span>
         </div>
@@ -497,7 +497,7 @@
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        问题定义
+        什么是世界模型？
       
     </span>
   </a>
@@ -508,18 +508,7 @@
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        挑战
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ssm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        状态空间模型 (SSM)
+        为什么需要"序列模型"？
       
     </span>
   </a>
@@ -530,7 +519,68 @@
   <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        关键前作
+        四种序列模型对比
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="四种序列模型对比">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lstm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LSTM — 经典选手
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transformer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transformer — 注意力之王
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SSM（状态空间模型）— 我们用的
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mamba-ssm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mamba — SSM的热门变体
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ssm-vs-mamba" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SSM vs Mamba 的关键区别
       
     </span>
   </a>
@@ -901,7 +951,7 @@
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        问题定义
+        什么是世界模型？
       
     </span>
   </a>
@@ -912,18 +962,7 @@
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        挑战
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ssm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        状态空间模型 (SSM)
+        为什么需要"序列模型"？
       
     </span>
   </a>
@@ -934,7 +973,68 @@
   <a href="#_4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        关键前作
+        四种序列模型对比
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="四种序列模型对比">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lstm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LSTM — 经典选手
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transformer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transformer — 注意力之王
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SSM（状态空间模型）— 我们用的
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mamba-ssm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mamba — SSM的热门变体
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ssm-vs-mamba" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SSM vs Mamba 的关键区别
       
     </span>
   </a>
@@ -961,53 +1061,84 @@
   
 
 
-<h1 id="_1">问题描述与预备知识<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<h2 id="_2">问题定义<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<p>给定历史状态-动作序列 <span class="arithmatex">\(\{(\bm{s}_t, \bm{a}_t)\}_{t=1}^{T}\)</span>，预测下一时刻状态 <span class="arithmatex">\(\hat{\bm{s}}_{T+1}\)</span>。</p>
+<h1 id="_1">背景概念<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h2 id="_2">什么是世界模型？<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>想象你在学骑自行车。你不需要每次都真的骑上去摔一跤才知道"往左打太多会倒"——你的大脑里有一个<strong>心理模型</strong>，能模拟"如果我这样动，会发生什么"。</p>
+<p><strong>世界模型</strong>就是给机器人建的这个"心理模型"。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>机器人看到当前状态（关节角度、角速度...）
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    ↓
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>世界模型预测：如果我施加这个力矩，下一刻身体会怎样？
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    ↓
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>MPC控制器：用这个预测能力，搜索最优的动作序列
+</code></pre></div>
+<p>没有世界模型 → 机器人只能"试错"
+有世界模型   → 机器人可以"想象"，提前规划</p>
+<h2 id="_3">为什么需要"序列模型"？<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>机器人的状态是随时间变化的序列数据。要预测"下一步"，就需要理解"前面每一步"的模式。</p>
+<p><strong>序列模型的任务</strong>：输入一段历史序列，输出对未来的预测。</p>
+<h2 id="_4">四种序列模型对比<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h3 id="lstm">LSTM — 经典选手<a class="headerlink" href="#lstm" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>状态</strong>: 关节角度、角速度、身体姿态 (376维)</li>
-<li><strong>动作</strong>: 关节力矩 (17维)</li>
-<li><strong>约束</strong>: 推理延迟 &lt;10ms (实时控制)</li>
+<li>原理：用"门"控制信息的保留和遗忘，一步步往前推</li>
+<li>优点：好理解，非线性能力强</li>
+<li>缺点：<strong>慢</strong>，必须一步一步算，无法并行。T=64时推理要27.8ms</li>
 </ul>
-<h2 id="_3">挑战<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
-<p>三重挑战: 状态维度高 (数十至数百维)，涉及多个关节的耦合动力学; 动作-状态映射具有强非线性; 且控制回路要求毫秒级的推理延迟。</p>
-<h2 id="ssm">状态空间模型 (SSM)<a class="headerlink" href="#ssm" title="Permanent link">&para;</a></h2>
-<p>连续时间形式:</p>
-<div class="arithmatex">\[
-\dot{\bm{h}}(t) = \bm{A}\bm{h}(t) + \bm{B}\bm{x}(t), \quad \bm{y}(t) = \bm{C}\bm{h}(t)
-\]</div>
-<p>离散化后:</p>
-<div class="arithmatex">\[
-\bm{h}_t = \bar{\bm{A}}\bm{h}_{t-1} + \bar{\bm{B}}\bm{x}_t, \quad \bm{y}_t = \bm{C}\bm{h}_t
-\]</div>
-<p>SSM支持两种计算模式: 递推模式 (recurrent mode) 以O(TN)的时间复杂度逐步计算，具有O(1)的单步延迟，适合在线推理; 卷积模式 (convolutional mode) 通过FFT在O(T log T)时间内并行计算全部输出，适合批量训练和长序列推理。</p>
-<h2 id="_4">关键前作<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h3 id="transformer">Transformer — 注意力之王<a class="headerlink" href="#transformer" title="Permanent link">&para;</a></h3>
+<ul>
+<li>原理：让序列中每个位置都能"看到"其他所有位置，计算注意力权重</li>
+<li>优点：建模能力最强</li>
+<li>缺点：<strong>更慢</strong>，计算量是序列长度的平方 O(T²)。T=64时推理超过100ms</li>
+</ul>
+<h3 id="ssm">SSM（状态空间模型）— 我们用的<a class="headerlink" href="#ssm" title="Permanent link">&para;</a></h3>
+<ul>
+<li>原理：用线性微分方程描述状态变化，数学上和控制理论里的"线性系统"是同一个东西</li>
+<li>优点：可以并行计算（FFT卷积），复杂度 O(T log T)。推理只要3.8ms</li>
+<li>缺点：线性假设在某些复杂场景下有局限</li>
+</ul>
+<h3 id="mamba-ssm">Mamba — SSM的热门变体<a class="headerlink" href="#mamba-ssm" title="Permanent link">&para;</a></h3>
+<ul>
+<li>原理：在SSM基础上加了"选择性扫描"，让模型能根据输入动态调整状态更新</li>
+<li>优点：精度好</li>
+<li>缺点：需要自定义CUDA算子，<strong>部署门槛高</strong></li>
+</ul>
+<h2 id="ssm-vs-mamba">SSM vs Mamba 的关键区别<a class="headerlink" href="#ssm-vs-mamba" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>方法</th>
-<th>特点</th>
+<th></th>
+<th>SSM（我们用的）</th>
+<th>Mamba</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>S4</td>
-<td>结构化参数化，解决长程依赖</td>
+<td>数学基础</td>
+<td>相同</td>
+<td>相同</td>
 </tr>
 <tr>
-<td>S4D</td>
-<td>简化对角SSM，复数对角矩阵</td>
+<td>实现方式</td>
+<td>标准PyTorch（FFT）</td>
+<td>自定义CUDA算子</td>
 </tr>
 <tr>
-<td>Mamba</td>
-<td>选择性扫描，输入依赖的状态更新</td>
+<td>部署难度</td>
+<td><strong>低</strong></td>
+<td>高（需要编译mamba-ssm库）</td>
 </tr>
 <tr>
-<td>Mamba-2</td>
-<td>SSM与注意力的对偶关系</td>
+<td>精度</td>
+<td>略低（MuJoCo差1.5%）</td>
+<td>略高</td>
+</tr>
+<tr>
+<td>推理速度</td>
+<td><strong>更快</strong>（3.8ms vs 4.5ms）</td>
+<td>稍慢</td>
 </tr>
 </tbody>
 </table>
+<p><strong>我们的选择</strong>：用更简单的SSM实现，牺牲1.5%的精度，换来更好的部署友好性。</p>
 
 
 

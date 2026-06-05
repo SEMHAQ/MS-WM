@@ -787,7 +787,7 @@
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        精度与速度的权衡
+        核心论点：精度不是唯一标准
       
     </span>
   </a>
@@ -795,10 +795,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
+  <a href="#vs-mujoco" class="md-nav__link">
     <span class="md-ellipsis">
       
-        数据集差异分析
+        合成数据集 vs MuJoCo：为什么表现不同？
       
     </span>
   </a>
@@ -806,21 +806,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#ssm-wmmamba-wm" class="md-nav__link">
+  <a href="#mamba15" class="md-nav__link">
     <span class="md-ellipsis">
       
-        SSM-WM与Mamba-WM的比较
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ssm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        SSM架构选择的依据
+        和Mamba的对比：1.5%的精度差距值不值？
       
     </span>
   </a>
@@ -901,7 +890,7 @@
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        精度与速度的权衡
+        核心论点：精度不是唯一标准
       
     </span>
   </a>
@@ -909,10 +898,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#_3" class="md-nav__link">
+  <a href="#vs-mujoco" class="md-nav__link">
     <span class="md-ellipsis">
       
-        数据集差异分析
+        合成数据集 vs MuJoCo：为什么表现不同？
       
     </span>
   </a>
@@ -920,21 +909,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#ssm-wmmamba-wm" class="md-nav__link">
+  <a href="#mamba15" class="md-nav__link">
     <span class="md-ellipsis">
       
-        SSM-WM与Mamba-WM的比较
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ssm" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        SSM架构选择的依据
+        和Mamba的对比：1.5%的精度差距值不值？
       
     </span>
   </a>
@@ -962,14 +940,79 @@
 
 
 <h1 id="_1">讨论<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
-<h2 id="_2">精度与速度的权衡<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<p>SSM-WM的核心价值在于: 在保持竞争力的预测精度的同时，将推理时间降低至实时控制所需的毫秒级。在合成数据集上SSM-WM精度低于LSTM (MSE差距约167%)，但在推理速度上具有7.3倍的优势。在MuJoCo上SSM-WM精度反而优于LSTM约6%，推理时间9.5ms仍在10ms实时控制预算内。</p>
-<h2 id="_3">数据集差异分析<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
-<p>合成数据集近线性特性有利于LSTM的非线性递推结构，SSM-WM在该数据集上的精度劣势并不代表真实场景表现。MuJoCo包含真实接触动力学，SSM-WM的精度反而优于LSTM，更能反映SSM在复杂场景下的实际竞争力。消融实验也支持这一分析: 门控机制在MuJoCo上的贡献 (4.6%) 显著大于合成数据集 (2.2%)。</p>
-<h2 id="ssm-wmmamba-wm">SSM-WM与Mamba-WM的比较<a class="headerlink" href="#ssm-wmmamba-wm" title="Permanent link">&para;</a></h2>
-<p>在MuJoCo上两者精度差距仅1.5%且不显著 (p=0.27)。SSM-WM优势: 实现更简单 (无需自定义CUDA算子)、推理快16%、参数少14%。在对部署简便性和推理速度有严格要求的场景下，SSM-WM是更实用的选择。</p>
-<h2 id="ssm">SSM架构选择的依据<a class="headerlink" href="#ssm" title="Permanent link">&para;</a></h2>
-<p>首先，SSM的线性递推结构具有O(1)的单步推理延迟，适合在线控制场景。其次，O(T log T)训练复杂度在长序列下优于Transformer的O(T²)。再次，SSM参数量与序列长度无关。最后，SSM在控制理论中有明确的物理意义 (线性系统)，便于与传统控制方法结合。</p>
+<h2 id="_2">核心论点：精度不是唯一标准<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>SSM-WM的价值不在于"比所有方法都准"，而在于<strong>精度-速度-参数量的综合权衡</strong>。</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>精度排名：Mamba ≈ SSM-WM &gt; LSTM &gt; Transformer
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>速度排名：SSM-WM &gt; Mamba &gt; LSTM &gt;&gt; Transformer
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>参数排名：SSM-WM &lt; Mamba &lt; LSTM &lt; Transformer
+</code></pre></div>
+<p>综合来看，SSM-WM的"性价比"最高。</p>
+<h2 id="vs-mujoco">合成数据集 vs MuJoCo：为什么表现不同？<a class="headerlink" href="#vs-mujoco" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>合成数据集</th>
+<th>MuJoCo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>动力学特点</td>
+<td>近线性（系数0.1）</td>
+<td>真实接触+碰撞</td>
+</tr>
+<tr>
+<td>SSM-WM排名</td>
+<td>最慢（但最快）</td>
+<td><strong>优于LSTM和Transformer</strong></td>
+</tr>
+<tr>
+<td>原因</td>
+<td>线性假设在简单场景反而不利</td>
+<td>结构化参数化在复杂场景更稳定</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键洞察</strong>：不能只看一个数据集的结果。两个数据集的互补设计，让我们对SSM-WM的能力有了更全面的认识。</p>
+<h2 id="mamba15">和Mamba的对比：1.5%的精度差距值不值？<a class="headerlink" href="#mamba15" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>SSM-WM</th>
+<th>Mamba-WM</th>
+<th>差距</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MuJoCo MSE</td>
+<td>0.834</td>
+<td>0.821</td>
+<td>1.5%（不显著）</td>
+</tr>
+<tr>
+<td>推理速度</td>
+<td>3.8ms</td>
+<td>4.5ms</td>
+<td>SSM快16%</td>
+</tr>
+<tr>
+<td>参数量</td>
+<td>0.24M</td>
+<td>0.28M</td>
+<td>SSM少14%</td>
+</tr>
+<tr>
+<td>实现</td>
+<td>标准PyTorch</td>
+<td>自定义CUDA</td>
+<td>SSM更简单</td>
+</tr>
+</tbody>
+</table>
+<p><strong>结论</strong>：为了1.5%的精度（统计不显著），值得用更复杂的实现吗？在实际部署场景下，答案通常是"不值得"。</p>
 
 
 

@@ -25,7 +25,7 @@
     
     
       
-        <title>MPC集成 - SSM-World-Model</title>
+        <title>MPC 集成 - SSM-World-Model</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#ssm-wm" class="md-skip">
+        <a href="#mpc" class="md-skip">
           跳转至
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              MPC集成
+              MPC 集成
             
           </span>
         </div>
@@ -550,10 +550,32 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#mpc" class="md-nav__link">
+  <a href="#mpc_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        MPC框架
+        什么是MPC（模型预测控制）？
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mpc_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        世界模型在MPC中的角色
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fft" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么用FFT卷积模式？
       
     </span>
   </a>
@@ -564,18 +586,7 @@
   <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        计算模式选择
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        关键参数
+        控制频率
       
     </span>
   </a>
@@ -887,10 +898,32 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#mpc" class="md-nav__link">
+  <a href="#mpc_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        MPC框架
+        什么是MPC（模型预测控制）？
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mpc_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        世界模型在MPC中的角色
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fft" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为什么用FFT卷积模式？
       
     </span>
   </a>
@@ -901,18 +934,7 @@
   <a href="#_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        计算模式选择
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        关键参数
+        控制频率
       
     </span>
   </a>
@@ -939,50 +961,59 @@
   
 
 
-<h1 id="ssm-wm">基于SSM-WM的模型预测控制<a class="headerlink" href="#ssm-wm" title="Permanent link">&para;</a></h1>
-<h2 id="mpc">MPC框架<a class="headerlink" href="#mpc" title="Permanent link">&para;</a></h2>
-<p>将SSM-WM作为MPC的前向模型，在控制时域内优化动作序列:</p>
-<div class="arithmatex">\[
-\bm{a}^* = \arg\min_{\bm{a}_{1:H}} \sum_{k=1}^{H} \|\hat{\bm{s}}_{T+k} - \bm{s}_{\text{ref}}\|^2 + \rho\|\bm{a}_{T+k}\|^2
-\]</div>
-<p>优化采用Adam进行50次梯度下降迭代。</p>
-<h2 id="_1">计算模式选择<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<h1 id="mpc">MPC 集成<a class="headerlink" href="#mpc" title="Permanent link">&para;</a></h1>
+<h2 id="mpc_1">什么是MPC（模型预测控制）？<a class="headerlink" href="#mpc_1" title="Permanent link">&para;</a></h2>
+<p>想象你在开车。你不会只看眼前——你会往前看一段路，预判"如果我这样打方向盘，车会怎么走"，然后选最优的动作。</p>
+<p><strong>MPC就是这个"往前看"的过程</strong>：</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>当前状态
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    ↓
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>世界模型预测：如果我施加动作序列 [a1, a2, ..., a10]，未来10步会怎样？
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    ↓
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>优化器：反复调整动作序列，让预测的轨迹尽量接近目标
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    ↓
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>执行：只执行第一步动作，然后重新规划
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    ↓
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>循环
+</code></pre></div>
+<h2 id="mpc_2">世界模型在MPC中的角色<a class="headerlink" href="#mpc_2" title="Permanent link">&para;</a></h2>
+<p>MPC需要<strong>大量</strong>前向预测——每次规划都要反复问世界模型："如果这样做会怎样？"</p>
 <ul>
-<li><strong>MPC内层优化</strong>: 卷积模式，批量处理50次前向传播，充分利用GPU并行</li>
-<li><strong>部署阶段</strong>: 递推模式，O(1)单步延迟，适合逐步生成预测</li>
+<li>LSTM做世界模型 → 每次预测27.8ms → MPC太慢</li>
+<li>SSM-WM做世界模型 → 每次预测3.8ms → MPC实时可行</li>
 </ul>
-<h2 id="_2">关键参数<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h2 id="fft">为什么用FFT卷积模式？<a class="headerlink" href="#fft" title="Permanent link">&para;</a></h2>
+<p>MPC的内层优化需要做50次Adam迭代，每次都涉及对同一时刻的动作序列进行前向传播。</p>
+<ul>
+<li>递推模式：一步一步算，50次就是50次串行计算</li>
+<li>卷积模式：一次性算完所有时间步，50次并行处理</li>
+</ul>
+<p><strong>卷积模式在MPC场景下效率高得多</strong>，这就是为什么推理时间实验都在卷积模式下测量。</p>
+<h2 id="_1">控制频率<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>参数</th>
-<th>值</th>
-<th>说明</th>
+<th>数据集</th>
+<th>SSM-WM-MPC频率</th>
+<th>LSTM-MPC频率</th>
+<th>加速比</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>预测时域 H</td>
-<td>10</td>
-<td>MPC前向展开步数</td>
-</tr>
-<tr>
-<td>Adam迭代</td>
-<td>50</td>
-<td>内层优化次数</td>
-</tr>
-<tr>
-<td>控制步数</td>
-<td>30</td>
 <td>合成数据集</td>
+<td>5.1Hz</td>
+<td>0.7Hz</td>
+<td><strong>7倍</strong></td>
 </tr>
 <tr>
-<td>控制步数</td>
-<td>30</td>
 <td>MuJoCo Humanoid</td>
+<td>2.1Hz</td>
+<td>0.35Hz</td>
+<td><strong>6倍</strong></td>
 </tr>
 </tbody>
 </table>
+<p>5.1Hz意味着每秒可以做5次完整的MPC规划，满足大多数运动规划需求。</p>
 
 
 

@@ -411,7 +411,7 @@
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        研究动机
+        一句话概括
       
     </span>
   </a>
@@ -422,18 +422,7 @@
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        核心贡献
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        一句话总结
+        这篇文章做了什么？
       
     </span>
   </a>
@@ -885,7 +874,7 @@
   <a href="#_2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        研究动机
+        一句话概括
       
     </span>
   </a>
@@ -896,18 +885,7 @@
   <a href="#_3" class="md-nav__link">
     <span class="md-ellipsis">
       
-        核心贡献
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#_4" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        一句话总结
+        这篇文章做了什么？
       
     </span>
   </a>
@@ -936,45 +914,28 @@
 
 <h1 id="_1">面向人形机器人状态预测的轻量级状态空间世界模型<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
 <p><strong>周新民 &nbsp; 余焕杰</strong> — 湖南工商大学 / 湘江实验室</p>
-<p><em>控制理论与应用 (Control Theory &amp; Applications)</em>, 2026 专刊: 具身智能与人形机器人</p>
+<p><em>控制理论与应用</em>, 2026</p>
 <p><a class="md-button md-button--primary" href="https://github.com/SEMHAQ/SSM-World-Model">:fontawesome-brands-github: GitHub</a></p>
 <hr />
-<h2 id="_2">研究动机<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
-<p>人形机器人状态预测需要<strong>高精度</strong>和<strong>低延迟</strong>的平衡:</p>
-<table>
-<thead>
-<tr>
-<th>方法</th>
-<th>问题</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>LSTM</td>
-<td>推理慢 (27.8ms), 参数多 (0.29M)</td>
-</tr>
-<tr>
-<td>Transformer</td>
-<td>O(T²)复杂度, 推理 &gt;100ms</td>
-</tr>
-<tr>
-<td>Mamba</td>
-<td>需要自定义CUDA算子, 部署门槛高</td>
-</tr>
-</tbody>
-</table>
-<p><strong>SSM-WM</strong> 用标准PyTorch操作实现了 7倍加速 + 竞争力精度 + 最少参数量。</p>
-<h2 id="_3">核心贡献<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
-<ol>
-<li><strong>轻量级SSM世界模型</strong> — S4D对角参数化 + Mamba门控块结构</li>
-<li><strong>O(T log T)训练, O(1)推理</strong> — FFT卷积 + 递推模式双模计算</li>
-<li><strong>MPC集成</strong> — 合成数据集5.1Hz, MuJoCo 2.1Hz控制频率</li>
-<li><strong>门控阈值实验</strong> — 软阈值 &gt; Garrote &gt; 硬阈值</li>
-</ol>
-<h2 id="_4">一句话总结<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<h2 id="_2">一句话概括<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <blockquote>
-<p>SSM-WM在MuJoCo Humanoid上优于LSTM 6%、优于Transformer 13%，与Mamba持平但实现更简单，推理快16%，参数少14%。</p>
+<p>用一种轻量级的序列模型（SSM）给机器人建一个"世界模型"，让机器人能预测自己身体的状态变化，再结合MPC做控制决策。</p>
 </blockquote>
+<h2 id="_3">这篇文章做了什么？<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>```
+人形机器人想控制自己的身体
+    ↓
+需要一个"世界模型"来预测：如果我做这个动作，身体会怎样？
+    ↓
+以前用LSTM建世界模型 → 太慢，来不及控制
+   用Transformer建   → 更慢，O(T²)复杂度
+   用Mamba建         → 快，但部署需要特殊CUDA算子
+    ↓
+我们用SSM（和Mamba类似的数学基础，但实现更简单）
+    ↓
+效果：比LSTM快7倍，比Transformer快26倍，精度不差
+    ↓
+接上MPC控制器 → 实现了5.1Hz的实时控制</p>
 
 
 
