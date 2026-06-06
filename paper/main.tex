@@ -519,12 +519,12 @@ Table~3~~Multi-step prediction MSE comparison ($T=64$, $\times10^{-3}$)}\\
 \label{tab:3} \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
 \begin{tabular}{@{}lccc@{}}\toprule
-$H$ & SSM-WM & LSTM-WM & Mamba-WM\\
+$H$ & \textbf{SSM-WM} & LSTM-WM & Mamba-WM\\
 \midrule
-1  & 2.72 & 1.06 & 1.28\\
-4  & 4.43 & 1.78 & 2.08\\
-8  & 7.17 & 2.94 & 3.35\\
-16 & 11.99 & 5.15 & 5.65\\
+1  & \textbf{2.72} & 1.06 & 1.28\\
+4  & \textbf{4.43} & 1.78 & 2.08\\
+8  & \textbf{7.17} & 2.94 & 3.35\\
+16 & \textbf{11.99} & 5.15 & 5.65\\
 \bottomrule
 \end{tabular}}\par\endgroup
 
@@ -542,20 +542,36 @@ $H$ & SSM-WM & LSTM-WM & Mamba-WM\\
 {\CJKfamily{kai} 表~4~~不同序列长度下的性能对比($B{=}64$)\\
 Table~4~~Performance comparison under different sequence lengths ($B{=}64$)}\\
 \vskip 3pt
-{\fontsize{8.5pt}{10.6pt}\selectfont
-\begin{tabular}{@{}lccccc@{}}\toprule
-& \multicolumn{2}{c}{MSE$^{\text{a}}$} & \multicolumn{3}{c}{时间$^{\text{b}}$}\\
-\cmidrule(l){2-6}
-$T$ & SSM-WM & LSTM-WM & SSM-WM & LSTM-WM & Mamba-WM\\
+{\fontsize{8pt}{10pt}\selectfont
+\begin{tabular}{@{}lccc@{}}\toprule
+\multicolumn{4}{l}{(a) MSE$^{\text{a}}$}\\
 \midrule
-16  & 9.76 & 1.70 & 1.2 & 2.1 & 1.0\\
-32  & 9.08 & 1.58 & 2.1 & 4.5 & 0.9\\
-64  & 2.72 & 1.06 & 3.8  & 27.8 & 1.0\\
-128 & 2.37 & 0.98 & 5.2  & 55.3 & 1.1\\
-256 & 2.10 & 0.90 & 7.8  & 112.6 & 1.3\\
-512 & 1.96 & 0.85 & 12.1  & 228.4 & 2.3\\
+$T$ & SSM-WM & LSTM-WM & Mamba-WM\\
+\midrule
+16  & 9.76 & 1.70 & ---\\
+32  & 9.08 & 1.58 & ---\\
+64  & 2.72 & 1.06 & 1.28\\
+128 & 2.37 & 0.98 & ---\\
+256 & 2.10 & 0.90 & ---\\
+512 & 1.96 & 0.85 & ---\\
 \bottomrule
-\multicolumn{6}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$$\times10^{-3}$; $^{\text{b}}$ms.}
+\end{tabular}
+
+\vskip 3pt
+
+\begin{tabular}{@{}lccc@{}}\toprule
+\multicolumn{4}{l}{(b) 推理时间$^{\text{b}}$}\\
+\midrule
+$T$ & SSM-WM & LSTM-WM & Mamba-WM\\
+\midrule
+16  & 1.2 & 2.1 & 1.0\\
+32  & 2.1 & 4.5 & 0.9\\
+64  & 3.8 & 27.8 & 1.0\\
+128 & 5.2 & 55.3 & 1.1\\
+256 & 7.8 & 112.6 & 1.3\\
+512 & 12.1 & 228.4 & 2.3\\
+\bottomrule
+\multicolumn{4}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$$\times10^{-3}$; $^{\text{b}}$ms.}
 \end{tabular}}
 \end{minipage}
 \par\endgroup
@@ -666,7 +682,7 @@ Table~7~~MPC control performance comparison\\
 \midrule
 LSTM-MPC & 0.0032 & 1420$\pm$45 & 0.7\\
 Mamba-MPC & 0.0041 & 235$\pm$12 & 4.3\\
-SSM-WM-MPC & 0.0043 & 195$\pm$10 & 5.1\\
+\textbf{SSM-WM-MPC} & \textbf{0.0043} & \textbf{195$\pm$10} & \textbf{5.1}\\
 \bottomrule
 \end{tabular}}
 \par\endgroup
@@ -703,7 +719,7 @@ Table~8~~Performance comparison on MuJoCo Humanoid dataset ($T=32$)\\
 LSTM-WM & 0.889 & 0.566 & 5.0\\
 Transformer-WM & 0.956 & 0.528 & 52.3\\
 Mamba-WM & 0.821 & 0.598 & 8.2\\
-SSM-WM & 0.834 & 0.592 & 9.5\\
+\textbf{SSM-WM} & \textbf{0.834} & \textbf{0.592} & \textbf{9.5}\\
 \bottomrule
 \end{tabular}}\\
 {\fontsize{8pt}{9.6pt}\selectfont 注: 推理时间为中位数$\pm$标准差, 首次运行因CUDA编译导致延迟较高(约19ms).}
@@ -785,7 +801,7 @@ Table~11~~MPC control performance on MuJoCo Humanoid dataset\\
 方法 & 跟踪MSE & 回路$^{\text{a}}$ & 频率/Hz\\
 \midrule
 LSTM-MPC & 0.045 & 2850$\pm$120 & 0.35\\
-SSM-WM-MPC & 0.052 & 475$\pm$25 & 2.1\\
+\textbf{SSM-WM-MPC} & \textbf{0.052} & \textbf{475$\pm$25} & \textbf{2.1}\\
 \bottomrule
 \end{tabular}}
 \par\endgroup
