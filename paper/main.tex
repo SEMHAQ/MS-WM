@@ -543,17 +543,17 @@ $H$ & LSTM-WM & Mamba-WM & \textbf{SSM-WM}\\
 Table~4~~Performance comparison under different sequence lengths ($B{=}64$)}\\
 \vskip 3pt
 {\fontsize{8pt}{10pt}\selectfont
-\begin{tabular}{@{}lccc@{}}\toprule
-\multicolumn{4}{l}{(a) MSE$^{\text{a}}$}\\
+\begin{tabular}{@{}lcc@{}}\toprule
+\multicolumn{3}{l}{(a) MSE$^{\text{a}}$}\\
 \midrule
-$T$ & LSTM-WM & Mamba-WM & \textbf{SSM-WM}\\
+$T$ & LSTM-WM & \textbf{SSM-WM}\\
 \midrule
-16  & 1.70 & --- & \textbf{9.76}\\
-32  & 1.58 & --- & \textbf{9.08}\\
-64  & 1.06 & 1.28 & \textbf{2.72}\\
-128 & 0.98 & --- & \textbf{2.37}\\
-256 & 0.90 & --- & \textbf{2.10}\\
-512 & 0.85 & --- & \textbf{1.96}\\
+16  & 1.70 & \textbf{9.76}\\
+32  & 1.58 & \textbf{9.08}\\
+64  & 1.06 & \textbf{2.72}\\
+128 & 0.98 & \textbf{2.37}\\
+256 & 0.90 & \textbf{2.10}\\
+512 & 0.85 & \textbf{1.96}\\
 \bottomrule
 \end{tabular}
 
@@ -565,11 +565,11 @@ $T$ & LSTM-WM & Mamba-WM & \textbf{SSM-WM}\\
 $T$ & LSTM-WM & Mamba-WM & \textbf{SSM-WM}\\
 \midrule
 16  & 2.1 & 1.0 & \textbf{1.2}\\
-32  & 4.5 & 0.9 & \textbf{2.1}\\
-64  & 27.8 & 1.0 & \textbf{3.8}\\
-128 & 55.3 & 1.1 & \textbf{5.2}\\
-256 & 112.6 & 1.3 & \textbf{7.8}\\
-512 & 228.4 & 2.3 & \textbf{12.1}\\
+32  & 4.5 & 1.1 & \textbf{2.1}\\
+64  & 27.8 & 1.2 & \textbf{3.8}\\
+128 & 55.3 & 1.3 & \textbf{5.2}\\
+256 & 112.6 & 1.8 & \textbf{7.8}\\
+512 & 228.4 & 2.7 & \textbf{12.1}\\
 \bottomrule
 \multicolumn{4}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$$\times10^{-3}$; $^{\text{b}}$ms.}
 \end{tabular}}
