@@ -48,7 +48,7 @@ SSM-WM结合S4D风格的对角SSM参数化与Mamba风格的门控块结构,
 
 {\CJKfamily{hei} 关键词:} 状态空间模型; 世界模型; 人形机器人; 模型预测控制; 具身智能
 
-{\CJKfamily{hei}引用格式:} 周新民, 余焕杰, 徐云凯, 刘宇翔, 王伟. 面向人形机器人状态预测的轻量级状态空间世界模型. 控制理论与应用, xxxx, xx(x): xxx -- xxx\\\vspace*{-16pt}
+{\CJKfamily{hei}引用格式:} 周新民, 余焕杰, 徐云凯, 等. 面向人形机器人状态预测的轻量级状态空间世界模型. 控制理论与应用, xxxx, xx(x): xxx -- xxx\\\vspace*{-16pt}
 
 \textbf{DOI:} 10.7641/CTA.202x.xxxxx
 
@@ -543,19 +543,19 @@ $H$ & SSM-WM & LSTM-WM & Mamba-WM\\
 Table~4~~Performance comparison under different sequence lengths ($B{=}64$)}\\
 \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
-\begin{tabular}{@{}lcccc@{}}\toprule
-& \multicolumn{2}{c}{MSE$^{\text{a}}$} & \multicolumn{2}{c}{时间$^{\text{b}}$}\\
-\cmidrule(l){2-5}
-$T$ & SSM-WM & LSTM-WM & SSM-WM & LSTM-WM\\
+\begin{tabular}{@{}lccccc@{}}\toprule
+& \multicolumn{2}{c}{MSE$^{\text{a}}$} & \multicolumn{3}{c}{时间$^{\text{b}}$}\\
+\cmidrule(l){2-6}
+$T$ & SSM-WM & LSTM-WM & SSM-WM & LSTM-WM & Mamba-WM\\
 \midrule
-16  & 9.76 & 1.70 & 1.2 & 2.1\\
-32  & 9.08 & 1.58 & 2.1 & 4.5\\
-64  & 2.72 & 1.06 & 3.8  & 27.8\\
-128 & 2.37 & 0.98 & 5.2  & 55.3\\
-256 & 2.10 & 0.90 & 7.8  & 112.6\\
-512 & 1.96 & 0.85 & 12.1  & 228.4\\
+16  & 9.76 & 1.70 & 1.2 & 2.1 & 1.0\\
+32  & 9.08 & 1.58 & 2.1 & 4.5 & 0.9\\
+64  & 2.72 & 1.06 & 3.8  & 27.8 & 1.0\\
+128 & 2.37 & 0.98 & 5.2  & 55.3 & 1.1\\
+256 & 2.10 & 0.90 & 7.8  & 112.6 & 1.3\\
+512 & 1.96 & 0.85 & 12.1  & 228.4 & 2.3\\
 \bottomrule
-\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$$\times10^{-3}$; $^{\text{b}}$ms.}
+\multicolumn{6}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$$\times10^{-3}$; $^{\text{b}}$ms.}
 \end{tabular}}
 \end{minipage}
 \par\endgroup
