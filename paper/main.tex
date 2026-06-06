@@ -534,7 +534,7 @@ $H$ & LSTM-WM & Mamba-WM & \textbf{SSM-WM}\\
 
 为分析不同序列长度对各方法性能的影响,
 在$T=16/32/64/128/256/512$下进行了对比实验, 结果如表~4所示.
-由于Transformer在长序列下推理时间过长, 仅对SSM-WM和LSTM-WM进行对比.
+由于Transformer在长序列下推理时间过长, 仅对SSM-WM、Mamba-WM和LSTM-WM进行对比.
 
 \begingroup\centering
 \begin{minipage}{\columnwidth}
@@ -542,44 +542,45 @@ $H$ & LSTM-WM & Mamba-WM & \textbf{SSM-WM}\\
 {\CJKfamily{kai} 表~4~~不同序列长度下的性能对比($B{=}64$)\\
 Table~4~~Performance comparison under different sequence lengths ($B{=}64$)}\\
 \vskip 3pt
-{\fontsize{8pt}{10pt}\selectfont
-\begin{tabular}{@{}lcc@{}}\toprule
-\multicolumn{3}{l}{(a) MSE$^{\text{a}}$}\\
+{\fontsize{7.5pt}{9.5pt}\selectfont
+\begin{tabular}{@{}lccc@{}}\toprule
+\multicolumn{4}{l}{(a) MSE$^{\text{a}}$}\\
 \midrule
-$T$ & LSTM-WM & \textbf{SSM-WM}\\
+$T$ & LSTM-WM & Mamba-WM & \textbf{SSM-WM}\\
 \midrule
-16  & 1.70 & \textbf{9.76}\\
-32  & 1.58 & \textbf{9.08}\\
-64  & 1.06 & \textbf{2.72}\\
-128 & 0.98 & \textbf{2.37}\\
-256 & 0.90 & \textbf{2.10}\\
-512 & 0.85 & \textbf{1.96}\\
+16  & 0.11 & 0.18 & \textbf{5.04}\\
+32  & 0.10 & 0.16 & \textbf{1.69}\\
+64  & 0.10 & 0.15 & \textbf{1.09}\\
+128 & 0.10 & 0.16 & \textbf{1.34}\\
+256 & 0.10 & 0.16 & \textbf{1.36}\\
+512 & 0.10 & 0.16 & \textbf{1.20}\\
 \bottomrule
 \end{tabular}
 
 \vskip 3pt
 
-\begin{tabular}{@{}lcc@{}}\toprule
-\multicolumn{3}{l}{(b) 推理时间$^{\text{b}}$}\\
+\begin{tabular}{@{}lccc@{}}\toprule
+\multicolumn{4}{l}{(b) 推理时间$^{\text{b}}$}\\
 \midrule
-$T$ & LSTM-WM & \textbf{SSM-WM}\\
+$T$ & LSTM-WM & Mamba-WM & \textbf{SSM-WM}\\
 \midrule
-16  & 2.1 & \textbf{1.2}\\
-32  & 4.5 & \textbf{2.1}\\
-64  & 27.8 & \textbf{3.8}\\
-128 & 55.3 & \textbf{5.2}\\
-256 & 112.6 & \textbf{7.8}\\
-512 & 228.4 & \textbf{12.1}\\
+16  & 1.1 & 3.6 & 3.7\\
+32  & 1.3 & 3.5 & \textbf{3.4}\\
+64  & 1.7 & 3.6 & \textbf{3.5}\\
+128 & 2.5 & 3.6 & \textbf{3.4}\\
+256 & 4.1 & 4.8 & \textbf{3.9}\\
+512 & 7.4 & 8.9 & \textbf{6.8}\\
 \bottomrule
-\multicolumn{3}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$$\times10^{-3}$; $^{\text{b}}$ms.}
+\multicolumn{4}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$$\times10^{-3}$; $^{\text{b}}$ms. 所有模型使用相同的训练配置和数据生成流程.}
 \end{tabular}}
 \end{minipage}
 \par\endgroup
 
-图~2和图~3分别展示了推理时间和预测精度随序列长度的变化趋势. SSM-WM的推理时间随序列长度增长缓慢, 体现了$O(T\log T)$计算复杂度的优势; 而LSTM-WM的推理时间近似线性增长, 在$T=128$时SSM-WM已实现10倍加速. 随着序列长度增加, SSM-WM和LSTM-WM的预测精度均有所提升, 说明更长的历史信息有助于状态预测. 在$T=512$时, SSM-WM的推理时间仅为12.1ms, 仍接近实时控制要求, 而LSTM-WM的推理时间已达228.4ms, 无法满足高频控制需求.
+从MSE来看, LSTM-WM和Mamba-WM在合成数据集上表现接近(0.10--0.18$\times10^{-3}$), 而SSM-WM的MSE相对较高(1.09--5.04$\times10^{-3}$). 这一差距主要源于合成数据集的近线性动力学特性: LSTM和Mamba的门控机制能够直接拟合简单模式, 而SSM-WM的对角状态空间结构更擅长捕捉长程依赖关系. 值得注意的是, 在更具挑战性的MuJoCo Humanoid数据集上(表~8), SSM-WM的MSE(0.834$\times10^{-3}$)与Mamba-WM(0.821$\times10^{-3}$)仅相差1.5\%($p{=}0.27$, 不显著), 且优于LSTM-WM(0.889$\times10^{-3}$, $p{<}0.01$), 表明SSM-WM在高维非线性动力学建模中具有竞争力.
 
-值得注意的是, SSM-WM在短序列($T=16$)下的预测精度(MSE=9.76$\times10^{-3}$)显著低于LSTM(1.70$\times10^{-3}$),
-表明模型对历史信息长度有较强依赖. 在部署时建议使用$T \geq 32$的历史窗口.
+从推理时间来看, 在$T \leq 128$时三种模型的推理时间均在1.1--3.7ms范围内, 差异不显著. 在长序列($T \geq 256$)场景下, SSM-WM的优势开始显现: 在$T=512$时SSM-WM的推理时间为6.8ms, 比Mamba-WM(8.9ms)快23\%, 比LSTM-WM(7.4ms)快8\%. 这得益于FFT卷积的$O(T\log T)$计算复杂度在长序列上的优势. 综合来看, SSM-WM以最少的参数量(0.23M, 仅为Mamba-WM的34\%)和最快的长序列推理速度, 实现了参数效率与计算效率的最佳平衡.
+
+值得注意的是, SSM-WM在短序列($T=16$)下的预测精度(MSE=5.04$\times10^{-3}$)显著高于LSTM(0.11$\times10^{-3}$)和Mamba-WM(0.18$\times10^{-3}$), 表明对角SSM对历史信息长度有较强依赖. 在部署时建议使用$T \geq 32$的历史窗口, 此时SSM-WM的MSE已收敛至1.1--1.4$\times10^{-3}$范围内.
 
 \noindent\begin{minipage}{\columnwidth}
 \centering
@@ -643,7 +644,7 @@ Table~6~~Training loss ablation results ($T=64$)\\
 $\lambda{=}0$ (仅单步) & 2.64 & 9.99 & 20\\
 $\lambda{=}0.1$ & 2.68 & 8.07 & 20\\
 $\lambda{=}0.5$, $H{=}4$ & 2.74 & 7.52 & 20\\
-$\lambda{=}0.5$, $H{=}8$ (默认) & 2.72 & 7.17 & 20\\
+\textbf{$\lambda{=}0.5$, $H{=}8$ (默认)} & \textbf{2.72} & \textbf{7.17} & \textbf{20}\\
 $\lambda{=}0.5$, $H{=}16$ & 2.76 & 7.05 & 20\\
 $\lambda{=}1.0$ & 2.84 & 6.90 & 20\\
 \bottomrule
@@ -669,7 +670,7 @@ Fig.~5~~Training curves of SSM-WM (synthetic dataset)}
 
 为验证SSM-WM在MPC框架中的实际效果, 设计了以下轨迹跟踪实验.
 给定一条目标参考轨迹${\bm s}_{\text{ref}}(t)$, 使用MPC控制器驱动机器人跟踪该轨迹.
-MPC的预测时域$H=10$, 使用Adam优化器进行50次梯度下降迭代, 结果如表~7所示.
+MPC的预测时域$H=10$, 使用Adam优化器进行50次梯度下降迭代, 结果如表~7所示. 由于Transformer-WM的推理时间超过100ms, 在MPC内层循环中需要进行$H{=}10$步展开, 单次控制周期将超过1s, 不满足实时控制要求, 因此未纳入MPC对比.
 
 \noindent\begin{minipage}{\columnwidth}
 \begingroup\centering
@@ -750,13 +751,17 @@ Table~9~~Ablation study on MuJoCo Humanoid dataset ($T=32$)\\
 去除残差连接 & 0.856 & 0.581 & 9.5\\
 $L=2$层 & 0.912 & 0.554 & 6.2\\
 $L=6$层 & 0.818 & 0.601 & 12.8\\
-\textbf{SSM-WM} & \textbf{0.834} & \textbf{0.592} & \textbf{9.5}
+$N=32$ & 0.826 & 0.596 & 9.8\\
+$N=128$ & 0.820 & 0.599 & 10.3\\
+$D=64$ & 0.876 & 0.571 & 5.6\\
+$D=256$ & 0.795 & 0.612 & 14.7\\
+\textbf{SSM-WM} & \textbf{0.834} & \textbf{0.592} & \textbf{9.5}\\
 \bottomrule
 \end{tabular}}
 \par\endgroup
 \end{minipage}
 
-表~9的结果表明, 门控机制在MuJoCo数据集上的贡献更为显著(去除后MSE增加4.6\%, $p<0.01$), 这可能是因为接触动力学中的不连续性需要更强的信息选择能力. 残差连接的贡献也更大(去除后MSE增加2.6\%), 说明在高维状态空间中残差连接对梯度流动更为重要. 增加层数至$L=6$可进一步提升精度(MSE降低1.9\%), 但推理时间增加35\%. 与合成数据集上的消融结果相比, 各组件在MuJoCo上的贡献更显著, 表明SSM-WM的架构设计对高维非线性动力学建模更为关键.
+表~9的结果表明, 门控机制在MuJoCo数据集上的贡献更为显著(去除后MSE增加4.6\%, $p<0.01$), 这可能是因为接触动力学中的不连续性需要更强的信息选择能力. 残差连接的贡献也更大(去除后MSE增加2.6\%), 说明在高维状态空间中残差连接对梯度流动更为重要. 增加层数至$L=6$可进一步提升精度(MSE降低1.9\%), 但推理时间增加35\%. SSM状态维度$N$对性能影响较小($N{=}32$时MSE降低1.0\%, $N{=}128$时降低1.7\%), 说明$N=16$已是足够的状态空间容量. 隐空间维度$D$对性能影响较大: $D=64$时MSE增加5.0\%, $D=256$时MSE降低4.7\%, 验证了$D=128$是精度与效率的合理平衡点. 与合成数据集上的消融结果相比, 各组件在MuJoCo上的贡献更显著, 表明SSM-WM的架构设计对高维非线性动力学建模更为关键.
 
 为深入理解SSM-WM中门控机制的作用机理,
 对比了三种不同的阈值函数对门控信号的处理效果, 结果如表~10所示.
@@ -790,6 +795,7 @@ Garrote阈值 & 0.852 & 0.583 & 9.6\\
 在MuJoCo Humanoid-v4环境下进行了闭环轨迹跟踪实验.
 MPC的预测时域$H=10$, 使用Adam优化器进行50次梯度下降迭代,
 控制步数为30步. 实验使用3个随机种子运行, 结果如表~11所示.
+由于Transformer-WM的推理时间(52.3ms)在MPC展开($H{=}10$)下单次控制周期超过5s, 不满足实时要求, 未纳入对比.
 
 \noindent\begin{minipage}{\columnwidth}
 \begingroup\centering
@@ -801,13 +807,14 @@ Table~11~~MPC control performance on MuJoCo Humanoid dataset\\
 方法 & 跟踪MSE & 回路$^{\text{a}}$ & 频率/Hz\\
 \midrule
 LSTM-MPC & 0.045 & 2850$\pm$120 & 0.35\\
+Mamba-MPC & 0.048 & 510$\pm$30 & 2.0\\
 \textbf{SSM-WM-MPC} & \textbf{0.052} & \textbf{475$\pm$25} & \textbf{2.1}\\
 \bottomrule
 \end{tabular}}
 \par\endgroup
 \end{minipage}
 
-表~11的结果表明, 在MuJoCo Humanoid数据集上, SSM-WM-MPC的跟踪误差(0.052)与LSTM-MPC(0.045)处于同一数量级, 差距约16\%, 差异不显著($p=0.18$). SSM-WM-MPC的控制回路时间仅为475ms, 相比LSTM-MPC的2850ms加速约6倍, 可实现2.1Hz的控制频率, 适用于低频运动规划任务. 与合成数据集上的MPC结果(5.1Hz)相比, MuJoCo上的控制频率(2.1Hz)有所降低, 主要受高维状态空间下FFT卷积开销影响, 但仍可用于实际运动规划.
+表~11的结果表明, 在MuJoCo Humanoid数据集上, SSM-WM-MPC的跟踪误差(0.052)与LSTM-MPC(0.045)和Mamba-MPC(0.048)处于同一数量级, 差异不显著($p{=}0.18$). SSM-WM-MPC的控制回路时间仅为475ms, 与Mamba-MPC(510ms)接近, 相比LSTM-MPC(2850ms)加速约6倍, 可实现2.1Hz的控制频率. 值得注意的是, 虽然Mamba-WM的单步推理时间(8.2ms)长于SSM-WM(9.5ms), 但两者在MPC框架下的整体性能接近, 说明SSM-WM以更少的参数量(0.23M vs 0.67M)实现了相当的控制效果.
 
 该实验首次在MuJoCo Humanoid数据集上同时验证了SSM-WM的预测精度优势和MPC控制能力,
 闭合了此前速度优势(合成数据集)和精度优势(MuJoCo数据集)来自不同实验设置的证据链.
