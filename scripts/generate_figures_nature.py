@@ -244,11 +244,15 @@ def fig5():
     c = [C_LSTM, C_MAMBA, C_SSM]
     x = np.arange(len(methods))
 
-    # (a) MSE
-    bars1 = ax1.bar(x, mse_vals, color=c, alpha=0.85, edgecolor='white', linewidth=0.5, width=0.55)
+    # (a) MSE — bar + line dual encoding
+    ax1.bar(x, mse_vals, color=c, alpha=0.3, edgecolor=[C_LSTM, C_MAMBA, C_SSM], linewidth=0.8, width=0.55)
+    ax1.plot(x, mse_vals, '-o', color='#555', linewidth=1.5, markersize=6, zorder=3)
     for i, v in enumerate(mse_vals):
         weight = 'bold' if i == 2 else 'normal'
-        ax1.text(i, v + 0.0002, f'{v:.4f}', ha='center', va='bottom', fontsize=10, fontweight=weight)
+        ax1.text(i, v + 0.00015, f'{v:.4f}', ha='center', va='bottom', fontsize=10, fontweight=weight, color=c[i])
+    # Equal accuracy zone
+    ax1.axhspan(0.0040, 0.0046, alpha=0.06, color='#2ecc71', zorder=0)
+    ax1.text(2.5, 0.00435, '同等精度区间', fontsize=8, color='#2ecc71', ha='center', alpha=0.7)
     ax1.set_ylabel('跟踪 MSE', fontsize=12)
     ax1.set_xticks(x)
     ax1.set_xticklabels(methods, fontsize=10)
@@ -256,24 +260,24 @@ def fig5():
     ax1.grid(True, alpha=0.12, axis='y', color=C_GRID, linewidth=0.4)
     ax1.text(-0.13, 1.05, '(a)', transform=ax1.transAxes, fontsize=12, fontweight='bold', va='top')
 
-    # (b) Frequency
-    bars2 = ax2.bar(x, freq_vals, color=c, alpha=0.85, edgecolor='white', linewidth=0.5, width=0.55)
+    # (b) Frequency — bar + line dual encoding
+    ax2.bar(x, freq_vals, color=c, alpha=0.3, edgecolor=[C_LSTM, C_MAMBA, C_SSM], linewidth=0.8, width=0.55)
+    ax2.plot(x, freq_vals, '-o', color='#555', linewidth=1.5, markersize=6, zorder=3)
     for i, v in enumerate(freq_vals):
         weight = 'bold' if i == 2 else 'normal'
-        ax2.text(i, v + 0.15, f'{v:.1f} Hz', ha='center', va='bottom', fontsize=10, fontweight=weight)
+        ax2.text(i, v + 0.2, f'{v:.1f} Hz', ha='center', va='bottom', fontsize=10, fontweight=weight, color=c[i])
     ax2.axhline(y=1, color='#999', linestyle=':', linewidth=0.6, alpha=0.7)
     ax2.text(2.3, 1.15, '1 Hz', fontsize=9, color='#777')
+    # Speedup bracket
+    ax2.annotate('', xy=(2, 5.3), xytext=(0, 0.9),
+                arrowprops=dict(arrowstyle='|-|', color=C_ANNO, lw=1.2, shrinkA=0, shrinkB=0))
+    ax2.text(1.0, 3.0, '$\\times$7.3', fontsize=11, fontweight='bold', color=C_ANNO, ha='center')
     ax2.set_ylabel('控制频率 (Hz)', fontsize=12)
     ax2.set_xticks(x)
     ax2.set_xticklabels(methods, fontsize=10)
     ax2.set_ylim(0, 7)
     ax2.grid(True, alpha=0.12, axis='y', color=C_GRID, linewidth=0.4)
     ax2.text(-0.13, 1.05, '(b)', transform=ax2.transAxes, fontsize=12, fontweight='bold', va='top')
-
-    ax2.annotate('$\\times$7.3', xy=(2, 5.1), xytext=(0.3, 6.3),
-                fontsize=12, fontweight='bold', color=C_ANNO,
-                arrowprops=dict(arrowstyle='->', color=C_ANNO, lw=1.2),
-                ha='center')
 
     fig.tight_layout()
     save(fig, 'mpc_comparison')
