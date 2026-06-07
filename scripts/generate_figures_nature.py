@@ -252,7 +252,7 @@ def fig5():
         y = ratio * x_range
         mask = (y >= 0) & (y <= 7)
         ax.plot(x_range[mask], y[mask], ':', color='#ccc', linewidth=0.8, alpha=alpha)
-        ax.text(label_pos[0], label_pos[1], f'$\\eta$={ratio}', fontsize=7, color='#bbb', ha='center', rotation=25)
+        ax.text(label_pos[0], label_pos[1], f'效率比={ratio}', fontsize=7, color='#bbb', ha='center', rotation=25)
 
     # Scatter with loop time as size encoding
     for i, (name, mse, freq, col, mk, lp) in enumerate(zip(methods, mse_vals, freq_vals, c, markers, loop_ms)):
