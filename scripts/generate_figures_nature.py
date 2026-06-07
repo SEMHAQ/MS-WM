@@ -172,7 +172,7 @@ def fig4():
     x = np.arange(len(configs))
 
     # (a) MSE
-    bars = ax1.bar(x, mse, color=c, alpha=0.85, edgecolor='white', linewidth=0.5, width=0.65, bottom=2.3)
+    bars = ax1.bar(x, mse, color=c, alpha=0.85, edgecolor='white', linewidth=0.5, width=0.65)
     ax1.axhline(y=base_mse, color='#333', linestyle='--', linewidth=0.5, alpha=0.4)
 
     for i, (m, cfg) in enumerate(zip(mse, configs)):
@@ -180,13 +180,12 @@ def fig4():
         if abs(delta) > 3:
             color = '#C44E52' if delta > 0 else '#55A868'
             sign = '+' if delta > 0 else ''
-            ax1.annotate(f'{sign}{delta:.1f}%', xy=(i, m), xytext=(i, m + 0.04 if delta > 0 else m - 0.04),
-                        fontsize=8, ha='center', color=color, fontweight='bold')
+            ax1.text(i, m + 0.02, f'{sign}{delta:.1f}%', fontsize=8, ha='center', color=color, fontweight='bold')
 
     ax1.set_ylabel('MSE ($\\times 10^{-3}$)', fontsize=12)
     ax1.set_xticks(x)
     ax1.set_xticklabels(configs, rotation=0, ha='center', fontsize=8)
-    ax1.set_ylim(2.3, 3.15)
+    ax1.set_ylim(2.35, 3.1)
     ax1.grid(True, alpha=0.12, axis='y', color=C_GRID, linewidth=0.4)
     ax1.text(-0.1, 1.05, '(a)', transform=ax1.transAxes, fontsize=12, fontweight='bold', va='top')
 
