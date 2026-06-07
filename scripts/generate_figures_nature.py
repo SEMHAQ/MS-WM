@@ -114,18 +114,36 @@ def fig2():
     T = [16, 32, 64, 128, 256, 512]
     ssm = [3.7, 3.4, 3.5, 3.4, 3.9, 6.8]
 
-    ax.plot(T, ssm, '-o', color=C_SSM, label='SSM-WM', linewidth=2.5, markersize=8, zorder=5)
+    x = np.arange(len(T))
 
+    # Bar + line dual encoding
+    bars = ax.bar(x, ssm, width=0.5, color=C_SSM, alpha=0.3, edgecolor=C_SSM, linewidth=0.8, zorder=2)
+    ax.plot(x, ssm, '-o', color=C_SSM, linewidth=2.5, markersize=8, zorder=5, label='SSM-WM')
+
+    # Real-time zone fill
+    ax.axhspan(0, 10, alpha=0.04, color='#2ecc71', zorder=0)
     ax.axhline(y=10, color='#999', linestyle=':', linewidth=0.8, alpha=0.8)
-    ax.text(18, 10.5, '实时阈值', fontsize=9, color='#777')
+    ax.text(0.1, 10.5, '实时阈值 (10 ms)', fontsize=9, color='#777')
+
+    # Recommended range highlight
+    ax.axvspan(1, 4, alpha=0.08, color=C_SSM, zorder=0)
+    ax.annotate('推荐区间', xy=(2.5, 1.5), fontsize=9, color=C_SSM, fontstyle='italic', ha='center')
+
+    # Value labels
+    for i, v in enumerate(ssm):
+        ax.text(i, v + 0.3, f'{v}', ha='center', fontsize=9, color=C_SSM, fontweight='bold')
+
+    # Complexity annotation
+    ax.annotate('$O(T\\log T)$', xy=(4.5, 6.0), fontsize=10, color=C_SSM, fontweight='bold', alpha=0.6)
 
     ax.set_xlabel('序列长度 $T$', fontsize=12)
     ax.set_ylabel('推理时间 (ms)', fontsize=12)
-    ax.set_xscale('log', base=2)
-    ax.set_xticks(T)
-    ax.set_xticklabels([str(t) for t in T])
-    ax.legend(loc='upper left', fontsize=10, handlelength=1.8)
-    ax.grid(True, alpha=0.15, color=C_GRID, linewidth=0.4, which='both')
+    ax.set_xticks(x)
+    ax.set_xticklabels([str(t) for t in T], fontsize=10)
+    ax.set_ylim(0, 9)
+    ax.legend(fontsize=10, handlelength=1.8)
+    ax.grid(True, alpha=0.12, axis='y', color=C_GRID, linewidth=0.4)
+
     fig.tight_layout()
     save(fig, 'inference_vs_seqlen')
 
