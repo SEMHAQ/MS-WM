@@ -82,7 +82,7 @@ def fig1():
     ax.grid(True, alpha=0.15, color=C_GRID, linewidth=0.4)
 
     # Inset: zoom on low batch — placed in empty area right of legend
-    axins = ax.inset_axes([0.52, 0.45, 0.35, 0.35])
+    axins = ax.inset_axes([0.35, 0.5, 0.3, 0.3])
     axins.plot(B, ssm, '-o', color=C_SSM, linewidth=2.0, markersize=6)
     axins.plot(B, mamba, '-D', color=C_MAMBA, linewidth=1.5, markersize=5)
     axins.plot(B, lstm, '-s', color=C_LSTM, linewidth=1.5, markersize=5)
