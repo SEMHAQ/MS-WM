@@ -276,41 +276,45 @@ def fig5():
 # Fig 6: Radar
 # ============================================================
 def fig6():
-    fig, axes = plt.subplots(2, 3, figsize=(7.5, 5.0), gridspec_kw={'hspace': 0.40, 'wspace': 0.35})
-    axes = axes.flatten()
+    fig, ax = plt.subplots(figsize=(5.0, 5.0), subplot_kw=dict(polar=True))
+    categories = ['MSE', 'R²', '参数量', '推理速度', '内存']
+    N = len(categories)
 
-    metrics = ['MSE ($\\times 10^{-3}$)', '$R^2$', '参数量 (M)', '推理时间 (ms)', '内存 (MB)']
-    raw = [
-        [0.834, 0.889, 0.956, 0.821],   # MSE - lower better
-        [0.592, 0.566, 0.528, 0.598],   # R² - higher better
-        [0.24, 0.29, 0.62, 0.28],       # Params - lower better
-        [9.5, 5.0, 52.3, 8.2],          # Time - lower better
-        [0.9, 1.1, 2.4, 1.0],           # Mem - lower better
-    ]
-    lower_better = [True, False, True, True, True]
-    names = ['SSM-WM', 'LSTM-WM', 'Trans.-WM', 'Mamba-WM']
-    c = [C_SSM, C_LSTM, C_TRANS, C_MAMBA]
-    x = np.arange(len(names))
+    def normalize(vals, lower_better=True, floor=0.10):
+        mn, mx = min(vals), max(vals)
+        if lower_better:
+            return [floor + (1 - floor) * (mx - v) / (mx - mn + 1e-8) for v in vals]
+        return [floor + (1 - floor) * (v - mn) / (mx - mn + 1e-8) for v in vals]
 
-    for idx, (ax, metric, vals, lb) in enumerate(zip(axes, metrics, raw, lower_better)):
-        bars = ax.bar(x, vals, color=c, alpha=0.85, edgecolor='white', linewidth=0.5, width=0.6)
-        # Mark best
-        best = np.argmin(vals) if lb else np.argmax(vals)
-        bars[best].set_edgecolor(c[best])
-        bars[best].set_linewidth(2.0)
-        # Value labels
-        for i, v in enumerate(vals):
-            fmt = f'{v:.3f}' if v < 1 else f'{v:.1f}'
-            ax.text(i, v + max(vals)*0.02, fmt, ha='center', va='bottom', fontsize=7, color=c[i])
-        ax.set_title(metric, fontsize=9, pad=3)
-        ax.set_xticks(x)
-        ax.set_xticklabels(['SSM', 'LSTM', 'Trans.', 'Mamba'], fontsize=7, rotation=25, ha='right')
-        ax.tick_params(axis='y', labelsize=7)
-        ax.grid(True, alpha=0.12, axis='y', color=C_GRID, linewidth=0.4)
-        ax.text(-0.15, 1.08, f'({chr(97+idx)})', transform=ax.transAxes, fontsize=10, fontweight='bold', va='top')
+    mse_n  = normalize([0.834, 0.889, 0.956, 0.821], lower_better=True)
+    r2_n   = normalize([0.592, 0.566, 0.528, 0.598], lower_better=False)
+    par_n  = normalize([0.24, 0.29, 0.62, 0.28], lower_better=True)
+    spd_n  = normalize([9.5, 5.0, 52.3, 8.2], lower_better=True)
+    mem_n  = normalize([0.9, 1.1, 2.4, 1.0], lower_better=True)
 
-    # Hide last empty subplot
-    axes[5].set_visible(False)
+    names  = ['SSM-WM', 'LSTM-WM', 'Trans.-WM', 'Mamba-WM']
+    colors = [C_SSM, C_LSTM, C_TRANS, C_MAMBA]
+    markers = ['o', 's', 'v', 'D']
+
+    angles = [n / float(N) * 2 * np.pi for n in range(N)]
+    angles += angles[:1]
+
+    for i, (name, color, marker) in enumerate(zip(names, colors, markers)):
+        scores = [mse_n[i], r2_n[i], par_n[i], spd_n[i], mem_n[i]]
+        scores += scores[:1]
+        lw = 2.5 if i == 0 else 1.2
+        ax.plot(angles, scores, marker=marker, linewidth=lw, label=name, color=color,
+                markersize=5 if i > 0 else 7, zorder=5-i)
+        if i == 0:
+            ax.fill(angles, scores, alpha=0.08, color=color)
+
+    ax.set_xticks(angles[:-1])
+    ax.set_xticklabels(categories, fontsize=11)
+    ax.set_ylim(0, 1.2)
+    ax.set_yticks([0.25, 0.5, 0.75, 1.0])
+    ax.set_yticklabels(['0.25', '0.50', '0.75', '1.00'], fontsize=10, color='#666')
+    ax.grid(True, alpha=0.2, linewidth=0.4)
+    ax.legend(loc='upper right', bbox_to_anchor=(1.35, 1.1), fontsize=9, handlelength=1.5)
 
     fig.tight_layout()
     save(fig, 'radar_comparison')
