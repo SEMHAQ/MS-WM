@@ -309,12 +309,12 @@ def fig6():
             ax.fill(angles, scores, alpha=0.08, color=color)
 
     ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(categories, fontsize=11)
+    ax.set_xticklabels(categories, fontsize=13)
     ax.set_ylim(0, 1.2)
     ax.set_yticks([0.25, 0.5, 0.75, 1.0])
-    ax.set_yticklabels(['0.25', '0.50', '0.75', '1.00'], fontsize=10, color='#666')
+    ax.set_yticklabels(['0.25', '0.50', '0.75', '1.00'], fontsize=12, color='#666')
     ax.grid(True, alpha=0.2, linewidth=0.4)
-    ax.legend(loc='upper right', bbox_to_anchor=(1.35, 1.1), fontsize=9, handlelength=1.5)
+    ax.legend(loc='upper right', bbox_to_anchor=(1.35, 1.1), fontsize=11, handlelength=1.5)
 
     fig.tight_layout()
     save(fig, 'radar_comparison')
