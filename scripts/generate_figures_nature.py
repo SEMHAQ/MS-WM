@@ -266,10 +266,8 @@ def fig5():
     ax.axhspan(4, 7, alpha=0.03, color='#3498db', zorder=0)
     ax.text(0.0034, 6.3, '理想区域', fontsize=9, color='#2ecc71', ha='center', alpha=0.5)
 
-    # Speedup arrow
-    ax.annotate('', xy=(0.0043, 4.8), xytext=(0.0045, 1.0),
-                arrowprops=dict(arrowstyle='->', color=C_ANNO, lw=2.0, alpha=0.8))
-    ax.text(0.0046, 2.8, '$\\times$7.3\n频率提升', fontsize=9, color=C_ANNO, fontweight='bold', ha='left')
+    # Speedup annotation (text only, no bracket)
+    ax.text(0.0046, 2.8, '$\\times$7.3 频率提升', fontsize=9, color=C_ANNO, fontweight='bold', ha='left')
 
     ax.set_xlabel('跟踪 MSE', fontsize=12)
     ax.set_ylabel('控制频率 (Hz)', fontsize=12)
