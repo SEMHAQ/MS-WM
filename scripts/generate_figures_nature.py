@@ -236,7 +236,7 @@ def fig4():
 # Fig 5: MPC comparison
 # ============================================================
 def fig5():
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.5, 5.0), gridspec_kw={'hspace': 0.40})
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5.5, 5.5), gridspec_kw={'hspace': 0.50})
 
     methods = ['LSTM-MPC', 'Mamba-MPC', 'SSM-WM-MPC']
     mse_vals = [0.0045, 0.0041, 0.0043]
@@ -256,7 +256,7 @@ def fig5():
     ax1.set_xlim(0, 0.006)
     ax1.invert_yaxis()
     ax1.grid(True, alpha=0.12, axis='x', color=C_GRID, linewidth=0.4)
-    ax1.text(-0.0005, -0.6, '(a)', fontsize=12, fontweight='bold')
+    ax1.text(-0.08, 1.05, '(a)', transform=ax1.transAxes, fontsize=12, fontweight='bold', va='top')
 
     # (b) Frequency — horizontal lollipop (higher = better)
     ax2.hlines(y, 0, freq_vals, color=c, linewidth=2.5, zorder=2)
@@ -264,7 +264,7 @@ def fig5():
     for i, v in enumerate(freq_vals):
         ax2.text(v + 0.15, i, f'{v:.1f} Hz', fontsize=9, va='center', color=c[i], fontweight='bold')
     ax2.axvline(x=1, color='#999', linestyle=':', linewidth=0.7, alpha=0.7)
-    ax2.text(1.1, -0.6, '1 Hz', fontsize=8, color='#999')
+    ax2.text(1.1, 2.7, '1 Hz', fontsize=8, color='#999')
     # Speedup annotation
     ax2.annotate('$\\times$7.3', xy=(5.1, 2), xytext=(2.5, 2.3),
                 fontsize=11, fontweight='bold', color=C_ANNO,
@@ -275,7 +275,7 @@ def fig5():
     ax2.set_xlim(0, 7)
     ax2.invert_yaxis()
     ax2.grid(True, alpha=0.12, axis='x', color=C_GRID, linewidth=0.4)
-    ax2.text(-0.3, -0.6, '(b)', fontsize=12, fontweight='bold')
+    ax2.text(-0.08, 1.05, '(b)', transform=ax2.transAxes, fontsize=12, fontweight='bold', va='top')
 
     fig.tight_layout()
     save(fig, 'mpc_comparison')
