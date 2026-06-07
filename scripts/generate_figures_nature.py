@@ -290,7 +290,7 @@ def fig6():
     mse_n  = normalize([0.834, 0.889, 0.956, 0.821])
     r2_n   = normalize([0.592, 0.566, 0.528, 0.598], lower_better=False)
     par_n  = normalize([0.24, 0.29, 0.62, 0.28])
-    spd_n  = normalize([9.5, 5.0, 52.3, 8.2], lower_better=False)
+    spd_n  = normalize([9.5, 5.0, 52.3, 8.2], lower_better=True)
     mem_n  = normalize([0.9, 1.1, 2.4, 1.0])
 
     names  = ['SSM-WM', 'LSTM-WM', 'Trans.-WM', 'Mamba-WM']
