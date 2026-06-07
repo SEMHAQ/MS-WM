@@ -120,11 +120,6 @@ def fig2():
     bars = ax.bar(x, ssm, width=0.5, color=C_SSM, alpha=0.3, edgecolor=C_SSM, linewidth=0.8, zorder=2)
     ax.plot(x, ssm, '-o', color=C_SSM, linewidth=2.5, markersize=8, zorder=5, label='SSM-WM')
 
-    # Real-time zone fill
-    ax.axhspan(0, 10, alpha=0.04, color='#2ecc71', zorder=0)
-    ax.axhline(y=10, color='#999', linestyle=':', linewidth=0.8, alpha=0.8)
-    ax.text(5.3, 10.3, '实时阈值', fontsize=9, color='#777', ha='right')
-
     # Recommended range highlight
     ax.axvspan(1, 4, alpha=0.08, color=C_SSM, zorder=0)
     ax.annotate('推荐区间', xy=(2.5, 7.5), fontsize=9, color=C_SSM, fontstyle='italic', ha='center')
