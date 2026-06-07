@@ -245,6 +245,13 @@ def fig5():
     c = [C_LSTM, C_MAMBA, C_SSM]
     markers = ['s', 'D', 'o']
 
+    # Connecting dotted line (same style as training curves)
+    ax.plot(mse_vals, freq_vals, ':', color='#999', linewidth=1.0, alpha=0.6, zorder=1)
+
+    # 1 Hz reference line
+    ax.axhline(y=1, color='#999', linestyle=':', linewidth=0.7, alpha=0.8)
+    ax.text(0.00355, 1.2, '1 Hz', fontsize=8, color='#999')
+
     # 3 scatter points
     for i, (name, mse, freq, col, mk, lp) in enumerate(zip(methods, mse_vals, freq_vals, c, markers, loop_ms)):
         ax.scatter(mse, freq, s=200, c=col, marker=mk, zorder=5, edgecolors='white', linewidth=1.5)
