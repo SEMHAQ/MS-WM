@@ -246,9 +246,6 @@ def fig5():
     markers = ['s', 'D', 'o']
 
 
-    # 1 Hz reference line
-    ax.axhline(y=1, color='#999', linestyle=':', linewidth=0.7, alpha=0.8)
-    ax.text(0.00355, 1.2, '1 Hz', fontsize=8, color='#999')
 
     # 3 scatter points
     for i, (name, mse, freq, col, mk, lp) in enumerate(zip(methods, mse_vals, freq_vals, c, markers, loop_ms)):
