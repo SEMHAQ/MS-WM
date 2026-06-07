@@ -245,8 +245,6 @@ def fig5():
     c = [C_LSTM, C_MAMBA, C_SSM]
     markers = ['s', 'D', 'o']
 
-    # Connecting dotted line (same style as training curves)
-    ax.plot(mse_vals, freq_vals, ':', color='#999', linewidth=1.0, alpha=0.6, zorder=1)
 
     # 1 Hz reference line
     ax.axhline(y=1, color='#999', linestyle=':', linewidth=0.7, alpha=0.8)
