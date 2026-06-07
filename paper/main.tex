@@ -684,16 +684,16 @@ Fig.~5~~MPC control performance comparison}
 Table~8~~Performance comparison on MuJoCo Humanoid dataset ($T=32$)\\
 \label{tab:8} \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
-\begin{tabular}{@{}lccc@{ }}\toprule
-方法 & MSE$^{\text{a}}$ & $R^2$ & 时间$^{\text{b}}$\\
+\begin{tabular}{@{}lcccc@{ }}\toprule
+方法 & MSE$^{\text{a}}$ & $R^2$ & 时间$^{\text{b}}$ & 回路$^{\text{c}}$\\
 \midrule
-LSTM-WM & 0.889 & 0.566 & 5.0\\
-Transformer-WM & 0.956 & 0.528 & 52.3\\
-Mamba-WM & 0.821 & 0.598 & 8.2\\
-\textbf{SSM-WM} & \textbf{0.834} & \textbf{0.592} & \textbf{9.5}\\
+LSTM-WM & 0.889 & 0.566 & 5.0 & 2850\\
+Transformer-WM & 0.956 & 0.528 & 52.3 & ---\\
+Mamba-WM & 0.821 & 0.598 & 8.2 & 510\\
+\textbf{SSM-WM} & \textbf{0.834} & \textbf{0.592} & \textbf{9.5} & \textbf{475}\\
 \bottomrule
-\end{tabular}}\\
-{\fontsize{8pt}{9.6pt}\selectfont 注: 推理时间为中位数$\pm$标准差, 首次运行因CUDA编译导致延迟较高(约19ms).}
+\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$$\times10^{-3}$; $^{\text{b}}$ms; $^{\text{c}}$ms. Transformer-WM因推理时间过长未纳入MPC实验.}
+\end{tabular}}
 \par\endgroup
 \end{minipage}
 
