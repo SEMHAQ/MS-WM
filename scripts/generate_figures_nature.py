@@ -276,16 +276,16 @@ def fig5():
 # Fig 6: Radar
 # ============================================================
 def fig6():
-    fig, ax = plt.subplots(figsize=(4.5, 4.5), subplot_kw=dict(polar=True))
+    fig, ax = plt.subplots(figsize=(4.8, 4.8), subplot_kw=dict(polar=True))
     categories = ['MSE', 'R²', '参数量', '推理速度', '内存']
     N = len(categories)
 
-    def normalize(vals, lower_better=True):
+    def normalize(vals, lower_better=True, floor=0.08):
         if lower_better:
             mn, mx = min(vals), max(vals)
-            return [(mx - v) / (mx - mn + 1e-8) for v in vals]
+            return [floor + (1 - floor) * (mx - v) / (mx - mn + 1e-8) for v in vals]
         mn, mx = min(vals), max(vals)
-        return [(v - mn) / (mx - mn + 1e-8) for v in vals]
+        return [floor + (1 - floor) * (v - mn) / (mx - mn + 1e-8) for v in vals]
 
     mse_n  = normalize([0.834, 0.889, 0.956, 0.821])
     r2_n   = normalize([0.592, 0.566, 0.528, 0.598], lower_better=False)
@@ -310,10 +310,10 @@ def fig6():
             ax.fill(angles, scores, alpha=0.08, color=color)
 
     ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(categories, fontsize=11)
-    ax.set_ylim(0, 1.15)
+    ax.set_xticklabels(categories, fontsize=11, fontweight='bold')
+    ax.set_ylim(0, 1.3)
     ax.set_yticks([0.25, 0.5, 0.75, 1.0])
-    ax.set_yticklabels(['0.25', '0.50', '0.75', '1.00'], fontsize=8, color='#999')
+    ax.set_yticklabels(['0.25', '0.50', '0.75', '1.00'], fontsize=10, color='#666')
     ax.grid(True, alpha=0.2, linewidth=0.4)
     ax.legend(loc='upper right', bbox_to_anchor=(1.35, 1.1), fontsize=9, handlelength=1.5)
 
