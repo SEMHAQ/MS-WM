@@ -309,8 +309,8 @@ def fig6():
             ax.fill(angles, scores, alpha=0.08, color=color)
 
     ax.set_xticks(angles[:-1])
-    ax.set_xticklabels(categories, fontsize=13)
-    ax.set_ylim(0, 1.2)
+    ax.set_xticklabels(categories, fontsize=13, fontweight='bold')
+    ax.set_ylim(0, 1.5)
     ax.set_yticks([0.25, 0.5, 0.75, 1.0])
     ax.set_yticklabels(['0.25', '0.50', '0.75', '1.00'], fontsize=12, color='#666')
     ax.grid(True, alpha=0.2, linewidth=0.4)
