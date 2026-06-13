@@ -539,7 +539,7 @@ $H$ & LSTM-WM & Mamba-WM & \textbf{S4D-WM}\\
 \subsection{序列长度敏感性分析}
 
 为分析序列长度对S4D-WM预测精度的影响,
-在$T=16/32/64/128/256/512$下进行了实验, 结果如表~4所示.
+在$T=16/32/64/128/256$下分别在Humanoid(348维)和Ant(105维)数据集上进行了实验, 结果如表~4所示.
 
 \begingroup\centering
 \begin{minipage}{\columnwidth}
@@ -548,29 +548,27 @@ $H$ & LSTM-WM & Mamba-WM & \textbf{S4D-WM}\\
 Table~4~~Prediction accuracy of S4D-WM under different sequence lengths ($B{=}64$)}\\
 \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
-\begin{tabular}{@{}lcc@{}}\toprule
-$T$ & MSE$^{\text{a}}$ & 时间$^{\text{b}}$\\
+\begin{tabular}{@{}lcccc@{}}\toprule
+& \multicolumn{2}{c}{Humanoid(348维)} & \multicolumn{2}{c}{Ant(105维)} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+$T$ & MSE & $R^2$ & MSE & $R^2$ \\
 \midrule
-16  & 5.04 & 3.7\\
-32  & 1.69 & 3.4\\
-64  & 1.09 & 3.5\\
-128 & 1.34 & 3.4\\
-256 & 1.36 & 3.9\\
-512 & 1.20 & 6.8\\
+16  & \textbf{0.315} & \textbf{0.627} & 0.220 & 0.514 \\
+32  & 0.390 & 0.541 & 0.198 & 0.537 \\
+64  & 0.482 & 0.333 & 0.180 & 0.558 \\
+128 & 0.961 & $-$0.287 & \textbf{0.165} & \textbf{0.586} \\
+256 & 5.538 & $-$5.953 & 0.172 & 0.577 \\
 \bottomrule
-\multicolumn{3}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$$\times10^{-3}$; $^{\text{b}}$ms($B{=}64$).}
 \end{tabular}}
 \end{minipage}
 \par\endgroup
 
-S4D-WM在$T{=}16$时MSE较高(5.04$\times10^{-3}$), 随序列长度增加而快速下降, 在$T{=}32$时降至1.69$\times10^{-3}$, $T{=}64$时达到最优(1.09$\times10^{-3}$, 与表~1一致). 当$T \geq 32$后, MSE收敛至1.1--1.4$\times10^{-3}$范围内, 波动幅度小于15\%, 表明模型对序列长度不敏感. 推理时间在$T \leq 256$时基本稳定(3.4--3.9ms), 在$T{=}512$时增至6.8ms. 综合考虑预测精度和计算开销, 推荐工作区间为$T \in [32, 256]$(如图~2所示).
-
-\begingroup\centering
-\includegraphics[width=0.95\columnwidth]{figures/seqlen_sensitivity.pdf}\\
-{\fontsize{8.5pt}{10.6pt}\selectfont 图~2~~S4D-WM在不同序列长度下的推理时间与预测精度\\
-Fig.~2~~Inference time and prediction accuracy of S4D-WM under different sequence lengths}
-\par\endgroup
-
+表~4揭示了一个重要发现: 最优序列长度与数据集维度相关.
+Humanoid数据集(348维)在$T{=}16$时取得最优MSE(0.315), 随$T$增大而快速退化, $T{=}256$时MSE飙升至5.538.
+Ant数据集(105维)则在$T{=}128$时取得最优MSE(0.165), 且$T \geq 32$后MSE变化平缓(0.165--0.220).
+这一差异的可能原因是: 高维数据的状态转移更复杂, 过长的历史序列引入噪声; 而中低维数据的动力学更规则, 较长的历史有助于捕捉周期性模式.
+推理时间在$T \leq 128$时基本稳定(Humanoid: 4.3--8.2ms, Ant: 3.5--7.9ms), $T{=}256$时显著增加.
+综合考虑, 推荐Humanoid使用$T \in [16, 32]$, Ant使用$T \in [64, 128]$(如图~2所示).
 \subsection{消融实验}
 
 为验证各组件的有效性, 在$T=64$的设置下进行了以下消融实验, 结果如表~5所示.
