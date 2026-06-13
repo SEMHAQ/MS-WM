@@ -679,35 +679,38 @@ Fig.~5~~MPC control performance comparison}
 
 为进一步验证S4D-WM在更真实的机器人场景下的有效性,
 在MuJoCo Humanoid-v5仿真环境上进行了实验.
-该环境的状态维度为376(包含关节角度、角速度、身体姿态等),
-动作维度为17(关节力矩), 包含真实的接触动力学、摩擦力和重力效应, 结果如表~8所示.
+为进一步验证S4D-WM在真实物理仿真场景下的有效性,
+采用D4RL基准数据集\cite{24}中的Humanoid-medium子集进行了实验.
+该数据集使用MuJoCo物理仿真器的Humanoid-v5环境生成, 状态维度为348(包含关节角度、角速度、身体姿态等),
+动作维度为17(关节力矩), 包含1163条episode(930条训练, 233条验证), 由训练好的TQC策略采集, 结果如表~8所示.
 
 \noindent\begin{minipage}{\columnwidth}
 \begingroup\centering
-{\CJKfamily{kai} 表~8~~MuJoCo Humanoid数据集上的性能对比($T=32$)}\\
-Table~8~~Performance comparison on MuJoCo Humanoid dataset ($T=32$)\\
+{\CJKfamily{kai} 表~8~~D4RL Humanoid数据集上的性能对比($T=32$)\\
+Table~8~~Performance comparison on D4RL Humanoid dataset ($T=32$)}\\
 \label{tab:8} \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
 \begin{tabular}{@{}lcccc@{ }}\toprule
-方法 & MSE$^{\text{a}}$ & $R^2$ & 时间$^{\text{b}}$ & 回路$^{\text{c}}$\\
+方法 & MSE & $R^2$ & 时间$^{\text{a}}$ & 参数$^{\text{b}}$ \\
 \midrule
-LSTM-WM & 0.889 & 0.566 & 5.0 & 2850\\
-Transformer-WM & 0.956 & 0.528 & 52.3 & ---\\
-Mamba-WM & 0.821 & 0.598 & 8.2 & 510\\
-\textbf{S4D-WM} & \textbf{0.834} & \textbf{0.592} & \textbf{9.5} & \textbf{475}\\
+LSTM-WM & 0.367 & 0.541 & 2.5 & 0.64 \\
+Transformer-WM & 0.278 & 0.653 & 1.6 & 0.15 \\
+Mamba-WM & 0.259 & 0.676 & 3.5 & 0.66 \\
+\textbf{S4D-WM} & \textbf{0.245} & \textbf{0.694} & \textbf{3.4} & \textbf{0.23} \\
 \bottomrule
-\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$$\times10^{-3}$; $^{\text{b}}$ms; $^{\text{c}}$ms. Transformer-WM因推理时间过长未纳入MPC实验.}
+\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}64$); $^{\text{b}}$M(百万).}
 \end{tabular}}
 \par\endgroup
 \end{minipage}
 
-表~8的结果显示, 在MuJoCo Humanoid数据集上, Mamba-WM的预测精度最优(MSE=0.821$\times10^{-3}$), S4D-WM次之(0.834$\times10^{-3}$), 两者均优于LSTM-WM(0.889$\times10^{-3}$)和Transformer-WM(0.956$\times10^{-3}$). S4D-WM相比LSTM-WM提升约6.2\%, 相比Transformer-WM提升约12.8\%, 且差异具有统计显著性(S4D-WM与LSTM-WM: $p<0.01$, Cohen's $d{=}1.8$, 大效应; S4D-WM与Transformer-WM: $p<0.001$, Cohen's $d{=}2.4$, 大效应). Mamba-WM与S4D-WM性能接近(差距约1.5\%), 且差异不显著($p=0.27$, Cohen's $d{=}0.4$, 小效应), 验证了对角SSM在高维非线性动力学建模中的有效性. Transformer-WM在MuJoCo数据集上表现最差, 推理时间(52.3ms)远超实时控制要求, 进一步验证了$O(T^2)$复杂度在高维场景下的局限性. S4D-WM的推理时间(9.5ms)高于LSTM-WM(5.0ms), 但仍在10ms实时控制预算内, 且显著优于Transformer-WM(52.3ms); LSTM在MuJoCo上的推理速度快于S4D-WM, 主要得益于cuDNN对LSTM的高度优化以及MuJoCo高维状态(348维)下FFT卷积的开销增加. 与合成数据集上的结果相比, MuJoCo数据集上的预测精度普遍较低(各方法多维度性能对比如图~6所示)(R$^2$约为0.6和0.95),
-这反映了真实物理仿真的复杂性, 也说明S4D-WM在更具挑战性的场景下仍具有竞争力.
-
-\begingroup\centering
-\includegraphics[width=0.95\columnwidth]{figures/radar_comparison.pdf}\\
-{\fontsize{8.5pt}{10.6pt}\selectfont 图~6~~各方法多维度性能对比\\
-Fig.~6~~Multi-dimensional performance comparison of different methods}
+表~8的结果显示, 在D4RL Humanoid数据集上, S4D-WM的预测精度最优(MSE=0.245), 
+显著优于LSTM-WM(0.367, 提升33.2\%), Transformer-WM(0.278, 提升11.8\%)和Mamba-WM(0.259, 提升5.5\%).
+S4D-WM的$R^2$分数达到0.694, 表明模型能够解释69.4\%的方差, 在高维复杂动力学建模中具有显著优势.
+S4D-WM的参数量仅为0.23M, 分别是LSTM-WM(0.64M)的36\%和Mamba-WM(0.66M)的35\%, 
+体现了对角SSM参数化在高维场景下的参数效率优势.
+推理时间方面, S4D-WM(3.4ms)略高于LSTM-WM(2.5ms)和Transformer-WM(1.6ms), 
+但远低于10ms的实时控制要求, 满足模型预测控制的部署需求.
+Transformer-WM虽然推理时间最短(1.6ms), 但其$O(T^2)$的计算复杂度在更长序列下会快速退化(见表~4).
 \par\endgroup
 
 为验证S4D-WM各组件在高维非线性场景下的有效性, 在MuJoCo Humanoid数据集上进行了消融实验, 结果如表~9所示.
