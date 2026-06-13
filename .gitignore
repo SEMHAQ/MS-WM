@@ -31,7 +31,7 @@ logs/
 runs/
 wandb/
 
-# Data (track by LFS or download script, not git)
+# Data (not tracked in git)
 data/
 *.h5
 *.hdf5
@@ -70,29 +70,32 @@ Thumbs.db
 *.xdv
 *.dvi
 
-# Compiled
+# Compiled images
 *.pdf
 *.png
 *.jpg
 *.jpeg
 *.svg
 
-# CTA template (from external repo, not tracked here)
-paper/template/
-
-# Exceptions - keep important figures/tables in paper/
+# Exceptions - keep paper figures
 !paper/figures/*.pdf
 !paper/figures/*.png
 !paper/*.pdf
-!paper/ssm_architecture_redraw_bundle/*.pdf
-!paper/ssm_architecture_redraw_bundle/*.png
-!paper/ssm_architecture_redraw_bundle/*.svg
+
+# Project-specific
 .claude/
 refs/
 paper/peer_review/
 paper/ssm_architecture_redraw_bundle/
-
-
+paper/template/
+paper/template_gbk/
 paper/version
+paper/sections/
+paper/missfont.log
 site/
 docs_backup_group_meeting_qa.txt
+run.sh
+
+# Old experiment results (not needed in repo)
+experiments/*.json
+experiments/*.txt
