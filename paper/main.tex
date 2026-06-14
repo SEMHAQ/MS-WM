@@ -560,7 +560,7 @@ $T$ & MSE & $R^2$ & MSE & $R^2$ \\
 128 & 1.213 & $-$0.623 & 0.934 & 0.139 \\
 256 & 2.146 & $-$1.694 & \textbf{0.480} & \textbf{0.131} \\
 \bottomrule
-\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $R^2<0$表示模型预测不如直接预测均值, 通常出现在序列长度过长导致模型过拟合的场景.}
+\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: 加粗为各数据集最优值.}
 \end{tabular}}
 \end{minipage}
 \par\endgroup
@@ -746,6 +746,12 @@ S4D-WM次之(0.728), 两者差距仅1.4\%, 且S4D-WM的$R^2$(0.150)与Transforme
 但远低于LSTM-WM(0.57M)和Mamba-WM(0.59M), 体现了对角SSM的参数效率.
 综合两个数据集的结果, S4D-WM在高维复杂动力学(Humanoid)上具有显著优势,
 在中低维动力学(Ant)上也具有竞争力, 且参数效率始终最优.
+
+\begingroup\centering
+\includegraphics[width=0.95\columnwidth]{figures/radar_comparison.pdf}\\
+{\fontsize{8.5pt}{10.6pt}\selectfont 图~5~~各方法多维度性能对比(D4RL Humanoid)\\
+Fig.~5~~Multi-dimensional performance comparison on D4RL Humanoid dataset}
+\par\endgroup
 
 为验证S4D-WM各组件在高维非线性场景下的有效性, 在D4RL Humanoid数据集上进行了消融实验, 结果如表~10所示.
 
