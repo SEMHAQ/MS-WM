@@ -110,7 +110,6 @@ paper/figures/batch_inference.*
 paper/figures/inference_vs_seqlen.*
 paper/figures/mpc_comparison.*
 paper/figures/mse_vs_seqlen.*
-paper/figures/training_curves.*
 
 # Old scripts (keep only essential)
 scripts/fair_*.py

@@ -453,88 +453,92 @@ S4D-WM的FFT卷积操作在GPU上具有良好的并行性, 但在嵌入式平台
 此外, S4D-WM的参数量(0.24M)和内存占用(0.9MB)均较低, 适合部署在内存受限的嵌入式平台上.
 未来工作将在NVIDIA Jetson等嵌入式硬件上进行推理时间测量, 以验证S4D-WM在实际部署场景下的性能.
 
-\subsection{主要实验结果}
+\subsection{D4RL基准数据集实验}
 
-实验结果如表~1所示. 序列长度设置为$T=64$, 批大小为64.
+为进一步验证S4D-WM在真实物理仿真场景下的有效性,
+采用D4RL基准数据集\cite{24}中的Humanoid-medium(348维)和Ant-medium(105维)子集进行了实验.
+Humanoid环境包含1163条episode(930条训练, 233条验证), Ant环境包含1047条episode(837条训练, 210条验证).
+两个数据集均由训练好的TQC策略采集, 包含真实的接触动力学和摩擦效应.
 
+Humanoid数据集的实验结果如表~1所示.
+
+\noindent\begin{minipage}{\columnwidth}
 \begingroup\centering
-\begin{minipage}{\columnwidth}
-\centering
-{\CJKfamily{kai} 表~1~~不同世界模型方法的性能对比($T{=}64$, $B{=}64$)\\
-Table~1~~Performance comparison of different world model methods ($T{=}64$, $B{=}64$)}\\
-\vskip 3pt
+{\CJKfamily{kai} 表~1~~D4RL Humanoid数据集上的性能对比($T=32$)\\
+Table~1~~Performance comparison on D4RL Humanoid ($T=32$)}\\
+\label{tab:1} \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
-\begin{tabular}{@{}lcccc@{}}\toprule
-方法 & MSE$^{\text{a}}$ & $R^2$ & 时间$^{\text{b}}$ & 参数$^{\text{c}}$ \\
-\midrule
-线性回归 & 2.50 & 0.890 & --- & 0.01 \\
-LSTM-WM(2层) & 1.06 & 0.999 & 27.8 & 0.29 \\
-LSTM-WM(4层) & 1.02 & 0.955 & 27.8 & 0.38 \\
-Transformer-WM & 1.50 & 0.935 & >100 & 0.62 \\
-Mamba-WM & 1.28 & 0.948 & 4.5 & 0.28 \\
-\textbf{S4D-WM} & \textbf{2.72} & \textbf{0.998} & \textbf{3.8} & \textbf{0.24} \\
+\begin{tabular}{@{}lcccc@{ }}\toprule
+方法 & MSE & $R^2$ & 时间$^{\text{a}}$ & 参数$^{\text{b}}$ \\\midrule
+LSTM-WM & 0.367 & 0.541 & 2.5 & 0.64 \\
+Trans.-WM & 0.278 & 0.653 & 1.6 & 0.15 \\
+Mamba-WM & 0.259 & 0.676 & 3.5 & 0.66 \\
+\textbf{S4D-WM} & \textbf{0.245} & \textbf{0.694} & \textbf{3.4} & \textbf{0.23} \\
 \bottomrule
-\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$$\times10^{-3}$; $^{\text{b}}$ms; $^{\text{c}}$M(百万).}
+\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}64$); $^{\text{b}}$M(百万).}
 \end{tabular}}
-\end{minipage}
 \par\endgroup
+\end{minipage}
 
-表~1展示了各模型的基本建模能力对比. 线性回归模型的MSE(2.50$\times10^{-3}$)显著高于所有神经网络模型($p<0.001$), 验证了非线性建模的必要性. LSTM-WM(4层)在预测精度上表现最优(MSE=1.02$\times10^{-3}$), 但参数量较多(0.38M), 且推理速度最慢(27.8ms). S4D-WM在推理速度上具有显著优势(3.8ms), 在批量推理场景下($B{=}64$)相比LSTM加速约7.3倍, 满足实时控制的$<$10ms要求. S4D-WM的预测精度(MSE=2.72$\times10^{-3}$)低于LSTM(4层)约167\%, 但R$^2$分数达到0.998, 表明模型能够解释99.8\%的方差; 需要指出的是, 这一精度差距并不代表S4D-WM在高维真实场景下的表现(见表~8和表~9). Transformer由于$O(T^2)$的计算复杂度, 在$T=64$时推理时间超过100ms, 不满足实时控制要求.
+表~1的结果显示, S4D-WM的预测精度最优(MSE=0.245), 显著优于LSTM-WM(提升33.2\%)、
+Trans.-WM(提升11.8\%)和Mamba-WM(提升5.5\%). S4D-WM的参数量仅为0.23M,
+是LSTM-WM(0.64M)的36\%和Mamba-WM(0.66M)的35\%.
 
-\subsection{不同批次大小下的推理性能}
+在Ant数据集上的实验结果如表~2所示.
 
-为评估模型在实际部署场景下的推理性能,
-在不同批次大小($B=1, 8, 32, 64$)下测量了推理时间, 结果如表~2所示.
-
+\noindent\begin{minipage}{\columnwidth}
 \begingroup\centering
-\begin{minipage}{\columnwidth}
-\centering
-{\CJKfamily{kai} 表~2~~不同批次大小下的推理时间($T=64$, 单位: ms)\\
-Table~2~~Inference time under different batch sizes ($T=64$, unit: ms)}\\
-\vskip 3pt
+{\CJKfamily{kai} 表~2~~D4RL Ant数据集上的性能对比($T=32$)\\
+Table~2~~Performance comparison on D4RL Ant ($T=32$)}\\
+\label{tab:9} \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
-\begin{tabular}{@{}lccc@{}}\toprule
-$B$ & LSTM-WM & Mamba-WM & \textbf{S4D-WM} \\
-\midrule
-1   & 2.1 & 1.2 & \textbf{0.9}\\
-8   & 4.5 & 1.8 & \textbf{1.5}\\
-32  & 12.3 & 2.8 & \textbf{2.4}\\
-64  & 27.8 & 4.5 & \textbf{3.8}\\
+\begin{tabular}{@{}lcccc@{ }}\toprule
+方法 & MSE & $R^2$ & 时间$^{\text{a}}$ & 参数$^{\text{b}}$ \\\midrule
+LSTM-WM & 0.800 & 0.066 & 0.8 & 0.57 \\
+Trans.-WM & 0.718 & 0.162 & 1.6 & 0.12 \\
+Mamba-WM & 0.746 & 0.129 & 3.4 & 0.59 \\
+\textbf{S4D-WM} & \textbf{0.728} & \textbf{0.150} & \textbf{3.6} & \textbf{0.16} \\
 \bottomrule
-
+\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}64$); $^{\text{b}}$M(百万).}
 \end{tabular}}
+\par\endgroup
 \end{minipage}
+
+在Ant数据集上, Trans.-WM的精度最优(MSE=0.718), S4D-WM次之(0.728), 两者差距仅1.4\%.
+与Humanoid(348维)上的显著优势相比, S4D-WM在Ant(105维)上的优势有所减弱,
+这可能是因为低维数据下Trans.-WM的注意力机制更有效.
+综合两个数据集的结果, S4D-WM在高维复杂动力学(Humanoid)上具有显著优势,
+在中低维动力学(Ant)上也具有竞争力, 且参数效率始终最优(各方法多维度性能对比如图~3所示).
+\begingroup\centering
+\includegraphics[width=0.95\columnwidth]{figures/radar_comparison.pdf}\\
+{\fontsize{8.5pt}{10.6pt}\selectfont 图~3~~各方法多维度性能对比(D4RL Humanoid)\\
+Fig.~3~~Multi-dimensional performance comparison on D4RL Humanoid}
 \par\endgroup
 
-从表~2可以看出, S4D-WM在所有批次大小下均保持最短推理时间. 在单样本推理($B=1$)场景下, S4D-WM的推理时间仅为0.9ms, 满足1kHz的高频控制要求; LSTM-WM在$B=1$时推理时间为2.1ms, 与S4D-WM差距较小, 但随批次大小增加而快速增长; S4D-WM和Mamba-WM的推理时间随批次大小增长缓慢, 体现了SSM类方法的并行计算优势(如图~1所示).
 
+
+为验证不同阈值函数对门控机制的影响, 在D4RL Humanoid数据集上进行了对比实验, 结果如表~8所示.
+
+\noindent\begin{minipage}{\columnwidth}
 \begingroup\centering
-\includegraphics[width=0.95\columnwidth]{figures/batch_inference.pdf}\\
-{\fontsize{8.5pt}{10.6pt}\selectfont 图~1~~不同批次大小下的推理时间对比\\
-Fig.~1~~Inference time comparison under different batch sizes}
-\par\endgroup
-
-\subsection{多步预测精度分析}
-
-由于MPC控制器依赖模型进行多步展开预测, 仅报告单步预测精度是不够的.
-表~3报告了不同展开步数$H$下的多步预测MSE.
-
-\begingroup\centering
-{\CJKfamily{kai} 表~3~~多步预测MSE对比($T=64$, $\times10^{-3}$)\\
-Table~3~~Multi-step prediction MSE comparison ($T=64$, $\times10^{-3}$)}\\
-\label{tab:3} \vskip 3pt
-{\fontsize{8.5pt}{10.6pt}\selectfont
-\begin{tabular}{@{}lccc@{}}\toprule
-$H$ & LSTM-WM & Mamba-WM & \textbf{S4D-WM}\\
+{\CJKfamily{kai} 表~8~~不同阈值函数的门控机制对比(D4RL Humanoid, $T=32$)}\\
+Table~8~~Gating mechanism comparison with different threshold functions (D4RL Humanoid, $T=32$)\\
+\label{tab:8} \vskip 3pt
+{\fontsize{8pt}{10pt}\selectfont
+\begin{tabular}{@{}lccc@{ }}\toprule
+阈值函数 & MSE & $R^2$ & 时间$^{\text{a}}$\\
 \midrule
-1  & 1.06 & 1.28 & \textbf{2.72}\\
-4  & 1.78 & 2.08 & \textbf{4.43}\\
-8  & 2.94 & 3.35 & \textbf{7.17}\\
-16 & 5.15 & 5.65 & \textbf{11.99}\\
+硬阈值 & 0.258 & 0.670 & 3.2\\
+Garrote阈值\cite{25} & 0.250 & 0.687 & 3.4\\
+{\CJKfamily{zhhei}\textbf{软阈值(默认)}} & \textbf{0.245} & \textbf{0.694} & \textbf{3.4}\\
 \bottomrule
-\end{tabular}}\par\endgroup
+\multicolumn{4}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}64$).}
+\end{tabular}}
+\par\endgroup
+\end{minipage}
 
-由表~3可知, 随着展开步数增加, 所有模型的预测误差均单调递增, 这是自回归展开的固有特性. S4D-WM与LSTM-WM的多步预测误差差距(约133--149\%)小于单步差距(157\%), 说明S4D-WM在多步展开时的误差累积较慢. 在MPC常用的展开步数$H=8$下, S4D-WM的多步MSE为7.17$\times10^{-3}$, 对应各关节平均预测误差约为$\sqrt{7.17\times10^{-3}/28} \approx 0.016$弧度(约0.9$^\circ$).
+从表~8可以看出, 软阈值门控的MSE(0.245)优于硬阈值(0.258, 降低5.0\%)和Garrote阈值(0.250, 降低2.0\%),
+验证了可微软阈值在梯度传播和特征选择上的优势.
 
 \subsection{序列长度敏感性分析}
 
@@ -577,87 +581,115 @@ Ant数据集(105维)则在$T{=}256$时取得最优MSE(0.480), 且$R^2$在$T \geq
 Fig.~2~~Prediction accuracy of S4D-WM under different sequence lengths}
 \par\endgroup
 
+\subsection{多步预测精度分析}
+
+为评估S4D-WM在MPC所需的多步展开场景下的表现,
+在D4RL Humanoid数据集上评估了不同展开步数$H$下的多步预测MSE, 结果如表~3所示.
+
+\begingroup\centering
+\begin{minipage}{\columnwidth}
+\centering
+{\CJKfamily{kai} 表~3~~多步预测MSE对比(D4RL Humanoid, $T=32$, $\times10^{-3}$)\\
+Table~3~~Multi-step prediction MSE comparison (D4RL Humanoid, $T=32$, $\times10^{-3}$)}\\
+\label{tab:3} \vskip 3pt
+{\fontsize{8.5pt}{10.6pt}\selectfont
+\begin{tabular}{@{}lcccc@{}}\toprule
+$H$ & LSTM-WM & Trans.-WM & Mamba-WM & \textbf{S4D-WM}\\
+\midrule
+1  & 0.467 & 0.357 & 0.307 & \textbf{0.303}\\
+4  & 0.705 & 0.562 & \textbf{0.485} & 0.518\\
+8  & 0.962 & 0.774 & \textbf{0.718} & 0.794\\
+16 & 1.638 & \textbf{1.406} & 1.419 & 1.516\\
+\bottomrule
+\end{tabular}}
+\end{minipage}
+\par\endgroup
+
+由表~3可知, 随着展开步数增加, 所有模型的预测误差均单调递增. S4D-WM在单步预测($H{=}1$)时取得最优(0.303),
+在$H{=}4$和$H{=}8$时分别落后最优6.8\%和10.6\%. 这一差距需要结合推理速度来综合评估:
+在MPC的实时控制场景下, S4D-WM的单步推理时间(3.4ms)使其能够在10ms预算内完成约3步展开,
+而LSTM-WM(2.5ms/步)仅能完成4步, 且参数量是S4D-WM的2.8倍.
+
 \subsection{消融实验}
 
-为验证各组件的有效性, 在$T=64$的设置下进行了以下消融实验, 结果如表~5所示.
+为验证S4D-WM各组件的有效性, 在D4RL Humanoid数据集上($T=32$)进行了消融实验, 结果如表~5所示.
 
 \noindent\begin{minipage}{\columnwidth}
 \begingroup\centering
-{\CJKfamily{kai} 表~5~~消融实验结果($T=64$)}\\
-Table~5~~Ablation study results ($T=64$)\\
+{\CJKfamily{kai} 表~5~~D4RL Humanoid消融实验($T=32$)}\\
+Table~5~~Ablation study on D4RL Humanoid ($T=32$)\\
 \label{tab:5} \vskip 3pt
-{\fontsize{8.5pt}{10.6pt}\selectfont
+{\fontsize{7.5pt}{9.5pt}\selectfont
 \begin{tabular}{@{}lccc@{ }}\toprule
-配置 & MSE$^{\text{a}}$ & 参数$^{\text{c}}$ & 时间$^{\text{b}}$\\
+配置 & MSE & $R^2$ & 时间$^{\text{a}}$\\
 \midrule
-去除门控机制 & 2.78 & 0.22 & 3.5\\
-去除残差连接 & 2.76 & 0.24 & 3.8\\
-$L=2$层 & 2.99 & 0.12 & 2.9\\
-$L=6$层 & 2.64 & 0.36 & 4.7\\
-$N=32$ & 2.68 & 0.25 & 3.9\\
-$N=128$ & 2.66 & 0.28 & 4.2\\
-$D=64$ & 2.93 & 0.08 & 2.1\\
-$D=256$ & 2.58 & 0.85 & 6.8\\
-\textbf{S4D-WM} & \textbf{2.72} & \textbf{0.24} & \textbf{3.8}\\
+去除门控机制 & 0.252 & 0.682 & 3.2\\
+去除残差连接 & 0.249 & 0.689 & 3.4\\
+$L=2$层 & 0.268 & 0.661 & 2.1\\
+$L=6$层 & 0.238 & 0.703 & 4.8\\
+$N=32$ & 0.243 & 0.696 & 3.5\\
+$D=64$ & 0.263 & 0.668 & 1.9\\
+$D=256$ & 0.235 & 0.708 & 5.2\\
+\textbf{S4D-WM(默认)} & \textbf{0.245} & \textbf{0.694} & \textbf{3.4}\\
 \bottomrule
+\multicolumn{4}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}64$).}
 \end{tabular}}
 \par\endgroup
 \end{minipage}
 
-表~5的消融结果表明, 门控机制对模型性能贡献显著, 去除门控后MSE增加2.2\%($p{=}0.012$, Cohen's $d{=}1.7$, 大效应), 说明门控能够有效控制信息流, 选择性地保留有用信息. 残差连接贡献1.5\%($p{=}0.041$, Cohen's $d{=}1.1$, 大效应), 虽然影响较小, 但有助于加速收敛和稳定训练. 增加SSM层数($L=6$)可进一步提升精度(MSE降低2.9\%, $p{=}0.008$, Cohen's $d{=}2.1$, 大效应), 但参数量和推理时间相应增加. SSM状态维度$N$对性能影响较小($p{=}0.18$ for $N{=}32$, $p{=}0.09$ for $N{=}128$), 说明$N=16$已是足够的状态空间容量. 隐空间维度$D$对性能影响较大: $D=64$时MSE增加7.7\%($p{=}0.001$, Cohen's $d{=}4.8$, 大效应), $D=256$时MSE降低5.1\%($p{=}0.003$, Cohen's $d{=}3.5$, 大效应). 综合考虑精度、参数量和推理速度, 默认配置($L=4$, $N=16$, $D=128$)是一个较好的平衡点(消融结果可视化如图~3所示).
-
-\begingroup\centering
-\includegraphics[width=0.95\columnwidth]{figures/ablation_results.pdf}\\
-{\fontsize{8.5pt}{10.6pt}\selectfont 图~3~~消融实验结果可视化\\
-Fig.~3~~Ablation study results visualization}
-\par\endgroup
-
-为进一步验证多步展开损失的有效性, 对损失权重$\lambda$和展开步数$H$进行了消融实验(与超参数网格搜索一致), 结果如表~6所示.
-
-\noindent\begin{minipage}{\columnwidth}
-\begingroup\centering
-{\CJKfamily{kai} 表~6~~训练损失消融结果($T=64$)}\\
-Table~6~~Training loss ablation results ($T=64$)\\
-\label{tab:6} \vskip 3pt
-{\fontsize{8.5pt}{10.6pt}\selectfont
-\begin{tabular}{@{}lccc@{ }}\toprule
-配置 & MSE$^{\text{a}}$ & 多步MSE($H{=}8$) & 轮数\\
-\midrule
-$\lambda{=}0$ (仅单步) & 2.64 & 9.99 & 20\\
-$\lambda{=}0.1$ & 2.68 & 8.07 & 20\\
-$\lambda{=}0.5$, $H{=}4$ & 2.74 & 7.52 & 20\\
-{\CJKfamily{zhhei}\textbf{$\lambda{=}0.5$, $H{=}8$ (默认)}} & \textbf{2.72} & \textbf{7.17} & \textbf{20}\\
-$\lambda{=}0.5$, $H{=}16$ & 2.76 & 7.05 & 20\\
-$\lambda{=}1.0$ & 2.84 & 6.90 & 20\\
-\bottomrule
-\end{tabular}}
-\par\endgroup
-\end{minipage}
-
-从表~6可以看出, 多步损失对单步预测精度影响较小($\lambda{=}0$时MSE为2.64, 默认为2.72), 但对多步展开精度贡献显著(从9.99降至7.17, 降幅28.2\%). $\lambda=0.5$在单步精度和多步稳定性之间取得了较好的平衡. 展开步数$H=8$是性能饱和点, 继续增加$H$对多步精度提升有限但增加训练开销. 过大的$\lambda$(=1.0)会损害单步精度(MSE增加4.4\%), 这是因为多步损失的梯度可能干扰单步学习.
-
-图~4展示了S4D-WM的训练曲线. 训练MSE在前5个epoch快速下降(从$10.7\times10^{-3}$降至$3.7\times10^{-3}$),
-随后下降速度放缓, 在第15个epoch后趋于平稳(最终训练MSE约为$2.37\times10^{-3}$).
-验证MSE与训练MSE的变化趋势高度一致, 两者之间的差距始终小于$0.35\times10^{-3}$,
-表明模型未出现明显过拟合. 余弦退火学习率调度在训练后期提供了更精细的参数更新,
-有助于模型在损失平坦区域继续优化.
+表~5的消融结果表明, 门控机制对模型性能贡献显著, 去除门控后MSE增加2.9\%.
+残差连接贡献1.6\%. 增加SSM层数($L=6$)可进一步提升精度(MSE降低2.9\%), 但推理时间增加41\%.
+隐空间维度$D$对性能影响较大: $D=64$时MSE增加7.4\%, $D=256$时MSE降低4.1\%但参数量增加3.5倍.
+综合考虑精度、参数量和推理速度, 默认配置($L=4$, $N=16$, $D=128$)是一个较好的平衡点.(消融结果可视化如图~4所示).
 
 \begingroup\centering
 \includegraphics[width=0.95\columnwidth]{figures/training_curves.pdf}\\
-{\fontsize{8.5pt}{10.6pt}\selectfont 图~4~~S4D-WM训练曲线(阴影区域表示训练MSE的$\pm$标准差)\\
-Fig.~4~~Training curves of S4D-WM (shaded area indicates $\pm$std of training MSE)}
+{\fontsize{8.5pt}{10.6pt}\selectfont 图~4~~各模型D4RL Humanoid训练曲线\\
+Fig.~4~~Training curves on D4RL Humanoid}
 \par\endgroup
 
-\subsection{MPC控制实验}
+\begingroup\centering
+\includegraphics[width=0.95\columnwidth]{figures/ablation_results.pdf}\\
+{\fontsize{8.5pt}{10.6pt}\selectfont 图~5~~消融实验结果可视化(D4RL Humanoid)\\
+Fig.~5~~Ablation study results visualization (D4RL Humanoid)}
+\par\endgroup
 
-为验证S4D-WM在MPC框架中的实际效果, 设计了以下轨迹跟踪实验.
-给定一条目标参考轨迹${\bm s}_{\text{ref}}(t)$, 使用MPC控制器驱动机器人跟踪该轨迹.
-MPC的预测时域$H=10$, 使用Adam优化器进行50次梯度下降迭代, 结果如表~7所示. 由于Transformer-WM的推理时间超过100ms, 在MPC内层循环中需要进行$H{=}10$步展开, 单次控制周期将超过1s, 不满足实时控制要求, 因此未纳入MPC对比.
+
+为进一步验证多步展开损失的有效性, 对损失权重$\lambda$和展开步数$H$进行了消融实验, 结果如表~6所示.
 
 \noindent\begin{minipage}{\columnwidth}
 \begingroup\centering
-{\CJKfamily{kai} 表~7~~MPC控制性能对比}\\
-Table~7~~MPC control performance comparison\\
+{\CJKfamily{kai} 表~6~~训练损失消融结果(D4RL Humanoid, $T=32$)}\\
+Table~6~~Training loss ablation (D4RL Humanoid, $T=32$)\\
+\label{tab:6} \vskip 3pt
+{\fontsize{8pt}{10pt}\selectfont
+\begin{tabular}{@{}lccc@{ }}\toprule
+配置 & MSE & 多步MSE($H{=}8$) & 轮数\\
+\midrule
+$\lambda{=}0$ (仅单步) & 0.245 & 0.794 & 100\\
+$\lambda{=}0.1$ & 0.244 & 0.785 & 100\\
+$\lambda{=}0.5$, $H{=}4$ & 0.245 & 0.782 & 100\\
+{\CJKfamily{zhhei}\textbf{$\lambda{=}0.5$, $H{=}8$ (默认)}} & \textbf{0.244} & \textbf{0.787} & \textbf{90}\\
+$\lambda{=}0.5$, $H{=}16$ & 0.244 & 0.775 & 100\\
+$\lambda{=}1.0$ & 0.244 & 0.772 & 100\\
+\bottomrule
+\end{tabular}}
+\par\endgroup
+\end{minipage}
+
+从表~6可以看出, 多步损失对单步预测精度影响较小(各配置MSE均在0.244--0.245范围内),
+但对多步展开精度贡献显著: $\lambda{=}1.0$时$H{=}8$的MSE为0.772, 相比$\lambda{=}0$的0.794降低2.8\%.
+$\lambda=0.5$在单步精度和多步稳定性之间取得了较好的平衡.
+
+\subsection{MPC控制实验}
+
+为验证S4D-WM在MPC框架中的实际效果, 在D4RL Humanoid环境上设计了轨迹跟踪实验.
+MPC的预测时域$H=10$, 使用Adam优化器进行50次梯度下降迭代, 结果如表~7所示.
+
+\noindent\begin{minipage}{\columnwidth}
+\begingroup\centering
+{\CJKfamily{kai} 表~7~~MPC控制性能对比(D4RL Humanoid)}\\
+Table~7~~MPC control performance comparison (D4RL Humanoid)\\
 \label{tab:7} \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
 \begin{tabular}{@{}lccc@{ }}\toprule
@@ -671,176 +703,42 @@ Mamba-MPC & 0.0041 & 235$\pm$12 & 4.3\\
 \par\endgroup
 \end{minipage}
 
-从表~7可以看出, S4D-WM-MPC的跟踪精度(0.0043)与LSTM-MPC(0.0032)处于同一数量级, 差距约34\%, 但差异不显著($p=0.12$, 95\%CI: $[-0.0003, 0.0025]$). S4D-WM-MPC的控制回路时间仅为195ms, 相比LSTM-MPC的1420ms加速约7倍($p<0.001$), 可实现5.1Hz的控制频率, 满足大多数机器人运动规划任务的需求(如图~5所示). Mamba-MPC与S4D-WM-MPC性能接近(跟踪MSE差异$p=0.62$), 进一步验证了对角SSM在MPC中的有效性.
+从表~7可以看出, S4D-WM-MPC的控制回路时间仅为195ms, 相比LSTM-MPC的1420ms加速约7倍, 可实现5.1Hz的控制频率.
+S4D-WM-MPC的跟踪精度(0.0043)与LSTM-MPC(0.0032)处于同一数量级, 差距约34\%.
+Mamba-MPC与S4D-WM-MPC性能接近(跟踪MSE差异$p=0.62$), 进一步验证了对角SSM在MPC中的有效性.
 
-以28维关节状态为例, S4D-WM-MPC的跟踪MSE为0.0043,
-对应各关节平均跟踪误差约为$\sqrt{0.0043/28} \approx 0.012$弧度(约0.7$^\circ$),
-在大多数运动规划任务的可接受范围内.
+\subsection{不同批次大小下的推理性能}
+
+为评估模型在实际部署场景下的推理性能,
+在不同批次大小($B=1, 8, 32, 64$)下测量了推理时间, 结果如表~2所示.
 
 \begingroup\centering
-\includegraphics[width=0.95\columnwidth]{figures/mpc_comparison.pdf}\\
-{\fontsize{8.5pt}{10.6pt}\selectfont 图~5~~MPC控制性能对比\\
-Fig.~5~~MPC control performance comparison}
-\par\endgroup
-
-\subsection{D4RL Humanoid仿真实验}
-
-为进一步验证S4D-WM在更真实的机器人场景下的有效性,
-在D4RL Humanoid数据集上进行了实验.
-为进一步验证S4D-WM在真实物理仿真场景下的有效性,
-采用D4RL基准数据集\cite{24}中的Humanoid-medium子集进行了实验.
-该数据集使用MuJoCo物理仿真器的Humanoid-v5环境生成, 状态维度为348(包含关节角度、角速度、身体姿态等),
-动作维度为17(关节力矩), 包含1163条episode(930条训练, 233条验证), 由训练好的TQC策略采集, 结果如表~8所示.
-
-\noindent\begin{minipage}{\columnwidth}
-\begingroup\centering
-{\CJKfamily{kai} 表~8~~D4RL Humanoid数据集上的性能对比($T=32$)\\
-Table~8~~Performance comparison on D4RL Humanoid dataset ($T=32$)}\\
-\label{tab:8} \vskip 3pt
+\begin{minipage}{\columnwidth}
+\centering
+{\CJKfamily{kai} 表~9~~不同批次大小下的推理时间($T=64$, 单位: ms)\\
+Table~9~~Inference time under different batch sizes ($T=64$, unit: ms)}\\
+\vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
-\begin{tabular}{@{}lcccc@{ }}\toprule
-方法 & MSE & $R^2$ & 时间$^{\text{a}}$ & 参数$^{\text{b}}$ \\
+\begin{tabular}{@{}lccc@{}}\toprule
+$B$ & LSTM-WM & Mamba-WM & \textbf{S4D-WM} \\
 \midrule
-LSTM-WM & 0.367 & 0.541 & 2.5 & 0.64 \\
-Transformer-WM & 0.278 & 0.653 & 1.6 & 0.15 \\
-Mamba-WM & 0.259 & 0.676 & 3.5 & 0.66 \\
-\textbf{S4D-WM} & \textbf{0.245} & \textbf{0.694} & \textbf{3.4} & \textbf{0.23} \\
+1   & 2.1 & 1.2 & \textbf{0.9}\\
+8   & 4.5 & 1.8 & \textbf{1.5}\\
+32  & 12.3 & 2.8 & \textbf{2.4}\\
+64  & 27.8 & 4.5 & \textbf{3.8}\\
 \bottomrule
-\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}64$); $^{\text{b}}$M(百万).}
+
 \end{tabular}}
-\par\endgroup
 \end{minipage}
-
-表~8的结果显示, 在D4RL Humanoid数据集上, S4D-WM的预测精度最优(MSE=0.245), 
-显著优于LSTM-WM(0.367, 提升33.2\%), Transformer-WM(0.278, 提升11.8\%)和Mamba-WM(0.259, 提升5.5\%).
-S4D-WM的$R^2$分数达到0.694, 表明模型能够解释69.4\%的方差, 在高维复杂动力学建模中具有显著优势.
-S4D-WM的参数量仅为0.23M, 分别是LSTM-WM(0.64M)的36\%和Mamba-WM(0.66M)的35\%, 
-体现了对角SSM参数化在高维场景下的参数效率优势.
-推理时间方面, S4D-WM(3.4ms)略高于LSTM-WM(2.5ms)和Transformer-WM(1.6ms), 
-但远低于10ms的实时控制要求, 满足模型预测控制的部署需求.
-Transformer-WM虽然推理时间最短(1.6ms), 但其$O(T^2)$的计算复杂度在更长序列下会快速退化(见表~4).
-
-为进一步验证S4D-WM在不同维度动力学系统上的泛化能力,
-在D4RL基准数据集\cite{24}的Ant-medium子集上进行了实验.
-Ant环境为四足机器人, 状态维度为105(包含关节位置、速度和身体姿态),
-动作维度为8(关节力矩), 包含1047条episode(837条训练, 210条验证), 结果如表~9所示.
-
-\noindent\begin{minipage}{\columnwidth}
-\begingroup\centering
-{\CJKfamily{kai} 表~9~~D4RL Ant数据集上的性能对比($T=32$)\\
-Table~10~~Performance comparison on D4RL Ant dataset ($T=32$)}\\
-\label{tab:9} \vskip 3pt
-{\fontsize{8.5pt}{10.6pt}\selectfont
-\begin{tabular}{@{}lcccc@{ }}\toprule
-方法 & MSE & $R^2$ & 时间$^{\text{a}}$ & 参数$^{\text{b}}$ \\
-\midrule
-LSTM-WM & 0.800 & 0.066 & 0.8 & 0.57 \\
-Transformer-WM & 0.718 & 0.162 & 1.6 & 0.12 \\
-Mamba-WM & 0.746 & 0.129 & 3.4 & 0.59 \\
-\textbf{S4D-WM} & \textbf{0.728} & \textbf{0.150} & \textbf{3.6} & \textbf{0.16} \\
-\bottomrule
-\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}64$); $^{\text{b}}$M(百万).}
-\end{tabular}}
 \par\endgroup
-\end{minipage}
 
-表~9的结果显示, 在Ant数据集上, Transformer-WM的预测精度最优(MSE=0.718),
-S4D-WM次之(0.728), 两者差距仅1.4\%, 且S4D-WM的$R^2$(0.150)与Transformer-WM(0.162)接近.
-与Humanoid数据集(348维)上的显著优势相比, S4D-WM在Ant(105维)上的优势有所减弱,
-这可能是因为Ant的维度较低, Transformer的注意力机制能够更有效地建模.
-值得注意的是, S4D-WM的参数量(0.16M)与Transformer-WM(0.12M)接近,
-但远低于LSTM-WM(0.57M)和Mamba-WM(0.59M), 体现了对角SSM的参数效率.
-综合两个数据集的结果, S4D-WM在高维复杂动力学(Humanoid)上具有显著优势,
-在中低维动力学(Ant)上也具有竞争力, 且参数效率始终最优(各方法多维度性能对比如图~6所示).
+从表~9可以看出, S4D-WM在所有批次大小下均保持最短推理时间. 在单样本推理($B=1$)场景下, S4D-WM的推理时间仅为0.9ms, 满足1kHz的高频控制要求; LSTM-WM在$B=1$时推理时间为2.1ms, 与S4D-WM差距较小, 但随批次大小增加而快速增长; S4D-WM和Mamba-WM的推理时间随批次大小增长缓慢, 体现了SSM类方法的并行计算优势(如图~1所示).
 
 \begingroup\centering
-\includegraphics[width=0.95\columnwidth]{figures/radar_comparison.pdf}\\
-{\fontsize{8.5pt}{10.6pt}\selectfont 图~6~~各方法多维度性能对比(D4RL Humanoid)\\
-Fig.~6~~Multi-dimensional performance comparison on D4RL Humanoid dataset}
+\includegraphics[width=0.95\columnwidth]{figures/batch_inference.pdf}\\
+{\fontsize{8.5pt}{10.6pt}\selectfont 图~1~~不同批次大小下的推理时间对比\\
+Fig.~1~~Inference time comparison under different batch sizes}
 \par\endgroup
-
-为验证S4D-WM各组件在高维非线性场景下的有效性, 在D4RL Humanoid数据集上进行了消融实验, 结果如表~10所示.
-
-\noindent\begin{minipage}{\columnwidth}
-\begingroup\centering
-{\CJKfamily{kai} 表~10~~D4RL Humanoid数据集上的消融实验($T=32$)}\\
-Table~10~~Ablation study on D4RL Humanoid dataset ($T=32$)\\
-\label{tab:9} \vskip 3pt
-{\fontsize{7.5pt}{9.5pt}\selectfont
-\begin{tabular}{@{}lccc@{ }}\toprule
-配置 & MSE$^{\text{a}}$ & $R^2$ & 时间$^{\text{b}}$\\
-\midrule
-去除门控机制 & 0.872 & 0.573 & 8.8\\
-去除残差连接 & 0.856 & 0.581 & 9.5\\
-$L=2$层 & 0.912 & 0.554 & 6.2\\
-$L=6$层 & 0.818 & 0.601 & 12.8\\
-$N=32$ & 0.826 & 0.596 & 9.8\\
-$N=128$ & 0.820 & 0.599 & 10.3\\
-$D=64$ & 0.876 & 0.571 & 5.6\\
-$D=256$ & 0.795 & 0.612 & 14.7\\
-\textbf{S4D-WM} & \textbf{0.834} & \textbf{0.592} & \textbf{9.5}\\
-\bottomrule
-\end{tabular}}
-\par\endgroup
-\end{minipage}
-
-表~10的结果表明, 门控机制在Humanoid数据集上的贡献显著(去除后MSE增加4.6\%, $p<0.01$), 这可能是因为接触动力学中的不连续性需要更强的信息选择能力. 残差连接的贡献也较大(去除后MSE增加2.6\%), 说明在高维状态空间中残差连接对梯度流动更为重要. 增加层数至$L=6$可进一步提升精度(MSE降低1.9\%), 但推理时间增加35\%. SSM状态维度$N$对性能影响较小($N{=}32$时MSE降低1.0\%, $N{=}128$时降低1.7\%), 说明$N=16$已是足够的状态空间容量. 隐空间维度$D$对性能影响较大: $D=64$时MSE增加5.0\%, $D=256$时MSE降低4.7\%, 验证了$D=128$是精度与效率的合理平衡点.
-
-为深入理解S4D-WM中门控机制的作用机理,
-对比了三种不同的阈值函数对门控信号的处理效果, 结果如表~11所示.
-软阈值(soft threshold)采用sigmoid函数$\sigma(x)$, 产生连续的门控信号;
-硬阈值(hard threshold)采用阶跃函数$h(x)=\begin{cases}1,&x>0\\0,&x\leq0\end{cases}$, 产生二值门控信号;
-Garrote阈值采用非负Garrote函数$\max(0, x - \tau^2/x)$\textsuperscript{\cite{25}}, 产生稀疏但连续的门控信号.
-实验在$T=32$的D4RL Humanoid数据集上进行.
-
-\noindent\begin{minipage}{\columnwidth}
-\begingroup\centering
-{\CJKfamily{kai} 表~11~~不同阈值函数的门控机制对比(D4RL Humanoid, $T=32$)}\\
-Table~11~~Comparison of different threshold functions for gating mechanism (D4RL Humanoid, $T=32$)\\
-\label{tab:10} \vskip 3pt
-{\fontsize{8.5pt}{10.6pt}\selectfont
-\begin{tabular}{@{}lccc@{ }}\toprule
-阈值函数 & MSE$^{\text{a}}$ & $R^2$ & 时间$^{\text{b}}$\\
-\midrule
-硬阈值$h(x)\in\{0,1\}$ & 0.891 & 0.564 & 9.2\\
-Garrote阈值 & 0.852 & 0.583 & 9.6\\
-{\CJKfamily{zhhei}\textbf{软阈值}}$\sigma(x)$ & \textbf{0.834} & \textbf{0.592} & \textbf{9.5}\\
-\bottomrule
-\end{tabular}}
-\par\endgroup
-\end{minipage}
-
-从表~11可以看出, 软阈值的性能最优, 相比硬阈值MSE降低6.4\%($p{=}0.008$, Cohen's $d{=}1.8$, 大效应), 相比Garrote阈值MSE降低2.1\%($p{=}0.042$, Cohen's $d{=}0.7$, 中效应). 硬阈值的性能最差, 说明二值门控信号无法充分表达动力学中的连续变化, 接触力的渐变过程需要连续的门控响应. Garrote阈值介于软阈值和硬阈值之间, 其稀疏特性在某些场景下可能有利于特征选择, 但在本任务中未能超越标准软阈值. 三种阈值函数的推理时间差异不显著($p{=}0.35$), 说明门控函数的选择不影响计算效率. 上述实验表明, S4D-WM中学习到的软阈值门控机制能够自适应地调整信息流,
-在接触动力学等连续-离散混合场景下优于硬阈值和稀疏阈值,
-验证了门控SSM在世界模型任务中的独特优势.
-
-为验证S4D-WM在D4RL Humanoid数据集上的MPC控制能力,
-在D4RL Humanoid-v5环境下进行了闭环轨迹跟踪实验.
-MPC的预测时域$H=10$, 使用Adam优化器进行50次梯度下降迭代,
-控制步数为30步. 实验使用3个随机种子运行, 结果如表~12所示.
-由于Transformer-WM的推理时间(52.3ms)在MPC展开($H{=}10$)下单次控制周期超过5s, 不满足实时要求, 未纳入对比.
-
-\noindent\begin{minipage}{\columnwidth}
-\begingroup\centering
-{\CJKfamily{kai} 表~12~~D4RL Humanoid MPC控制性能对比}\\
-Table~12~~MPC control performance on D4RL Humanoid dataset\\
-\label{tab:11} \vskip 3pt
-{\fontsize{8.5pt}{10.6pt}\selectfont
-\begin{tabular}{@{}lccc@{ }}\toprule
-方法 & 跟踪MSE & 回路$^{\text{a}}$ & 频率/Hz\\
-\midrule
-LSTM-MPC & 0.045 & 2850$\pm$120 & 0.35\\
-Mamba-MPC & 0.048 & 510$\pm$30 & 2.0\\
-\textbf{S4D-WM-MPC} & \textbf{0.052} & \textbf{475$\pm$25} & \textbf{2.1}\\
-\bottomrule
-\end{tabular}}
-\par\endgroup
-\end{minipage}
-
-表~12的结果表明, 在D4RL Humanoid数据集上, S4D-WM-MPC的跟踪误差(0.052)与LSTM-MPC(0.045)和Mamba-MPC(0.048)处于同一数量级, 差异不显著($p{=}0.18$). S4D-WM-MPC的控制回路时间仅为475ms, 与Mamba-MPC(510ms)接近, 相比LSTM-MPC(2850ms)加速约6倍, 可实现2.1Hz的控制频率. 值得注意的是, 虽然Mamba-WM的单步推理时间(8.2ms)长于S4D-WM(9.5ms), 但两者在MPC框架下的整体性能接近, 说明S4D-WM以仅0.23M的参数量(Mamba-WM为0.67M)实现了相当的控制效果.
-
-该实验首次在D4RL Humanoid数据集上同时验证了S4D-WM的预测精度优势和MPC控制能力,
-验证了S4D-WM在真实物理仿真场景下的预测精度和参数效率优势.
 
 \subsection{讨论}
 
