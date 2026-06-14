@@ -1,4 +1,4 @@
-"""Radar chart: D4RL Humanoid, 4 models, clean layout."""
+"""Radar chart: D4RL Humanoid, 4 models, intuitive Chinese labels."""
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 import os
 
-zhfont = FontProperties(fname='/mnt/c/Windows/Fonts/simhei.ttf', size=10)
-zhfont_s = FontProperties(fname='/mnt/c/Windows/Fonts/simhei.ttf', size=8)
+zhfont = FontProperties(fname='/mnt/c/Windows/Fonts/simhei.ttf', size=11)
+zhfont_s = FontProperties(fname='/mnt/c/Windows/Fonts/simhei.ttf', size=9)
 
 plt.rcParams.update({
     'font.family': 'serif',
@@ -21,24 +21,25 @@ models = ['S4D-WM', 'Mamba-WM', 'Trans.-WM', 'LSTM-WM']
 colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']
 markers = ['o', 's', '^', 'D']
 
-raw = {
-    'S4D-WM':    [0.694, 1/0.245, 3.4, 1/0.23],
-    'Mamba-WM':  [0.676, 1/0.259, 3.5, 1/0.66],
-    'Trans.-WM': [0.653, 1/0.278, 1.6, 1/0.15],
-    'LSTM-WM':   [0.541, 1/0.367, 2.5, 1/0.64],
+# D4RL Humanoid raw data (Table 8)
+# All metrics normalized so that HIGHER = BETTER
+raw_scores = {
+    #           R²     预测精度(1/MSE)  推理速度(1/ms)  参数效率(1/M)
+    'S4D-WM':    [0.694,  1/0.245,        1/3.4,          1/0.23],
+    'Mamba-WM':  [0.676,  1/0.259,        1/3.5,          1/0.66],
+    'Trans.-WM': [0.653,  1/0.278,        1/1.6,          1/0.15],
+    'LSTM-WM':   [0.541,  1/0.367,        1/2.5,          1/0.64],
 }
 
-categories = ['R2', '1/MSE', '推理速度', '1/参数量']
+categories = ['R2', '预测精度', '推理速度', '参数效率']
 N = len(categories)
 
-def norm(ci, higher_better=True):
-    v = np.array([raw[m][ci] for m in models])
-    if not higher_better:
-        v = 1.0 / v
+def normalize(col_idx):
+    v = np.array([raw_scores[m][col_idx] for m in models])
     mn, mx = v.min(), v.max()
     return 0.2 + 0.8 * (v - mn) / (mx - mn) if mx - mn > 1e-10 else np.full(4, 0.5)
 
-all_n = [norm(0, True), norm(1, True), norm(2, False), norm(3, True)]
+all_n = [normalize(i) for i in range(N)]
 
 angles = np.linspace(0, 2*np.pi, N, endpoint=False).tolist()
 angles += angles[:1]
@@ -56,11 +57,9 @@ for i, m in enumerate(models):
 
 ax.set_xticks(angles[:-1])
 ax.set_xticklabels(categories, fontproperties=zhfont, fontweight='bold')
-# Push labels outward to avoid overlap with data
-ax.tick_params(pad=14)
+ax.tick_params(pad=15)
 
 ax.set_ylim(0, 1.15)
-# Remove inner grid labels (0.4, 0.7, 1.0)
 ax.set_yticks([])
 ax.grid(True, linewidth=0.3, alpha=0.4)
 
