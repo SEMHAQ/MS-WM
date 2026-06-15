@@ -453,9 +453,13 @@ S4D-WM的FFT卷积操作在GPU上具有良好的并行性, 但在嵌入式平台
 此外, S4D-WM的参数量(0.24M)和内存占用(0.9MB)均较低, 适合部署在内存受限的嵌入式平台上.
 未来工作将在NVIDIA Jetson等嵌入式硬件上进行推理时间测量, 以验证S4D-WM在实际部署场景下的性能.
 
-\subsection{主要实验结果}
+\subsection{D4RL基准数据集实验}
 
-实验结果如表~1所示. 序列长度设置为$T=64$, 批大小为64.
+为评估各模型在真实物理仿真场景下的预测性能, 采用D4RL基准数据集\cite{24}中的Humanoid-medium子集进行了实验.
+该数据集使用MuJoCo物理仿真器的Humanoid-v5环境生成, 状态维度为348(包含关节角度、角速度、身体姿态等),
+动作维度为17(关节力矩), 包含1163条episode(930条训练, 233条验证), 由训练好的TQC策略采集.
+所有模型使用$T=32$的序列长度, 批大小$B=64$, 训练100个epoch(早期停止patience=20).
+Humanoid数据集的实验结果如表~1所示.
 
 \begingroup\centering
 \begin{minipage}{\columnwidth}
@@ -482,7 +486,9 @@ Mamba-WM & 0.259 & 0.676 & 3.5 & 0.66 \\
 \subsection{不同批次大小下的推理性能}
 
 为评估模型在实际部署场景下的推理性能,
-在不同批次大小($B=1, 8, 32, 64$)下测量了推理时间, 结果如表~2所示.
+在不同批次大小($B=1, 8, 32, 64$)下测量了各模型的前向传播时间(序列长度$T=64$), 结果如表~2所示.
+由于Trans.-WM的推理时间在$T=64$时已超过100ms(受$O(T^2)$自注意力复杂度制约),
+在$B \geq 8$的批量推理场景下不满足实时控制要求, 因此未纳入本实验.
 
 \begingroup\centering
 \begin{minipage}{\columnwidth}
@@ -514,8 +520,9 @@ Fig.~1~~Inference time comparison under different batch sizes}
 
 \subsection{多步预测精度分析}
 
-由于MPC控制器依赖模型进行多步展开预测, 仅报告单步预测精度是不够的.
-表~3报告了不同展开步数$H$下的多步预测MSE.
+模型预测控制(MPC)需要在每个控制周期内对多步未来状态进行展开预测, 因此多步预测精度与单步精度同样重要.
+为评估各模型在多步自回归展开场景下的预测能力,
+在D4RL Humanoid数据集上以$T=32$为输入窗口, 逐步递推预测$H=1, 4, 8, 16$步后的状态, 结果如表~3所示.
 
 \begingroup\centering
 {\CJKfamily{kai} 表~3~~多步预测MSE对比(D4RL Humanoid, $T=32$, $\times10^{-3}$)\\
@@ -577,7 +584,8 @@ Fig.~2~~Prediction accuracy of S4D-WM under different sequence lengths}
 
 \subsection{消融实验}
 
-为验证各组件的有效性, 在$T=64$的设置下进行了以下消融实验, 结果如表~5所示.
+为验证S4D-WM各组件(门控机制、残差连接)和关键超参数(层数$L$、隐空间维度$D$)的贡献,
+在D4RL Humanoid数据集上以$T=32$的默认设置下逐一移除或调整各组件, 结果如表~5所示.
 
 \noindent\begin{minipage}{\columnwidth}
 \begingroup\centering
@@ -679,12 +687,7 @@ Mamba-MPC & 0.0041 & 235$\pm$12 & 4.3\\
 Fig.~5~~MPC control performance comparison}
 \par\endgroup
 
-\subsection{D4RL Humanoid仿真实验}
-
-为进一步验证S4D-WM在更真实的机器人场景下的有效性,
-在D4RL Humanoid数据集上进行了实验.
-为进一步验证S4D-WM在不同阈值函数门控下的表现,
-采用D4RL基准数据集\cite{24}中的Humanoid-medium子集进行了实验.
+\subsection{泛化能力与阈值函数分析}
 
 
 
