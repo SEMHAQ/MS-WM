@@ -440,8 +440,8 @@ S4D-WM的隐空间维度$D=128$, SSM状态维度$N=16$, 层数$L=4$.
 实验在单块NVIDIA RTX 3090 GPU上进行, 使用PyTorch 2.1.2框架实现.
 推理时间测量包含5次GPU预热迭代, 随后取20次测量的平均值.
 为保证对比公平, 所有模型均采用相近的参数量和隐层维度设置.
-由于Trans.-WM的$O(T^2)$自注意力复杂度在长序列下会导致推理时间急剧增长, 
-在涉及多步展开或长序列的实验中(表~3和表~7), 未纳入Trans.-WM的对比, 
+由于Transformer-WM的$O(T^2)$自注意力复杂度在长序列下会导致推理时间急剧增长, 
+在涉及多步展开或长序列的实验中(表~3和表~7), 未纳入Transformer-WM的对比, 
 以确保实验结果反映各模型在目标应用场景下的真实性能差异.
 所有推理时间均在卷积模式下测量(批大小$B=64$), 递推模式的单步延迟为$O(1)$, 适合逐步生成预测的在线控制场景.
 每组实验使用固定随机种子(42)运行.
@@ -493,7 +493,7 @@ Table~2~~Inference time under different batch sizes ($T=64$, unit: ms)}\\
 \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
 \begin{tabular}{@{}lcccc@{}}\toprule
-$B$ & LSTM-WM & Trans.-WM & Mamba-WM & \textbf{S4D-WM} \\
+$B$ & LSTM-WM & Transformer-WM & Mamba-WM & \textbf{S4D-WM} \\
 \midrule
 1   & \textbf{2.9} & 2.9 & 9.5 & 8.3\\
 8   & \textbf{1.9} & 3.1 & 10.5 & 8.7\\
