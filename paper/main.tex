@@ -396,14 +396,14 @@ S4D-WM的参数量为$O(D^2L + D(d_s+d_a))$.
 
 本文使用两个数据集进行实验:
 
-(1) Humanoid数据集: 采用D4RL基准数据集中的Humanoid-medium子集,
+(1) Humanoid数据集: 采用D4RL基准数据集\textsuperscript{\cite{24}}中的Humanoid-medium子集,
 使用MuJoCo物理仿真器的Humanoid-v5环境生成,
 包含1163条episode, 每条episode约1000步, 状态维度348(包含关节角度、角速度、身体姿态等),
 动作维度17(关节力矩). 该数据集由训练好的TQC策略采集,
 包含真实的接触动力学、摩擦力和重力效应, 代表高维复杂动力学场景.
 其中930条用于训练, 233条用于验证.
 
-(2) Ant数据集: 采用D4RL基准数据集中的Ant-medium子集,
+(2) Ant数据集: 采用D4RL基准数据集\textsuperscript{\cite{24}}中的Ant-medium子集,
 使用MuJoCo物理仿真器的Ant-v5环境生成, 代表中低维四足机器人动力学.
 该数据集包含1047条episode(训练集837条, 验证集210条), 平均每条约918步,
 状态维度105(包含关节位置、速度和身体姿态), 动作维度8(关节力矩).
@@ -455,11 +455,7 @@ S4D-WM的FFT卷积操作在GPU上具有良好的并行性, 但在嵌入式平台
 
 \subsection{D4RL基准数据集实验}
 
-为评估各模型在真实物理仿真场景下的预测性能, 采用D4RL基准数据集\cite{24}中的Humanoid-medium子集进行了实验.
-该数据集使用MuJoCo物理仿真器的Humanoid-v5环境生成, 状态维度为348(包含关节角度、角速度、身体姿态等),
-动作维度为17(关节力矩), 包含1163条episode(930条训练, 233条验证), 由训练好的TQC策略采集.
-所有模型使用$T=32$的序列长度, 批大小$B=64$, 训练100个epoch(早期停止patience=20).
-Humanoid数据集的实验结果如表~1所示.
+在上述实验设置下, 各模型在D4RL Humanoid数据集上的预测性能如表~1所示.
 
 \begingroup\centering
 \begin{minipage}{\columnwidth}
@@ -692,7 +688,7 @@ Fig.~5~~MPC control performance comparison}
 
 
 为进一步验证S4D-WM在不同维度动力学系统上的泛化能力,
-在D4RL基准数据集\cite{24}的Ant-medium子集上进行了实验.
+在D4RL基准数据集\textsuperscript{\cite{24}}的Ant-medium子集上进行了实验.
 Ant环境为四足机器人, 状态维度为105(包含关节位置、速度和身体姿态),
 动作维度为8(关节力矩), 包含1047条episode(837条训练, 210条验证), 结果如表~8所示.
 
@@ -738,7 +734,7 @@ Table~9~~Gating mechanism comparison with different threshold functions (D4RL Hu
 阈值函数 & MSE & $R^2$ & 时间$^{\text{a}}$\\
 \midrule
 硬阈值 & 0.258 & 0.670 & 3.2\\
-Garrote阈值\cite{25} & 0.250 & 0.687 & 3.4\\
+Garrote阈值\textsuperscript{\cite{25}} & 0.250 & 0.687 & 3.4\\
 {\CJKfamily{zhhei}\textbf{软阈值(默认)}} & \textbf{0.245} & \textbf{0.694} & \textbf{3.4}\\
 \bottomrule
 \multicolumn{4}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}64$).}
