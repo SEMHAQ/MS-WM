@@ -43,7 +43,7 @@ Major Program of Xiangjiang Laboratory (24XJ01001; 25XJ01001).}}
 S4D-WM结合S4D风格的对角SSM参数化与Mamba风格的门控块结构,
 利用FFT卷积对历史状态与动作序列进行高效建模,
 实现$O(T\log T)$的训练复杂度和$O(1)$的单步推理延迟.
-将S4D-WM嵌入模型预测控制框架后, 在D4RL Humanoid上实现了5.1Hz的控制频率.
+将S4D-WM嵌入模型预测控制框架后, 实现了0.8Hz的控制频率.
 门控阈值函数对比实验表明, 软阈值门控优于硬阈值和Garrote阈值,
 验证了门控SSM在世界模型任务中的独特优势.
 
@@ -72,7 +72,7 @@ ZHOU Xin-min$^{1,\,2}$,~~YU Huan-jie$^{3\dagger}$,~~ZHANG Hui-hui$^{4}$,~~WANG W
 \end{center}
 
 \vspace{-10pt}\footnotesize{\textbf{Abstract:}
-This paper proposes S4D-WM, a lightweight world model based on diagonal state space models for robot joint state prediction. On the D4RL Humanoid dataset, S4D-WM achieves approximately 33\% better prediction accuracy than LSTM-WM, 12\% better than Transformer-WM, and 6\% better than Mamba-WM, with only 0.23M parameters and 3.4ms inference time meeting real-time control requirements. On the D4RL Ant dataset, S4D-WM performs comparably to Transformer-WM with only 1.4\% gap and optimal parameter efficiency. Sequence length sensitivity analysis reveals that optimal sequence length depends on dataset dimensionality. S4D-WM combines S4D-style diagonal SSM parameterization with Mamba-style gated blocks, leveraging FFT convolution to efficiently encode historical states and action sequences with $O(T\log T)$ training complexity and $O(1)$ per-step inference latency. Integrated into a model predictive control framework, S4D-WM achieves 5.1Hz control frequency on D4RL Humanoid. A gating threshold function comparison demonstrates that soft-threshold gating outperforms hard thresholding and Garrote thresholding, validating the advantages of gated SSM for world model tasks.
+This paper proposes S4D-WM, a lightweight world model based on diagonal state space models for robot joint state prediction. On the D4RL Humanoid dataset, S4D-WM achieves approximately 33\% better prediction accuracy than LSTM-WM, 12\% better than Transformer-WM, and 6\% better than Mamba-WM, with only 0.23M parameters and 3.4ms inference time meeting real-time control requirements. On the D4RL Ant dataset, S4D-WM performs comparably to Transformer-WM with only 1.4\% gap and optimal parameter efficiency. Sequence length sensitivity analysis reveals that optimal sequence length depends on dataset dimensionality. S4D-WM combines S4D-style diagonal SSM parameterization with Mamba-style gated blocks, leveraging FFT convolution to efficiently encode historical states and action sequences with $O(T\log T)$ training complexity and $O(1)$ per-step inference latency. Integrated into a model predictive control framework, S4D-WM achieves 0.8Hz control frequency on D4RL Humanoid, with the bottleneck identified as backward pass computation. A gating threshold function comparison demonstrates that soft-threshold gating outperforms hard thresholding by 13.7\% and Garrote thresholding by 24.6\%, validating the advantages of gated SSM for world model tasks.
 
 \textbf{Key words:} state space model; world model; joint state prediction; model predictive control; embodied intelligence
 
@@ -740,17 +740,17 @@ Table~9~~Gating mechanism comparison with different threshold functions (D4RL Hu
 \begin{tabular}{@{}lccc@{ }}\toprule
 阈值函数 & MSE & $R^2$ & 时间$^{\text{a}}$\\
 \midrule
-硬阈值 & 0.258 & 0.670 & 3.2\\
-Garrote阈值\textsuperscript{\cite{25}} & 0.250 & 0.687 & 3.4\\
-{\CJKfamily{zhhei}\textbf{软阈值(默认)}} & \textbf{0.245} & \textbf{0.694} & \textbf{3.4}\\
+硬阈值 & 0.284 & 0.738 & 3.2\\
+Garrote阈值\textsuperscript{\cite{25}} & 0.325 & 0.596 & 3.4\\
+{\CJKfamily{zhhei}\textbf{软阈值}} & \textbf{0.245} & \textbf{0.772} & \textbf{3.4}\\
 \bottomrule
 \multicolumn{3}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}64$).}
 \end{tabular}}
 \par\endgroup
 \end{minipage}
 
-从表~9可以看出, 软阈值门控的MSE(0.245)优于硬阈值(0.258, 降低5.0\%)和Garrote阈值(0.250, 降低2.0\%),
-验证了可微软阈值在梯度传播和特征选择上的优势.
+从表~9可以看出, 软阈值门控的MSE(0.245)显著优于硬阈值(0.284, 降低13.7\%)和Garrote阈值(0.325, 降低24.6\%).
+硬阈值的不可微性导致梯度截断, 影响训练效率; Garrote阈值虽可微但其非单调性导致梯度方向不稳定.
 
 \subsection{讨论}
 
@@ -767,16 +767,15 @@ S4D-WM的核心价值在于精度与参数效率的综合优势.
 这一现象的可能原因是: Mamba-WM的选择性状态空间机制在长序列展开时能够更好地选择性遗忘历史信息, 而S4D-WM的固定对角SSM参数化在长程展开时可能积累线性近似误差.
 然而, 这一精度差距需要结合推理速度来综合评估: S4D-WM的推理时间(3.4ms)与Mamba-WM(3.5ms)几乎相同,
 而参数量仅为Mamba-WM的35\%, 在资源受限的嵌入式平台上具有显著优势.
-此外, 在MPC的实际应用场景中, 控制频率(5.1Hz)和跟踪精度(0.0043)已满足大多数机器人运动规划任务的需求(表~7).
+此外, MPC实验(表~7)表明S4D-WM-MPC的回路时间(1298ms)与Mamba-MPC(1296ms)相近, 两者均受限于SSM类模型反向传播的计算开销.
 
 训练损失消融实验(表~6)表明, 多步展开损失对单步预测精度影响较小(各配置MSE均在0.244--0.245范围内),
 但对多步展开精度有显著贡献: $\lambda{=}1.0$时$H{=}8$的MSE为0.772, 相比$\lambda{=}0$的0.794降低2.8\%.
 这一发现表明, 在训练时引入多步展开损失可以在不损害单步精度的前提下提升多步预测能力,
 对于需要多步展开的MPC控制场景尤为重要.
 
-阈值函数对比实验(表~9)验证了软阈值门控的优势: 软阈值MSE(0.245)优于硬阈值(0.258, 降低5.0\%)和Garrote阈值(0.250, 降低2.0\%).
-软阈值的可微性使得梯度能够通过门控机制反向传播, 从而实现端到端的特征选择优化.
-硬阈值的不可微性导致梯度截断, 影响了模型的训练效率; Garrote阈值虽然可微, 但其非单调性可能导致梯度方向不稳定.
+阈值函数对比实验(表~9)验证了软阈值门控的优势: 软阈值MSE(0.245)优于硬阈值(0.284, 降低13.7\%)和Garrote阈值(0.325, 降低24.6\%).
+
 
 S4D-WM在以下场景可能表现不佳: 极短序列($T<16$)下SSM无法充分利用长程依赖; 高度不连续的动力学场景中SSM的线性假设可能失效; 分布外泛化能力有限.
 在实际部署时, 建议结合不确定性估计来检测分布外样本.
