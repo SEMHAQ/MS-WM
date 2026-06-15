@@ -506,7 +506,7 @@ $B$ & LSTM-WM & Mamba-WM & \textbf{S4D-WM} \\
 \end{minipage}
 \par\endgroup
 
-从表~2可以看出, S4D-WM在所有批次大小下均保持最短推理时间. 在单样本推理($B=1$)场景下, S4D-WM的推理时间仅为0.9ms, 满足1kHz的高频控制要求; LSTM-WM在$B=1$时推理时间为2.1ms, 与S4D-WM差距较小, 但随批次大小增加而快速增长; S4D-WM和Mamba-WM的推理时间随批次大小增长缓慢, 体现了SSM类方法的并行计算优势(如图~1所示).
+从表~2可以看出, S4D-WM在所有批次大小下均保持最短推理时间. 在单样本推理($B=1$)场景下, S4D-WM的推理时间仅为0.9ms, 满足1kHz的高频控制要求; LSTM-WM在$B=1$时推理时间为2.1ms, 与S4D-WM差距较小, 但随批次大小增加而快速增长; S4D-WM和Mamba-WM的推理时间随批次大小增长缓慢, 体现了SSM类方法的并行计算优势(如图~1所示, 其中10ms为机器人运动控制的典型实时阈值, 对应100Hz控制频率).
 
 \begingroup\centering
 \includegraphics[width=0.95\columnwidth]{figures/batch_inference.pdf}\\
