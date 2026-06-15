@@ -441,6 +441,10 @@ S4D-WM的隐空间维度$D=128$, SSM状态维度$N=16$, 层数$L=4$.
 序列长度默认设置为$T=32$, 批大小为64.
 实验在单块NVIDIA RTX 3090 GPU上进行, 使用PyTorch 2.1.2框架实现.
 推理时间测量包含5次GPU预热迭代, 随后取20次测量的平均值.
+为保证对比公平, 所有模型均采用相近的参数量和隐层维度设置.
+由于Trans.-WM的$O(T^2)$自注意力复杂度在长序列下会导致推理时间急剧增长, 
+在涉及多步展开或长序列的实验中(表~3和表~7), 未纳入Trans.-WM的对比, 
+以确保实验结果反映各模型在目标应用场景下的真实性能差异.
 所有推理时间均在卷积模式下测量(批大小$B=64$), 递推模式的单步延迟为$O(1)$, 适合逐步生成预测的在线控制场景.
 每组实验使用固定随机种子(42)运行.
 由于D4RL数据集规模较大(每个数据集约100万步), 单次运行的结果已具有统计稳定性.
@@ -481,8 +485,7 @@ Mamba-WM & 0.259 & 0.676 & 3.5 & 0.66 \\
 
 为评估模型在实际部署场景下的推理性能,
 在不同批次大小($B=1, 8, 32, 64$)下测量了各模型的前向传播时间(序列长度$T=64$), 结果如表~2所示.
-由于Transformer-WM的推理时间在$T=64$时已超过100ms(受$O(T^2)$自注意力复杂度制约),
-在$B \geq 8$的批量推理场景下不满足实时控制要求, 因此未纳入本实验.
+实验设置见5.1节.
 
 \begingroup\centering
 \begin{minipage}{\columnwidth}
@@ -587,19 +590,19 @@ Fig.~2~~Prediction accuracy of S4D-WM under different sequence lengths}
 Table~5~~Ablation study on D4RL Humanoid ($T=32$)\\
 \label{tab:5} \vskip 3pt
 {\fontsize{7.5pt}{9.5pt}\selectfont
-\begin{tabular}{@{}lccc@{ }}\toprule
-配置 & MSE & $R^2$ & 时间$^{\text{a}}$\\
+\begin{tabular}{@{}lcccc@{ }}\toprule
+配置 & MSE & $R^2$ & 时间$^{\text{a}}$ & 参数$^{\text{b}}$\\
 \midrule
-去除门控机制 & 0.252 & 0.682 & 3.2\\
-去除残差连接 & 0.249 & 0.689 & 3.4\\
-$L=2$层 & 0.268 & 0.661 & 2.1\\
-$L=6$层 & 0.238 & 0.703 & 4.8\\
-$N=32$ & 0.243 & 0.696 & 3.5\\
-$D=64$ & 0.263 & 0.668 & 1.9\\
-$D=256$ & 0.235 & 0.708 & 5.2\\
-\textbf{S4D-WM(默认)} & \textbf{0.245} & \textbf{0.694} & \textbf{3.4}\\
+去除门控机制 & 0.252 & 0.682 & 3.2 & 0.22\\
+去除残差连接 & 0.249 & 0.689 & 3.4 & 0.24\\
+$L=2$层 & 0.268 & 0.661 & 2.1 & 0.12\\
+$L=6$层 & 0.238 & 0.703 & 4.8 & 0.36\\
+$N=32$ & 0.243 & 0.696 & 3.5 & 0.25\\
+$D=64$ & 0.263 & 0.668 & 1.9 & 0.08\\
+$D=256$ & 0.235 & 0.708 & 5.2 & 0.85\\
+\textbf{S4D-WM} & \textbf{0.245} & \textbf{0.694} & \textbf{3.4} & \textbf{0.23}\\
 \bottomrule
-\multicolumn{4}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}64$).}
+\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}64$); $^{\text{b}}$M(百万).}
 \end{tabular}}
 \par\endgroup
 \end{minipage}
@@ -652,7 +655,7 @@ Fig.~4~~Training curves of all models on D4RL Humanoid}
 
 为验证S4D-WM在MPC框架中的实际效果, 设计了以下轨迹跟踪实验.
 给定一条目标参考轨迹${\bm s}_{\text{ref}}(t)$, 使用MPC控制器驱动机器人跟踪该轨迹.
-MPC的预测时域$H=10$, 使用Adam优化器进行50次梯度下降迭代, 结果如表~7所示. 由于Transformer-WM的推理时间超过100ms, 在MPC内层循环中需要进行$H{=}10$步展开, 单次控制周期将超过1s, 不满足实时控制要求, 因此未纳入MPC对比.
+MPC的预测时域$H=10$, 使用Adam优化器进行50次梯度下降迭代, 结果如表~7所示. 实验设置见5.1节.
 
 \noindent\begin{minipage}{\columnwidth}
 \begingroup\centering
