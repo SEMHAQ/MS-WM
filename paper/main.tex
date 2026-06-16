@@ -527,10 +527,10 @@ $T$ & MSE & $R^2$ & MSE & $R^2$ & MSE$^{\text{c}}$ & $R^2$ \\
 
 表~4揭示了一个重要发现: 最优序列长度与数据集维度相关.
 Humanoid数据集在$T{=}16$时取得最优MSE和$R^2$, 随$T$增大而快速退化, $T{=}256$时$R^2$降为负值.
-Ant数据集则在$T{=}256$时取得最优MSE, 且$R^2$在$T \\geq 32$后保持正值.
+Ant数据集则在$T{=}256$时取得最优MSE, 且$R^2$在$T \geq 32$后保持正值.
 Walker2d数据集的趋势与Humanoid一致, $T{=}16$时最优, 随$T$增大而单调退化.
 这一差异的可能原因是: 高维数据的状态转移更复杂, 过长的历史序列引入噪声; 而低维Ant的动力学更规则, 较长的历史有助于捕捉周期性模式.
-综合考虑, 推荐Humanoid和Walker2d使用$T \\in [16, 32]$, Ant使用$T \\in [128, 256]$.
+综合考虑, 推荐Humanoid和Walker2d使用$T \in [16, 32]$, Ant使用$T \in [128, 256]$.
 
 \begingroup\centering
 \includegraphics[width=0.95\columnwidth]{figures/seqlen_sensitivity.pdf}\\
