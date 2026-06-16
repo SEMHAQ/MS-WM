@@ -448,20 +448,20 @@ Mamba-WM & 25.84$\pm$0.60 & 0.677$\pm$0.008 & 9.5 & 0.66 \\
 Table~2~~Inference time under different batch sizes ($T=32$, unit: ms)}\\
 \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
-\begin{tabular}{@{}lcccc@{}}\toprule
-$B$ & LSTM-WM & Transformer-WM & Mamba-WM & \textbf{S4D-WM} \\
+\begin{tabular}{@{}lccccc@{}}\toprule
+$B$ & LSTM-WM & GRU-WM & Transformer-WM & Mamba-WM & \textbf{S4D-WM} \\
 \midrule
-1   & 2.9 & 2.9 & 9.5 & \textbf{8.3}\\
-8   & 1.9 & 3.1 & 10.5 & \textbf{8.7}\\
-32  & 3.5 & 3.4 & 9.6 & \textbf{8.8}\\
-64  & 4.5 & 4.3 & 8.3 & \textbf{8.7}\\
+1   & 2.9 & 1.1 & 2.9 & 9.5 & \textbf{8.3}\\
+8   & 1.9 & 1.1 & 3.1 & 10.5 & \textbf{8.7}\\
+32  & 3.5 & 1.2 & 3.4 & 9.6 & \textbf{8.8}\\
+64  & 4.5 & 1.3 & 4.3 & 8.3 & \textbf{8.7}\\
 \bottomrule
 
 \end{tabular}}
 \end{minipage}
 \par\endgroup
 
-从表~2可以看出, LSTM-WM在所有批次大小下均保持较短推理时间(1.9--4.5ms), 这得益于cuDNN对LSTM的高度优化.
+从表~2可以看出, GRU-WM在所有批次大小下推理时间最短(1.1--1.3ms), 得益于其简洁的门控结构. LSTM-WM次之(1.9--4.5ms), 得益于cuDNN的高度优化.
 Transformer-WM的推理时间与LSTM-WM接近(2.9--4.3ms), 因其采用了较小的隐层维度(64).
 S4D-WM(8.3--8.8ms)和Mamba-WM(8.3--10.5ms)的推理时间较高, 主要原因是两者均采用128维隐层和4层结构, 模型参数量较大.
 所有模型的推理时间均低于10ms的典型控制周期阈值(如图~2所示).
@@ -483,13 +483,13 @@ Fig.~2~~Inference time comparison under different batch sizes}
 Table~3~~Multi-step prediction MSE comparison (D4RL Humanoid, $T=32$, $\times10^{-3}$)}\\
 \label{tab:3} \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
-\begin{tabular}{@{}lcccc@{}}\toprule
-$H$ & LSTM-WM & Transformer-WM & Mamba-WM & \textbf{S4D-WM}\\
+\begin{tabular}{@{}lccccc@{}}\\toprule
+$H$ & LSTM-WM & GRU-WM & Transformer-WM & Mamba-WM & \textbf{S4D-WM}\\
 \midrule
-1  & 0.467 & 0.357 & 0.307 & \textbf{0.303}\\
-4  & 0.705 & 0.562 & 0.485 & \textbf{0.518}\\
-8  & 0.962 & 0.774 & 0.718 & \textbf{0.794}\\
-16 & 1.638 & 1.406 & 1.419 & \textbf{1.516}\\
+1  & 0.467 & 0.717 & 0.357 & 0.307 & \textbf{0.303}\\
+4  & 0.705 & 1.283 & 0.562 & 0.485 & \textbf{0.518}\\
+8  & 0.962 & 2.627 & 0.774 & 0.718 & \textbf{0.794}\\
+16 & 1.638 & 7.015 & 1.406 & 1.419 & \textbf{1.516}\\
 \bottomrule
 \end{tabular}}\par\endgroup
 
@@ -624,6 +624,7 @@ Table~7~~MPC control performance comparison (D4RL Humanoid)\\
 方法 & 回路时间$^{\text{a}}$ & 频率/Hz\\
 \midrule
 LSTM-MPC & 299$\pm$18 & 3.3\\
+GRU-MPC & 1265$\pm$83 & 0.8\\
 Mamba-MPC & 1296$\pm$67 & 0.8\\
 \textbf{S4D-WM-MPC} & \textbf{1298$\pm$65} & \textbf{0.8}\\
 \bottomrule
@@ -632,7 +633,7 @@ Mamba-MPC & 1296$\pm$67 & 0.8\\
 \end{minipage}
 
 从表~7可以看出, LSTM-MPC的回路时间最短(299ms/3.3Hz), 得益于cuDNN对LSTM反向传播的高度优化.
-S4D-WM-MPC和Mamba-MPC的回路时间相近, 约1300ms/0.8Hz, 瓶颈在于SSM类模型反向传播的计算开销而非状态维度本身(Ant 105维与Humanoid 348维的速度差异不足5\%).
+GRU-MPC(1265ms/0.8Hz)、S4D-WM-MPC和Mamba-MPC的回路时间相近, 约1300ms/0.8Hz, 瓶颈在于反向传播的计算开销而非状态维度本身.
 需要指出的是, 当前MPC实验采用基于梯度的Adam优化器(每步50次反向传播迭代), 0.8Hz的控制频率尚不能满足典型机器人控制需求(100--1000Hz).
 这一结果仅验证了S4D-WM作为MPC世界模型的可行性, 而非实用性.
 若采用仅需前向传播的采样式MPC方法(如CEM、MPPI), 结合S4D-WM递推模式的$O(1)$单步延迟, 控制频率有望提升至10Hz以上, 这将是未来工作的重要方向.
@@ -664,8 +665,8 @@ Table~8~~Performance comparison on D4RL Ant ($T=32$)}\\
 LSTM-WM & 81.40$\pm$1.26 & 0.050$\pm$0.015 & 2.0 & 0.57 \\
 Transformer-WM & 72.55$\pm$0.64 & 0.153$\pm$0.007 & 3.9 & 0.12 \\
 Mamba-WM & 74.28$\pm$0.26 & 0.133$\pm$0.003 & 8.3 & 0.59 \\
-\textbf{S4D-WM} & \textbf{73.20$\pm$0.60} & \textbf{0.145$\pm$0.007} & \textbf{8.8} & \textbf{0.16} \\
 GRU-WM & 77.76$\pm$1.61 & 0.092$\pm$0.019 & 1.5 & 0.50 \\
+\textbf{S4D-WM} & \textbf{73.20$\pm$0.60} & \textbf{0.145$\pm$0.007} & \textbf{8.8} & \textbf{0.16} \\
 \bottomrule
 \multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}1$, $T{=}32$); $^{\text{b}}$M(百万); 3 seeds.}
 \end{tabular}}
