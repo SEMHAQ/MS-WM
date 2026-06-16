@@ -26,7 +26,7 @@ fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(4.2, 5.0))
 
 # (a) Loop time
 bars1 = ax1.bar(range(len(methods)), loop_time, 0.55, color=colors,
-                edgecolor='white', linewidth=0.5, zorder=3)
+                edgecolor='none', linewidth=0, zorder=3)
 ax1.set_ylabel('回路时间 (ms)', fontproperties=zhfont)
 ax1.set_xticks(range(len(methods)))
 ax1.set_xticklabels(methods, fontsize=9)
@@ -40,7 +40,7 @@ ax1.set_title('(a) MPC回路时间', fontproperties=zhfont, fontsize=10, pad=8)
 
 # (b) Control frequency
 bars2 = ax2.bar(range(len(methods)), freq, 0.55, color=colors,
-                edgecolor='white', linewidth=0.5, zorder=3)
+                edgecolor='none', linewidth=0, zorder=3)
 ax2.set_ylabel('控制频率 (Hz)', fontproperties=zhfont)
 ax2.set_xticks(range(len(methods)))
 ax2.set_xticklabels(methods, fontsize=9)
