@@ -526,7 +526,7 @@ Humanoid数据集在$T{=}16$时取得最优MSE和$R^2$, 随$T$增大而快速退
 Ant数据集则在$T{=}256$时取得最优MSE, 且$R^2$在$T \geq 32$后保持正值.
 Walker2d数据集的MSE在$T{=}16$时最优(0.032), 随$T$增大而单调递增至0.058, 但$R^2$始终保持在0.92以上, 表明Walker2d的动力学较为简单, 序列长度对预测精度的影响有限.
 Humanoid(348维)和Walker2d(17维)的最优序列长度较短, 而Ant(105维)的最优序列长度较长, 这表明最优序列长度不仅与维度有关, 还与动力学系统的复杂程度和数据特性相关.
-综合考虑, 推荐Humanoid和Walker2d使用$T \in [16, 32]$, Ant使用$T \in [128, 256]$, 如图~3所示.
+综合考虑, 推荐Humanoid和Walker2d使用$T \in [16, 32]$, Ant使用$T \in [128, 256]$. 由于Walker2d各序列长度下MSE差异较小且$R^2$均在0.92以上, 图~3仅展示Humanoid和Ant的变化趋势.
 
 \begingroup\centering
 \includegraphics[width=0.95\columnwidth]{figures/seqlen_sensitivity.pdf}\\
