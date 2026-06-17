@@ -39,8 +39,8 @@ Major Program of Xiangjiang Laboratory (24XJ01001; 25XJ01001).}}
 本文提出S4D-WM, 一种基于对角状态空间模型的轻量级世界模型, 结合S4D参数化与Mamba风格门控结构, 实现$O(T\log T)$训练和$O(1)$单步推理, 参数量仅为0.14--0.23M.
 在D4RL基准的Humanoid、Ant和Walker2d三个数据集上的多种子实验表明:
 S4D-WM在高维Humanoid上精度最优, MSE为0.248, 分别优于LSTM、Transformer、GRU和Mamba约33\%、14\%、23\%和4\%;
-在Ant和Walker2d上同样具有竞争力, 且推理时间仅为8.3ms.
-序列长度分析揭示最优长度与维度相关: 高维Humanoid和Walker2d适合短序列, 低维Ant适合长序列.
+在Ant和Walker2d上同样具有竞争力.
+序列长度分析揭示最优长度与维度相关: Humanoid和Walker2d适合短序列, Ant适合长序列.
 门控阈值实验表明软阈值显著优于硬阈值和Garrote阈值.
 MPC概念验证实验中, S4D-WM与Mamba的回路时间相近, 瓶颈在梯度反向传播; 采样式MPC结合递推模式可进一步提升控制频率.
 
