@@ -40,7 +40,7 @@ Major Program of Xiangjiang Laboratory (24XJ01001; 25XJ01001).}}
 在D4RL基准的Humanoid、Ant和Walker2d三个数据集上的多种子实验表明:
 S4D-WM在高维Humanoid上精度最优, MSE为0.248, 分别优于LSTM、Transformer、GRU和Mamba约33\%、14\%、23\%和4\%;
 在Ant和Walker2d上具有竞争力.
-S4D-WM参数量仅0.23M, 在Humanoid和Ant上为对比方法中最少, 推理时间8.3ms.
+S4D-WM参数量仅0.23M, 推理时间8.3ms.
 序列长度分析揭示最优长度与维度相关: 高维Humanoid和Walker2d适合短序列, 低维Ant适合长序列.
 门控阈值实验表明软阈值显著优于硬阈值和Garrote阈值.
 MPC概念验证实验中, S4D-WM与Mamba的回路时间相近, 瓶颈在梯度反向传播; 采样式MPC结合递推模式可进一步提升控制频率.
