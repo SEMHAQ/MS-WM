@@ -22,7 +22,7 @@ loop_time = [299, 1265, 1296, 1298]
 freq = [3.3, 0.8, 0.8, 0.8]
 colors = ['#B0B0B0', '#B0B0B0', '#B0B0B0', '#1f77b4']
 
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(4.2, 5.0))
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(4.2, 4.0))
 
 # (a) Loop time
 bars1 = ax1.bar(range(len(methods)), loop_time, 0.55, color=colors,
