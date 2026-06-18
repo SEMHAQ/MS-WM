@@ -620,7 +620,7 @@ S4D-WM的训练MSE在前5个epoch快速下降(从$37.2{\times}10^{-2}$降至$24.
 随后放缓并最终收敛至$8.4{\times}10^{-2}$.
 虽然Mamba-WM的训练损失更低($4.0{\times}10^{-2}$), 但其验证损失($26.5{\times}10^{-2}$)高于S4D-WM($24.5{\times}10^{-2}$),
 表明S4D-WM凭借更少的参数(0.23M vs 0.66M)实现了更好的泛化.
-LSTM-WM和Trans.-WM的验证损失分别为$37.4{\times}10^{-2}$和$27.8{\times}10^{-2}$, 均高于S4D-WM.
+GRU-WM和LSTM-WM的验证损失分别为$35.0{\times}10^{-2}$和$37.4{\times}10^{-2}$, 均显著高于S4D-WM.
 
 \begingroup\centering
 \includegraphics[width=0.95\columnwidth]{figures/training_curves.pdf}\\
