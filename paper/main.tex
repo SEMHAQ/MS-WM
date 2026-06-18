@@ -430,7 +430,7 @@ Mamba & 25.84$\pm$0.60 & 0.677$\pm$0.008 & 9.5 & 0.66 \\
 
 表~1展示了各模型在D4RL Humanoid数据集上的性能对比, 报告3个随机种子的均值与标准差. S4D-WM的预测精度最优, MSE为$24.79{\times}10^{-2}$, 分别优于LSTM-WM、Transformer-WM、GRU-WM和Mamba-WM约33\%、14\%、23\%和4\%, 且标准差最小, 模型稳定性好. 参数量仅为0.23M, 远低于LSTM-WM(0.64M)和Mamba-WM(0.66M). 单样本推理时间8.3ms低于典型控制周期阈值.
 
-为进一步验证S4D-WM改进的统计显著性, 在Humanoid数据集上进行了配对$t$检验, 结果如表~2所示. S4D-WM相对于LSTM-WM、Transformer-WM和GRU-WM的改进均达到统计显著性水平$p<0.01$, 相对于Mamba-WM的改进接近显著水平($p{=}0.06$). 在Ant数据集上, S4D-WM与Transformer-WM的差异不显著$p{=}0.15$, 与两者仅0.9\%的差距一致.
+为进一步验证S4D-WM改进的统计显著性, 在Humanoid数据集上进行了配对$t$检验, 结果如表~2所示. S4D-WM相对于LSTM-WM、Transformer-WM和GRU-WM的改进均达到统计显著性水平$p<0.01$, 相对于Mamba-WM的改进接近显著水平($p{=}0.06$).
 
 \noindent\begin{minipage}{\columnwidth}
 \begingroup\centering
