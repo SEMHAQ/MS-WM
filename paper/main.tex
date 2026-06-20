@@ -882,7 +882,8 @@ Table~10~~MPC control performance comparison (D4RL Humanoid)\\
 LSTM & 1356 & 0.7\\
 GRU & 1307 & 0.8\\
 Mamba & 5779 & 0.2\\
-\textbf{S4D-WM} & \textbf{5768} & \textbf{0.2}\\
+S4D-WM & 5768 & 0.2\\
+\textbf{DA-SSM-WM} & \textbf{5782} & \textbf{0.2}\\
 \bottomrule
 \end{tabular}}
 \par\endgroup
@@ -908,14 +909,15 @@ Table~11~~CEM sampling-based MPC control performance (D4RL Humanoid)}\\
 LSTM & 32 & 31.3 \\
 GRU & 19 & 51.9 \\
 Mamba & 78 & 12.9 \\
-\textbf{S4D-WM} & \textbf{76} & \textbf{13.1} \\\bottomrule
+S4D-WM & 76 & 13.1 \\
+\textbf{DA-SSM-WM} & \textbf{77} & \textbf{12.9} \\\bottomrule
 \multicolumn{3}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms; $K{=}200$, $H{=}10$, 2轮迭代, GPU批量并行; 10次独立试验均值.}
 \end{tabular}}
 \end{minipage}
 \par\endgroup
 
 表~11表明, CEM-MPC相比梯度MPC(表~10)可将控制频率提升1--2个数量级.
-S4D-WM达到13.1Hz, 满足典型MPC控制需求(10Hz); Mamba-WM达到12.9Hz, 两者回路时间相近(76ms vs 78ms), 但S4D-WM的参数量(0.23M)仅为Mamba-WM(0.66M)的35\%.
+DA-SSM-WM达到12.9Hz, 满足典型MPC控制需求(10Hz); S4D-WM达到13.1Hz, Mamba-WM达到12.9Hz, 三者回路时间相近(76-78ms), 但DA-SSM-WM的参数量(0.24M)远低于Mamba-WM(0.66M).
 对CEM的候选数量$K$进行了敏感性分析: $K{=}100$时频率为13.6Hz, $K{=}200$时为12.0Hz(最优成本), $K{=}500$时为10.1Hz. 结果表明$K$在100--500范围内对控制质量影响较小, 但对频率有直接影响; $K{=}200$在成本和频率之间取得了较好的平衡.
 各方法MPC性能对比如图~7所示.
 
