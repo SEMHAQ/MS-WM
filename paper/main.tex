@@ -69,7 +69,7 @@ ZHOU Xin-min$^{1,\,2}$,~~YU Huan-jie$^{3\dagger}$,~~ZHANG Hui-hui$^{4}$,~~WANG W
 \end{center}
 
 \vspace{-10pt}\footnotesize{\textbf{Abstract:}
-High-dimensional state prediction for embodied intelligent robots faces the dual challenges of accuracy and real-time performance. This paper proposes S4D-WM, a lightweight world model based on diagonal state space models, combining S4D parameterization with Mamba-style gated structure to achieve $O(T\log T)$ training and $O(1)$ per-step inference, with only 0.14--0.23M parameters. Multi-seed experiments on three D4RL benchmarks (Humanoid 348D, Ant 105D, Walker2d 17D) show that S4D-WM achieves the best accuracy on high-dimensional Humanoid with MSE of 0.248, outperforming LSTM, Transformer, GRU, and Mamba by 33\%, 14\%, 23\%, and 4\% respectively, while remaining competitive on Ant and Walker2d. Sequence length analysis reveals that optimal length depends on dimensionality: shorter sequences suit Humanoid and Walker2d, while longer sequences benefit Ant. Soft-threshold gating significantly outperforms hard and Garrote thresholding by 13.7\% and 24.6\%. MPC proof-of-concept shows similar loop time between S4D-WM and Mamba, bottlenecked by gradient backpropagation; sampling-based MPC with recursive mode could further improve control frequency.
+High-dimensional state prediction for embodied intelligent robots faces the dual challenges of accuracy and real-time performance. This paper proposes S4D-WM, a lightweight world model based on diagonal state space models, combining S4D parameterization with Mamba-style gated structure to achieve $O(T\log T)$ training and $O(1)$ per-step inference, with only 0.14--0.23M parameters. Multi-seed experiments on three D4RL benchmarks (Humanoid 348D, Ant 105D, Walker2d 17D) show that S4D-WM achieves the best accuracy on high-dimensional Humanoid with MSE of 0.248, outperforming LSTM, Transformer, GRU, and Mamba by 33\%, 14\%, 23\%, and 4\% respectively, while remaining competitive on Ant and Walker2d. Sequence length analysis reveals that optimal length depends on dimensionality: shorter sequences suit Humanoid and Walker2d, while longer sequences benefit Ant. Soft-threshold gating significantly outperforms hard and Garrote thresholding by 9.3\% and 2.5\%. MPC proof-of-concept shows similar loop time between S4D-WM and Mamba, bottlenecked by gradient backpropagation; sampling-based MPC with recursive mode could further improve control frequency.
 
 \textbf{Key words:} state space model; world model; state prediction; model predictive control; embodied intelligence
 
@@ -733,17 +733,17 @@ Table~11~~Gating mechanism comparison with different threshold functions (D4RL H
 \begin{tabular}{@{}lccc@{ }}\toprule
 阈值函数 & MSE & $R^2$ & 时间$^{\text{a}}$\\
 \midrule
-硬阈值 & 0.284 & 0.738 & 7.8\\
-Garrote阈值\textsuperscript{\cite{25}} & 0.325 & 0.596 & 8.3\\
-{\CJKfamily{zhhei}\textbf{软阈值}} & \textbf{0.245} & \textbf{0.772} & \textbf{8.3}\\
+硬阈值 & 0.300$\pm$0.000 & 0.629$\pm$0.000 & 7.8\\
+Garrote阈值\textsuperscript{\cite{25}} & 0.279$\pm$0.005 & 0.655$\pm$0.006 & 8.3\\
+{\CJKfamily{zhhei}\textbf{软阈值}} & \textbf{0.272$\pm$0.002} & \textbf{0.664$\pm$0.003} & \textbf{8.3}\\
 \bottomrule
-\multicolumn{3}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}1$, $T{=}32$); 基于seed=42的单次运行.}
+\multicolumn{3}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}1$, $T{=}32$); 3 seeds.}
 \end{tabular}}
 \par\endgroup
 \end{minipage}
 
-从表~11可以看出, 软阈值门控的MSE(0.245)显著优于硬阈值(0.284, 降低13.7\%)和Garrote阈值(0.325, 降低24.6\%).
-硬阈值的不可微性导致梯度截断, 影响训练效率; Garrote阈值虽可微但其非单调性导致梯度方向不稳定.
+从表~11可以看出, 软阈值门控的MSE(0.272)优于硬阈值(0.300, 降低9.3\%)和Garrote阈值(0.279, 降低2.5\%), 且标准差最小(0.002), 表现最为稳定.
+硬阈值的不可微性导致梯度截断, 影响训练效率且结果完全无波动(标准差为0); Garrote阈值虽可微但其非单调性导致梯度方向不稳定.
 
 \subsection{讨论}
 
@@ -757,7 +757,7 @@ S4D-WM的核心价值在于精度、稳定性和参数效率的综合优势.
 在多步预测精度方面(表~4), S4D-WM在单步预测时取得最优, 但展开步数增加后Mamba-WM表现更好, 这一差距需结合参数效率综合评估.
 
 训练损失消融实验(表~9)表明, 多步展开损失对单步预测精度影响较小, 但对多步展开精度有显著贡献: $\lambda{=}1.0$时$H{=}8$的MSE相比$\lambda{=}0$降低2.8\%.
-阈值函数对比实验(表~11)验证了软阈值门控的优势: 软阈值MSE优于硬阈值(降低13.7\%)和Garrote阈值(降低24.6\%).
+阈值函数对比实验(表~11)验证了软阈值门控的优势: 软阈值MSE优于硬阈值(降低9.3\%)和Garrote阈值(降低2.5\%).
 
 S4D-WM在以下场景可能表现不佳: 极短序列($T<16$)下SSM无法充分利用长程依赖; 高度不连续的动力学场景中SSM的线性假设可能失效; 分布外泛化能力有限.
 在实际部署时, 建议结合不确定性估计来检测分布外样本.
