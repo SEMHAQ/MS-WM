@@ -15,10 +15,9 @@ T = 32
 
 print(f'Device: {device}', flush=True)
 
-def load_eps(d, s, mx=None):
+def load_eps(d, s):
     dd = os.path.join(d, s)
     fs = sorted([f for f in os.listdir(dd) if f.endswith('.npz')])
-    if mx: fs = fs[:mx]
     eps = []
     for i, f in enumerate(fs):
         eps.append((np.load(os.path.join(dd, f))['states'], np.load(os.path.join(dd, f))['actions']))
@@ -85,11 +84,11 @@ def train_eval(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed):
     params = sum(p.numel() for p in model.parameters()) / 1e6
     return {'mse': round(mse, 6), 'r2': round(r2, 6), 'best_epoch': best_ep, 'inf_time_ms': round(inf_time, 2), 'params_m': round(params, 3)}
 
-# Dataset configs
+# Dataset configs (Gymnasium MuJoCo expert-v0)
 datasets = {
-    'humanoid': {'dir': 'data/humanoid', 'sd': 348, 'ad': 17, 'train_max': 930, 'val_max': 233},
-    'ant': {'dir': 'data/ant', 'sd': 105, 'ad': 8, 'train_max': 837, 'val_max': 210},
-    'hopper': {'dir': 'data/hopper', 'sd': 11, 'ad': 3, 'train_max': 278, 'val_max': 70},
+    'humanoid': {'dir': 'data/humanoid', 'sd': 376, 'ad': 17},
+    'ant': {'dir': 'data/ant', 'sd': 105, 'ad': 8},
+    'walker2d': {'dir': 'data/walker2d', 'sd': 17, 'ad': 6},
 }
 
 models = {
@@ -134,9 +133,9 @@ for ds_name, ds_cfg in datasets.items():
     print(f'{"="*60}', flush=True)
 
     print(f'  Loading training data...', flush=True)
-    eps_tr = load_eps(ds_cfg['dir'], 'train', ds_cfg['train_max'])
+    eps_tr = load_eps(ds_cfg['dir'], 'train')
     print(f'  Loading validation data...', flush=True)
-    eps_vl = load_eps(ds_cfg['dir'], 'val', ds_cfg['val_max'])
+    eps_vl = load_eps(ds_cfg['dir'], 'val')
     m, s = stats(eps_tr)
     Xs, Xa, Y = make_data(eps_tr, T, m, s)
     Xv, Xav, Yv = make_data(eps_vl, T, m, s)
