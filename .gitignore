@@ -145,6 +145,10 @@ run.sh
 # Experiment backups
 experiments_backup/
 
+# Internal files
+CLAUDE_TASK.md
+EXPERIMENTS.md
+
 
 paper/peer_review_2/
 
