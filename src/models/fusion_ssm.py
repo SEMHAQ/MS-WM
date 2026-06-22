@@ -5,48 +5,22 @@ Fusion-SSM: 一种新型状态空间模型
 
 动机分析：
 - SSM擅长长程建模（Humanoid 348D最优）
-- Transformer擅长局部精细建模（Walker2d/Hopper最优）
+- Transformer擅长局部精细建模（Hopper最优）
 - 关键洞察：不同维度的任务需要不同的建模策略
 
 设计原则：
 1. SSM分支处理长程依赖（O(T log T)）
 2. 轻量注意力分支处理局部精细特征（窗口限制，O(TW)）
 3. 自适应门控融合两个分支的输出
-4. 保持参数效率（<0.3M）
+4. 保持参数效率
 """
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
-
-class DiagSSM(nn.Module):
-    """对角SSM（与S4D-WM相同）"""
-    def __init__(self, d_model, d_state=16):
-        super().__init__()
-        self.d_model = d_model
-        self.d_state = d_state
-        self.log_A_real = nn.Parameter(torch.randn(d_model, d_state) * 0.01 - 1.0)
-        self.A_imag = nn.Parameter(torch.randn(d_model, d_state) * 0.1)
-        self.B = nn.Parameter(torch.randn(d_model, d_state) * 0.01)
-        self.C = nn.Parameter(torch.randn(d_model, d_state) * 0.01)
-        self.D = nn.Parameter(torch.ones(d_model))
-        self.log_dt = nn.Parameter(torch.randn(d_model) * 0.01)
-
-    def forward(self, x):
-        batch, L, D = x.shape
-        N = self.d_state
-        dt = torch.exp(self.log_dt)
-        A = -torch.exp(self.log_A_real) + 1j * self.A_imag
-        dtA = dt.unsqueeze(-1) * A
-        powers = torch.arange(L, device=x.device, dtype=x.dtype)
-        dtA_pow = dtA.unsqueeze(-1) ** powers.unsqueeze(0).unsqueeze(0)
-        CB = self.C * self.B * dt.unsqueeze(-1)
-        K = (CB.unsqueeze(-1) * dtA_pow).sum(dim=1).real
-        K_fft = torch.fft.rfft(K, n=2*L)
-        x_fft = torch.fft.rfft(x.permute(0, 2, 1), n=2*L)
-        y = torch.fft.irfft(K_fft.unsqueeze(0) * x_fft, n=2*L)[:, :, :L]
-        return y.permute(0, 2, 1) + x * self.D
+# 从ssm_world_model导入DiagSSM，避免重复定义
+from src.models.ssm_world_model import DiagSSM
 
 
 class LocalAttention(nn.Module):

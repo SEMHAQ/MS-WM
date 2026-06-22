@@ -121,12 +121,14 @@ scripts/generate_mujoco_data_real.py
 scripts/generate_synthetic_data.py
 scripts/download_d4rl.py
 scripts/quick_test.py
-scripts/run_*.py
-scripts/run_*.sh
 scripts/test_*.py
 scripts/train_all_models.py
 scripts/train_mamba_*.py
-scripts/update_paper_tables.py
+
+# Keep new experiment scripts
+!scripts/run_all_experiments.py
+!scripts/update_paper_tables.py
+!scripts/cleanup_experiments.py
 
 # Old experiment results
 experiments/*.json
@@ -139,6 +141,9 @@ docs/
 notebooks/
 mkdocs.yml
 run.sh
+
+# Experiment backups
+experiments_backup/
 
 
 paper/peer_review_2/
