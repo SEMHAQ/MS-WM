@@ -111,6 +111,24 @@ else:
     results = {}
 
 for ds_name, ds_cfg in datasets.items():
+    # Check if all models and seeds are done for this dataset
+    all_done = True
+    for model_name in models:
+        key = f'{model_name}_{ds_name}'
+        if key not in results:
+            all_done = False
+            break
+        for seed in SEEDS:
+            seed_key = f'seed{seed}'
+            if seed_key not in results[key] or 'mse' not in results[key][seed_key]:
+                all_done = False
+                break
+        if not all_done:
+            break
+    if all_done:
+        print(f'\n{ds_name}: ALL DONE, SKIP', flush=True)
+        continue
+
     print(f'\n{"="*60}', flush=True)
     print(f'Dataset: {ds_name}', flush=True)
     print(f'{"="*60}', flush=True)
