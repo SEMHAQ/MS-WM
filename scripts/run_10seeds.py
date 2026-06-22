@@ -120,8 +120,7 @@ def train_model(ModelClass, name, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed, ds_name,
 datasets = {
     'humanoid': {'dir': 'data/humanoid', 'sd': 348, 'ad': 17, 'train_max': 930, 'val_max': 233},
     'ant': {'dir': 'data/ant', 'sd': 105, 'ad': 8, 'train_max': 837, 'val_max': 210},
-    'walker2d': {'dir': 'data/walker2d', 'sd': 17, 'ad': 6, 'train_max': 835, 'val_max': 209},
-    'hopper': {'dir': 'data/hopper', 'sd': 11, 'ad': 3, 'train_max': 278, 'val_max': 70},
+    'hopper': {'dir': 'data/hopper', 'sd': 11, 'ad': 6, 'train_max': 278, 'val_max': 70},
 }
 
 models = {
