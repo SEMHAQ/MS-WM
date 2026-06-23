@@ -5,13 +5,13 @@ from src.models.fusion_ssm import FSM
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 SEED = 42
-EPOCHS = 30
-BS = 64
+EPOCHS = 100
+BS = 256
 T = 32
 
-def load_eps(d, s, mx=200):
+def load_eps(d, s):
     dd = os.path.join(d, s)
-    fs = sorted([f for f in os.listdir(dd) if f.endswith('.npz')])[:mx]
+    fs = sorted([f for f in os.listdir(dd) if f.endswith('.npz')])
     return [(np.load(os.path.join(dd, f))['states'], np.load(os.path.join(dd, f))['actions']) for f in fs]
 
 def stats(eps):
