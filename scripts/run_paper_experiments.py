@@ -175,21 +175,45 @@ print('实验1: 多步预测 (Humanoid)', flush=True)
 print('='*60, flush=True)
 
 multistep_results = {}
+MULTISTEP_FILE = 'experiments/multistep_results.json'
+
+# 加载已有结果
+if os.path.exists(MULTISTEP_FILE):
+    with open(MULTISTEP_FILE) as f:
+        multistep_results = json.load(f)
+    print(f'已有结果:', flush=True)
+    for k, v in multistep_results.items():
+        print(f'  {k}: {len(v)} seeds', flush=True)
+
 Xs, Xa, Y, Xv, Xav, Yv, ds_cfg = data_cache['humanoid']
 
 for model_name in ['LSTM-WM', 'GRU-WM', 'Transformer-WM', 'Mamba-WM', 'S4D-WM', 'FSM-WM']:
+    # 检查是否已有完整结果
+    if model_name in multistep_results and len(multistep_results[model_name]) >= len(SEEDS):
+        print(f'\n{model_name}: 已有完整结果，跳过', flush=True)
+        continue
+
     print(f'\n{model_name}:', flush=True)
-    multistep_results[model_name] = {}
+    if model_name not in multistep_results:
+        multistep_results[model_name] = {}
     ModelClass, kwargs = get_model_config(model_name, ds_cfg['sd'], ds_cfg['ad'])
 
     for seed in SEEDS:
+        seed_key = f'seed{seed}'
+        if seed_key in multistep_results[model_name]:
+            print(f'  seed={seed} 已有，跳过', flush=True)
+            continue
         print(f'  seed={seed}...', end=' ', flush=True)
         model, _ = train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed)
         multistep = multi_step_predict(model, Xv, Xav, Yv)
-        multistep_results[model_name][f'seed{seed}'] = multistep
+        multistep_results[model_name][seed_key] = multistep
         print(f'OK', flush=True)
 
-with open('experiments/multistep_results.json', 'w') as f:
+        # 保存中间结果
+        with open(MULTISTEP_FILE, 'w') as f:
+            json.dump(multistep_results, f, indent=2)
+
+with open(MULTISTEP_FILE, 'w') as f:
     json.dump(multistep_results, f, indent=2)
 
 print('\n多步预测结果:', flush=True)
