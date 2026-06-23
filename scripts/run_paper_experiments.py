@@ -139,7 +139,7 @@ def get_model_config(model_name, sd, ad, **overrides):
         'Transformer-WM': (TransformerWorldModel, {'state_dim': sd, 'action_dim': ad, 'd_model': 128, 'n_layers': 4}),
         'Mamba-WM': (MambaWorldModel, {'state_dim': sd, 'action_dim': ad, 'd_model': 128, 'n_layers': 4}),
         'S4D-WM': (SSMWorldModel, {'state_dim': sd, 'action_dim': ad, 'd_model': 128, 'd_state': 16, 'n_layers': 4}),
-        'FSM-WM': (FSM, {'state_dim': sd, 'action_dim': ad, 'd_model': 128, 'd_state': 16, 'n_layers': 4, 'window_size': 8}),
+        'FSM-WM': (FSM, {'state_dim': sd, 'action_dim': ad, 'd_model': 128, 'd_state': 16, 'n_layers': 2, 'window_size': 8}),
     }
     ModelClass, kwargs = configs[model_name]
     kwargs.update(overrides)
