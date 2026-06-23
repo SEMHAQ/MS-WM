@@ -127,7 +127,7 @@ def gradient_mpc(model, init_state, init_actions, ref_state, horizon=10, n_iter=
 # CEM采样MPC
 # ============================================================
 def cem_mpc(model, init_state, init_actions, ref_state, horizon=10, n_samples=200, n_elite=30, n_iter=2):
-    """CEM采样MPC"""
+    """CEM采样MPC - GPU批量并行版本"""
     model.eval()
     action_dim = init_actions.shape[-1]
 
@@ -141,23 +141,22 @@ def cem_mpc(model, init_state, init_actions, ref_state, horizon=10, n_samples=20
         samples = mean.unsqueeze(0) + std.unsqueeze(0) * samples
         samples = torch.clamp(samples, -1, 1)  # 限制动作范围
 
-        # 评估每个样本
-        costs = []
-        for i in range(n_samples):
-            cur_state = init_state.clone()
-            total_cost = 0
+        # 批量评估所有样本 (GPU并行)
+        # 扩展初始状态到n_samples个副本
+        cur_states = init_state.expand(n_samples, -1, -1)  # (n_samples, T, state_dim)
+        total_costs = torch.zeros(n_samples, device=device)
 
-            for h in range(horizon):
-                pred = model(cur_state, samples[i:i+1, h:h+1, :])
-                cost = torch.sum((pred - ref_state) ** 2)
-                total_cost = cost
-                cur_state = torch.cat([cur_state[:, 1:], pred.unsqueeze(1)], dim=1)
-
-            costs.append(total_cost.item())
+        for h in range(horizon):
+            # 批量前向传播
+            pred = model(cur_states, samples[:, h:h+1, :])  # (n_samples, state_dim)
+            # 计算代价
+            costs = torch.sum((pred - ref_state) ** 2, dim=-1)  # (n_samples,)
+            total_costs = costs
+            # 更新状态
+            cur_states = torch.cat([cur_states[:, 1:], pred.unsqueeze(1)], dim=1)
 
         # 选择精英样本
-        costs = torch.tensor(costs)
-        elite_idx = torch.topk(costs, n_elite, largest=False).indices
+        elite_idx = torch.topk(total_costs, n_elite, largest=False).indices
         elite_samples = samples[elite_idx]
 
         # 更新分布
