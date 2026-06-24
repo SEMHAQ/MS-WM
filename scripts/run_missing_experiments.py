@@ -132,7 +132,7 @@ def evaluate_model(model, Xv, Xav, Yv):
     params = sum(p.numel() for p in model.parameters()) / 1e6
     return {'mse': round(mse, 6), 'r2': round(r2, 4), 'params_m': round(params, 3)}
 
-def multi_step_predict(model, Xv, Xav, Yv, H_list=[1, 4, 8, 16]):
+def multi_step_predict(model, Xv, Xav, Yv, H_list=[1, 4, 8]):
     """多步预测"""
     model.eval()
     results = {}
