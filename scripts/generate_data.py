@@ -4,9 +4,10 @@ import numpy as np
 import os
 
 DATASETS = {
-    'humanoid': {'env': 'Humanoid-v4', 'episodes': 1000},
-    'ant': {'env': 'Ant-v4', 'episodes': 1000},
-    'walker2d': {'env': 'Walker2d-v4', 'episodes': 1000},
+    'humanoid': {'env': 'Humanoid-v5', 'episodes': 1000},
+    'humanoid_standup': {'env': 'HumanoidStandup-v5', 'episodes': 1000},
+    'ant': {'env': 'Ant-v5', 'episodes': 1000},
+    'walker2d': {'env': 'Walker2d-v5', 'episodes': 1000},
 }
 
 def generate_expert_data(env_name, output_dir, n_episodes=1000, max_steps=1000):

@@ -8,6 +8,7 @@ DATASETS = {
     'humanoid': 'mujoco/humanoid/medium-v0',
     'ant': 'mujoco/ant/medium-v0',
     'walker2d': 'mujoco/walker2d/medium-v0',
+    'hopper': 'mujoco/hopper/medium-v0',
 }
 
 def download_and_convert(dataset_id, output_dir):
