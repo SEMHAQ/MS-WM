@@ -42,28 +42,34 @@ class HardThresholdGate(nn.Module):
     """硬阈值门控"""
     def __init__(self, d_model):
         super().__init__()
+        self.linear = nn.Linear(d_model, 3)  # 输入d_model*3, 输出3
         self.threshold = nn.Parameter(torch.tensor(0.5))
 
     def forward(self, x):
-        return (x > self.threshold).float()
+        # 输出3个值，用于三个分支的权重
+        gate_values = self.linear(x)
+        return (gate_values > self.threshold).float()
 
 class GarroteGate(nn.Module):
     """Garrote阈值门控"""
     def __init__(self, d_model):
         super().__init__()
-        self.scale = nn.Parameter(torch.ones(d_model))
+        self.linear = nn.Linear(d_model, 3)  # 输入d_model*3, 输出3
+        self.scale = nn.Parameter(torch.ones(3))
 
     def forward(self, x):
-        return 1 - (self.scale / (x + 1e-8))**2
+        # 输出3个值，用于三个分支的权重
+        gate_values = self.linear(x)
+        return 1 - (self.scale / (gate_values + 1e-8))**2
 
 class SoftThresholdGate(nn.Module):
     """软阈值门控（默认）"""
     def __init__(self, d_model):
         super().__init__()
-        self.linear = nn.Linear(d_model, d_model)
+        self.linear = nn.Linear(d_model, 3)  # 输入d_model*3, 输出3
 
     def forward(self, x):
-        return torch.sigmoid(self.linear(x))
+        return torch.softmax(self.linear(x), dim=-1)
 
 # ============================================================
 # MS-WM模型（可配置门控机制）
@@ -93,11 +99,11 @@ class MultiScaleModel(nn.Module):
 
         # 门控机制
         if gate_type == 'hard':
-            self.fusion_gate = HardThresholdGate(d_model * 3)
+            self.fusion_gate = HardThresholdGate(d_model * 3)  # 输入d_model*3, 输出3
         elif gate_type == 'garrote':
-            self.fusion_gate = GarroteGate(d_model * 3)
+            self.fusion_gate = GarroteGate(d_model * 3)  # 输入d_model*3, 输出3
         elif gate_type == 'soft':
-            self.fusion_gate = SoftThresholdGate(d_model * 3)
+            self.fusion_gate = SoftThresholdGate(d_model * 3)  # 输入d_model*3, 输出3
 
         self.fusion_proj = nn.Linear(d_model, state_dim)
 
