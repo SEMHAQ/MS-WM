@@ -596,7 +596,7 @@ Fig.~2~~Inference time comparison under different batch sizes}
 
 MPC需要在每个控制周期内对多步未来状态进行展开预测, 因此多步预测精度与单步精度同样重要.
 为评估各模型在多步自回归展开场景下的预测能力,
-在Humanoid数据集上以$T=32$为输入窗口, 逐步递推预测$H=1, 4, 8$步后的状态, 结果如表~4所示.
+在Humanoid数据集上以$T=32$为输入窗口, 逐步递推预测$H=1, 4, 8, 16$步后的状态, 结果如表~4所示.
 
 \begingroup\centering
 {\CJKfamily{kai} 表~4~~多步预测MSE对比(Humanoid, $T=32$, $\times10^{-3}$)\\
@@ -606,16 +606,17 @@ Table~4~~Multi-step prediction MSE comparison (Humanoid, $T=32$, $\times10^{-3}$
 \begin{tabular}{@{}lcccccc@{}}\toprule
 展开步数 & LSTM & GRU & Trans. & Mamba & S4D-WM & \textbf{MS-WM}\\
 \midrule
-1  & 0.467 & 0.717 & \textbf{0.357} & 0.307 & 0.303 & 0.317\\
-4  & 0.705 & 1.283 & \textbf{0.562} & 0.485 & 0.518 & 0.602\\
-8  & 0.962 & 2.627 & \textbf{0.774} & 0.718 & 0.794 & 0.924\\
+1  & 0.131 & 0.122 & \textbf{0.081} & 0.125 & 0.107 & 0.117\\
+4  & 0.958 & 0.952 & \textbf{0.889} & 0.950 & 0.909 & 0.902\\
+8  & 1.143 & 1.104 & \textbf{1.025} & 1.108 & 1.088 & 1.324\\
+16 & 1.349 & 1.240 & \textbf{1.094} & 1.241 & 1.309 & 41.502\\
 \bottomrule
 \end{tabular}}\par\endgroup
 
 由表~4可知, 随着展开步数增加, 所有模型的预测误差均单调递增, 这是自回归展开中误差累积的典型特征.
 Transformer-WM在所有步数上均取得最优精度, 得益于其注意力机制对长程依赖的强建模能力.
-MS-WM在$H{=}1$时表现接近最优(0.317 vs Transformer 0.357), 但随着步数增加, 误差累积较快.
-这表明MS-WM更适合单步预测和短时域控制场景, 而对于长时域规划任务, Transformer是更好的选择.
+MS-WM在$H{=}1$时表现接近最优(0.117 vs Transformer 0.081), 但随着步数增加, 误差累积较快, $H{=}16$时MSE高达41.502.
+这表明MS-WM的多尺度架构在长时域递推时存在数值不稳定性, 需要通过多步展开训练等方法加以改进.
 
 为进一步验证S4D-WM在不同维度动力学系统上的泛化能力,
 在MuJoCo\textsuperscript{\cite{28}}仿真器的Ant-expert数据集上进行了实验.
