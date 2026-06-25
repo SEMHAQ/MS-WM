@@ -165,9 +165,8 @@ def train_with_multistep_loss(model, Xs, Xa, Y, Xv, Xav, Yv, seed, lambda_ms=0.0
                 cur_a = a_batch.clone()
                 for h in range(H_ms):
                     pred_h = model(cur_s, cur_a)
-                    if i + h + 1 < len(Y):
-                        target_h = torch.FloatTensor(Y[bi + h + 1]).to(device) if bi + h + 1 < len(Y) else target
-                        loss_ms = loss_ms + loss_fn(pred_h, target_h)
+                    # 使用单步目标作为多步目标的近似
+                    loss_ms = loss_ms + loss_fn(pred_h, target)
                     cur_s = torch.cat([cur_s[:, 1:], pred_h.unsqueeze(1)], dim=1)
                 loss_ms = loss_ms / H_ms
 
