@@ -93,7 +93,8 @@ class MultiScaleModel(nn.Module):
             pred = self.fusion(fused)
         return states[:, -1, :] + pred
 
-def train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed, epochs=EPOCHS):
+def train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed, epochs=EPOCHS, lambda_ms=0.5, H_ms=4):
+    """训练模型，支持多步损失"""
     torch.manual_seed(seed); np.random.seed(seed)
     model = ModelClass(**kwargs).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=5e-4, weight_decay=1e-4)
@@ -106,8 +107,26 @@ def train_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed, epochs=EPOCHS)
         idx = np.random.permutation(len(Xs))
         for i in range(0, len(idx), BS):
             bi = idx[i:i+BS]
-            pred = model(torch.FloatTensor(Xs[bi]).to(device), torch.FloatTensor(Xa[bi]).to(device))
-            loss = loss_fn(pred, torch.FloatTensor(Y[bi]).to(device))
+            s_batch = torch.FloatTensor(Xs[bi]).to(device)
+            a_batch = torch.FloatTensor(Xa[bi]).to(device)
+            target = torch.FloatTensor(Y[bi]).to(device)
+
+            # 单步损失
+            pred = model(s_batch, a_batch)
+            loss_single = loss_fn(pred, target)
+
+            # 多步损失
+            loss_ms = torch.tensor(0.0, device=device)
+            if lambda_ms > 0:
+                cur_s = s_batch.clone()
+                cur_a = a_batch.clone()
+                for h in range(H_ms):
+                    pred_h = model(cur_s, cur_a)
+                    loss_ms = loss_ms + loss_fn(pred_h, target)
+                    cur_s = torch.cat([cur_s[:, 1:], pred_h.unsqueeze(1)], dim=1)
+                loss_ms = loss_ms / H_ms
+
+            loss = loss_single + lambda_ms * loss_ms
             opt.zero_grad(); loss.backward(); torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0); opt.step()
         sch.step()
         model.eval()
