@@ -59,8 +59,9 @@ class GarroteGate(nn.Module):
 
     def forward(self, x):
         # 输出3个值，用于三个分支的权重
+        # 使用数值稳定的Garrote公式: 1 - scale^2 / (x^2 + epsilon)
         gate_values = self.linear(x)
-        return 1 - (self.scale / (gate_values + 1e-8))**2
+        return 1 - (self.scale**2) / (gate_values**2 + 1e-6)
 
 class SoftThresholdGate(nn.Module):
     """软阈值门控（默认）"""
