@@ -521,45 +521,16 @@ S4D-WM & 27.13$\pm$0.35 & 0.661$\pm$0.004 & 4.43 & 0.23 \\
 
 为进一步验证MS-WM在高维任务上的优势, 在HumanoidStandup数据集(348维)上进行了实验, 结果如表~2所示. MS-WM取得了最优精度(MSE=$48.97{\times}10^{-2}$), 优于S4D-WM($50.79{\times}10^{-2}$)和Transformer-WM($54.54{\times}10^{-2}$), 进一步证实了多尺度融合架构对高维复杂动力学的有效性.
 
-为评估模型在实际部署场景下的推理性能,
-测量了各模型的前向传播时间, 序列长度$T{=}32$, 结果如表~3所示.
-
-\begingroup\centering
-\begin{minipage}{\columnwidth}
-\centering
-{\CJKfamily{kai} 表~3~~各模型推理时间对比($T=32$, 单位: ms)}\\
-Table~3~~Inference time comparison ($T=32$, unit: ms)}\\
-\vskip 3pt
-{\fontsize{8.5pt}{10.6pt}\selectfont
-\begin{tabular}{lcccccc}\toprule
-模型 & LSTM & GRU & Trans. & Mamba & S4D-WM & \textbf{MS-WM} \\
-\midrule
-推理时间 & 2.52 & 1.81 & 9.65 & 4.55 & 4.43 & \textbf{2.16} \\
-\bottomrule
-\end{tabular}}
-\end{minipage}
-\par\endgroup
-
-从表~3可以看出, MS-WM的推理时间最短(2.16ms), 优于GRU-WM(1.81ms)和LSTM-WM(2.52ms), 显著快于Transformer-WM(9.65ms). 这表明多尺度融合架构在保持高精度的同时, 实现了高效的推理性能.
-
-\begingroup\centering
-\includegraphics[width=0.95\columnwidth]{figures/batch_inference.pdf}\\
-{\fontsize{8.5pt}{10.6pt}\selectfont 图~2~~不同批次大小下的推理时间对比\\
-Fig.~2~~Inference time comparison under different batch sizes}
-\par\endgroup
-
 MPC需要在每个控制周期内对多步未来状态进行展开预测, 因此多步预测精度与单步精度同样重要.
 为评估各模型在多步自回归展开场景下的预测能力,
-在Humanoid数据集上以$T=32$为输入窗口, 逐步递推预测$H=1, 4, 8, 16$步后的状态, 结果如表~4所示.
+在Humanoid数据集上以$T=32$为输入窗口, 逐步递推预测$H=1, 4, 8, 16$步后的状态, 结果如表~3所示.
 
 \begingroup\centering
-{\CJKfamily{kai} 表~4~~多步预测MSE对比(Humanoid, $T=32$, $\times10^{-3}$)\\
-Table~4~~Multi-step prediction MSE comparison (Humanoid, $T=32$, $\times10^{-3}$)}\\
-\label{tab:4} \vskip 3pt
+{\CJKfamily{kai} 表~3~~多步预测MSE对比(Humanoid, $T=32$, $\times10^{-3}$)\\
+Table~3~~Multi-step prediction MSE comparison (Humanoid, $T=32$, $\times10^{-3}$)}\\
+\label{tab:3} \vskip 3pt
 {\fontsize{8.5pt}{10.6pt}\selectfont
-\begin{tabular}{lcccccc}\toprule
-& \multicolumn{6}{c}{展开步数} \\
-\cmidrule(lr){2-7}
+\begin{tabular}{@{}lcccc@{ }}\toprule
 模型 & $H{=}1$ & $H{=}4$ & $H{=}8$ & $H{=}16$ \\\midrule
 LSTM & 0.130 & 0.928 & 1.057 & 1.352 \\
 GRU & 0.121 & 0.916 & 1.049 & 1.256 \\
