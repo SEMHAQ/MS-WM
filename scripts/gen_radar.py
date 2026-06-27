@@ -33,7 +33,7 @@ raw_scores = {
     'MS-WM':   [0.737,  1/21.00,  1/2.16,  1/0.085],
 }
 
-categories = ['R2', '预测精度', '推理速度', '参数效率']
+categories = ['$R^2$', '预测精度', '推理速度', '参数效率']
 N = len(categories)
 
 def normalize(col_idx):
