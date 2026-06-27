@@ -131,7 +131,7 @@ Mamba}的选择性扫描机制虽然具有输入自适应能力, 但其参数量
 
 1)~~提出多尺度动力学世界模型MS-WM, 通过慢速SSM、快速SSM和局部注意力三个分支分别处理不同时间尺度的物理变化. 慢速SSM捕捉长程依赖如位置变化, 快速SSM捕捉短程依赖如速度变化, 局部注意力捕捉瞬时变化如力变化. 通过门控机制自适应融合三个分支, 实现多尺度建模;
 
-2)~~在Gymnasium MuJoCo基准的Humanoid348维、Ant105维和Walker2d17维三个数据集上进行了系统实验. 多种子实验5个随机种子表明, MS-WM在高维Humanoid上取得最优精度(MSE=21.00$\times10^{-2}$), 比Transformer-WM提升18.8\%; 在中维Ant上也优于所有基线;
+2)~~在Gymnasium MuJoCo基准的Humanoid 348维、Ant 105维和Walker2d 17维四个数据集上进行了系统实验. 多种子实验表明, MS-WM在高维Humanoid上取得最优精度, MSE为$21.00\times10^{-2}$, 比Transformer-WM提升18.8\%; 在中维Ant上也优于所有基线;
 
 3)~~首次在机器人世界模型状态预测任务上系统比较了LSTM、Transformer、GRU、Mamba、S4D和MS-WM六种序列模型, 揭示了多尺度建模对高维复杂动力学更有效的规律;
 
@@ -517,9 +517,9 @@ S4D-WM & 27.13$\pm$0.35 & 0.661$\pm$0.004 & 4.43 & 0.23 \\
 \end{minipage}
 \par\endgroup
 
-表~1展示了各模型在Humanoid数据集上的性能对比. MS-WM取得了最优精度(MSE=$21.00{\times}10^{-2}$), 显著优于Transformer-WM(降低18.8\%), S4D-WM(降低22.6\%)和Mamba-WM(降低23.2\%), 同时大幅优于LSTM-WM(降低48.6\%)和GRU-WM(降低41.1\%). MS-WM通过多尺度动力学建模, 在高维状态预测任务中实现了更精确的预测.
+表~1展示了各模型在Humanoid数据集上的性能对比. MS-WM取得了最优精度, MSE为$21.00\times10^{-2}$, 显著优于Transformer-WM降低18.8\%, S4D-WM降低22.6\%和Mamba-WM降低23.2\%, 同时大幅优于LSTM-WM降低48.6\%和GRU-WM降低41.1\%. MS-WM通过多尺度动力学建模, 在高维状态预测任务中实现了更精确的预测.
 
-为进一步验证MS-WM在高维任务上的优势, 在HumanoidStandup数据集348维上进行了实验, 结果如表~2所示. MS-WM取得了最优精度(MSE=$48.97{\times}10^{-2}$), 优于S4D-WM($50.79{\times}10^{-2}$)和Transformer-WM($54.54{\times}10^{-2}$), 进一步证实了多尺度融合架构对高维复杂动力学的有效性.
+为进一步验证MS-WM在高维任务上的优势, 在HumanoidStandup数据集348维上进行了实验, 结果如表~2所示. MS-WM取得了最优精度, MSE为$48.97\times10^{-2}$, 优于S4D-WM的$50.79\times10^{-2}$和Transformer-WM的$54.54\times10^{-2}$, 进一步证实了多尺度融合架构对高维复杂动力学的有效性.
 
 MPC需要在每个控制周期内对多步未来状态进行展开预测, 因此多步预测精度与单步精度同样重要.
 为评估各模型在多步自回归展开场景下的预测能力,
@@ -571,7 +571,7 @@ S4D-WM & 77.02$\pm$0.43 & 0.101$\pm$0.005 & 4.43 & 0.16 \\
 \par\endgroup
 \end{minipage}
 
-在Ant数据集上, MS-WM取得了最优精度(MSE=$72.34{\times}10^{-2}$), 优于Transformer-WM($73.78{\times}10^{-2}$)和S4D-WM($77.02{\times}10^{-2}$). MS-WM在中维任务中也表现出色.
+在Ant数据集上, MS-WM取得了最优精度, MSE为$72.34\times10^{-2}$, 优于Transformer-WM的$73.78\times10^{-2}$和S4D-WM的$77.02\times10^{-2}$. MS-WM在中维任务中也表现出色.
 
 \noindent\begin{minipage}{\columnwidth}
 \begingroup\centering
@@ -592,9 +592,9 @@ S4D-WM & 2.88$\pm$0.02 & 0.969$\pm$0.001 \\
 \par\endgroup
 \end{minipage}
 
-在Walker2d17维数据集上, Transformer-WM取得了最优精度(MSE=$2.80{\times}10^{-2}$), S4D-WM次之($2.88{\times}10^{-2}$), MS-WM($3.75{\times}10^{-2}$)表现不如传统方法, 结果如表~5所示. 这表明对于低维简单动力学系统, 多尺度建模的优势不明显, 传统方法已足够.
+在Walker2d 17维数据集上, Transformer-WM取得了最优精度, MSE为$2.80\times10^{-2}$, S4D-WM次之为$2.88\times10^{-2}$, MS-WM为$3.75\times10^{-2}$表现不如传统方法, 结果如表~5所示. 这表明对于低维简单动力学系统, 多尺度建模的优势不明显, 传统方法已足够.
 
-综合四个数据集的结果, MS-WM在高维复杂动力学(Humanoid, 348维)上取得最优精度(MSE=$21.00{\times}10^{-2}$), 比Transformer-WM提升18.8\%; 在中维(Ant, 105维)上也优于所有基线; 但在低维(Walker2d, 17维)上不如传统方法. 这表明多尺度建模对高维复杂动力学更有效, 而对于低维简单系统, 传统方法已足够.
+综合四个数据集的结果, MS-WM在高维复杂动力学Humanoid 348维上取得最优精度, MSE为$21.00\times10^{-2}$, 比Transformer-WM提升18.8\%; 在中维Ant 105维上也优于所有基线; 但在低维Walker2d 17维上不如传统方法. 这表明多尺度建模对高维复杂动力学更有效, 而对于低维简单系统, 传统方法已足够.
 
 \begingroup\centering
 \includegraphics[width=0.95\columnwidth]{figures/radar_comparison.pdf}\\
