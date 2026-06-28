@@ -68,7 +68,7 @@ ax2.set_xticklabels(['16', '32', '64', '128', '256'])
 ax2.grid(True, alpha=0.2, axis='y', linewidth=0.5)
 ax2.spines['top'].set_visible(False)
 ax2.spines['right'].set_visible(False)
-ax2.text(0.5, 1.02, '(b) $R^2$随序列长度的变化', transform=ax2.transAxes,
+ax2.text(0.5, 1.06, '(b) $R^2$随序列长度的变化', transform=ax2.transAxes,
          fontproperties=zhfont, fontsize=10, ha='center', va='bottom')
 
 # 4-item legend
@@ -79,10 +79,10 @@ legend_elements = [
     mpatches.Patch(facecolor='#A23B72', alpha=0.15, label='Ant推荐区间'),
 ]
 fig.legend(handles=legend_elements, loc='upper center', ncol=4, fontsize=8.5, prop=zhfont_s,
-           bbox_to_anchor=(0.5, 0.48), frameon=True, fancybox=True,
+           bbox_to_anchor=(0.5, 0.46), frameon=True, fancybox=True,
            framealpha=0.9, edgecolor='gray')
 
 plt.tight_layout()
-plt.subplots_adjust(hspace=0.4)
+plt.subplots_adjust(hspace=0.45)
 plt.savefig('paper/figures/seqlen_sensitivity.pdf', dpi=300, bbox_inches='tight')
 print("Done: seqlen_sensitivity.pdf")
