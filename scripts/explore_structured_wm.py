@@ -111,41 +111,56 @@ class StructuredWM(nn.Module):
     def __init__(self, state_dim, action_dim, d_model=128, d_state=16, n_layers=1):
         super().__init__()
         self.state_dim = state_dim
+        self.pos_dim = state_dim // 3
+        self.vel_dim = state_dim // 3
+        self.force_dim = state_dim - 2 * (state_dim // 3)
 
         # 位置分支（慢变化）- 用较大的d_state
-        self.pos_branch = nn.Sequential(
-            nn.Linear(state_dim // 3 + action_dim, d_model),
+        self.pos_encoder = nn.Sequential(
+            nn.Linear(self.pos_dim + action_dim, d_model),
             nn.GELU(),
-            nn.Linear(d_model, d_model),
-            nn.LayerNorm(d_model),
-            DiagSSM(d_model, d_state * 2),
+            nn.Linear(d_model, d_model)
+        )
+        self.pos_ssm = nn.ModuleList([
+            nn.ModuleDict({'norm': nn.LayerNorm(d_model), 'ssm': DiagSSM(d_model, d_state * 2)})
+            for _ in range(n_layers)
+        ])
+        self.pos_decoder = nn.Sequential(
             nn.Linear(d_model, d_model),
             nn.GELU(),
-            nn.Linear(d_model, state_dim // 3)
+            nn.Linear(d_model, self.pos_dim)
         )
 
         # 速度分支（快变化）- 用标准d_state
-        self.vel_branch = nn.Sequential(
-            nn.Linear(state_dim // 3 + action_dim, d_model),
+        self.vel_encoder = nn.Sequential(
+            nn.Linear(self.vel_dim + action_dim, d_model),
             nn.GELU(),
-            nn.Linear(d_model, d_model),
-            nn.LayerNorm(d_model),
-            DiagSSM(d_model, d_state),
+            nn.Linear(d_model, d_model)
+        )
+        self.vel_ssm = nn.ModuleList([
+            nn.ModuleDict({'norm': nn.LayerNorm(d_model), 'ssm': DiagSSM(d_model, d_state)})
+            for _ in range(n_layers)
+        ])
+        self.vel_decoder = nn.Sequential(
             nn.Linear(d_model, d_model),
             nn.GELU(),
-            nn.Linear(d_model, state_dim // 3)
+            nn.Linear(d_model, self.vel_dim)
         )
 
         # 力分支（瞬时变化）- 用较小的d_state
-        self.force_branch = nn.Sequential(
-            nn.Linear(state_dim // 3 + action_dim, d_model),
+        self.force_encoder = nn.Sequential(
+            nn.Linear(self.force_dim + action_dim, d_model),
             nn.GELU(),
-            nn.Linear(d_model, d_model),
-            nn.LayerNorm(d_model),
-            DiagSSM(d_model, d_state // 2),
+            nn.Linear(d_model, d_model)
+        )
+        self.force_ssm = nn.ModuleList([
+            nn.ModuleDict({'norm': nn.LayerNorm(d_model), 'ssm': DiagSSM(d_model, d_state // 2)})
+            for _ in range(n_layers)
+        ])
+        self.force_decoder = nn.Sequential(
             nn.Linear(d_model, d_model),
             nn.GELU(),
-            nn.Linear(d_model, state_dim - 2 * (state_dim // 3))
+            nn.Linear(d_model, self.force_dim)
         )
 
     def forward(self, states, actions):
@@ -154,14 +169,27 @@ class StructuredWM(nn.Module):
             actions = torch.cat([pad, actions], dim=1)
 
         # 分解状态
-        pos = states[:, :, :self.state_dim // 3]  # 位置
-        vel = states[:, :, self.state_dim // 3:2*(self.state_dim // 3)]  # 速度
-        force = states[:, :, 2*(self.state_dim // 3):]  # 力
+        pos = states[:, :, :self.pos_dim]  # 位置
+        vel = states[:, :, self.pos_dim:self.pos_dim+self.vel_dim]  # 速度
+        force = states[:, :, self.pos_dim+self.vel_dim:]  # 力
 
-        # 分别处理
-        pos_pred = self.pos_branch(torch.cat([pos, actions], dim=-1))
-        vel_pred = self.vel_branch(torch.cat([vel, actions], dim=-1))
-        force_pred = self.force_branch(torch.cat([force, actions], dim=-1))
+        # 位置分支
+        pos_h = self.pos_encoder(torch.cat([pos, actions], dim=-1))
+        for block in self.pos_ssm:
+            residual = pos_h; x_norm = block['norm'](pos_h); pos_h = residual + block['ssm'](x_norm)
+        pos_pred = self.pos_decoder(pos_h[:, -1, :])
+
+        # 速度分支
+        vel_h = self.vel_encoder(torch.cat([vel, actions], dim=-1))
+        for block in self.vel_ssm:
+            residual = vel_h; x_norm = block['norm'](vel_h); vel_h = residual + block['ssm'](x_norm)
+        vel_pred = self.vel_decoder(vel_h[:, -1, :])
+
+        # 力分支
+        force_h = self.force_encoder(torch.cat([force, actions], dim=-1))
+        for block in self.force_ssm:
+            residual = force_h; x_norm = block['norm'](force_h); force_h = residual + block['ssm'](x_norm)
+        force_pred = self.force_decoder(force_h[:, -1, :])
 
         # 拼接
         return states[:, -1, :] + torch.cat([pos_pred, vel_pred, force_pred], dim=-1)
