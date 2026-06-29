@@ -1,12 +1,9 @@
 """MIMO-WM: Multi-Input Multi-Output World Model
 
-基于S5架构的世界模型，核心创新：
+核心创新：
 1. MIMO结构：一个SSM处理所有维度
 2. GLU激活：门控线性单元
-3. 正确的初始化：HiPPO初始化
-4. 并行扫描：高效计算
-
-论文：S5: Simplified State Space Layers (Smith et al., ICLR 2023)
+3. 并行扫描：高效计算
 """
 import torch, torch.nn as nn, numpy as np, sys, os, json, time
 sys.path.insert(0, '.')
