@@ -8,7 +8,7 @@
 % 标题，基金项目，作者，地址定义
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \makeatother
-\title{\LARGE\textbf{基于S5的人形机器人轻量级世界模型}\\
+\title{\LARGE\textbf{基于MIMO-SSM的人形机器人轻量级世界模型}\\
 \footnotetext{\scriptsize \hskip -6pt
 \hspace*{-0.1em}收稿日期: xxxx$-$xx$-$xx; 录用日期: xxxx$-$xx$-$xx.\\
 \hspace*{1.1em}$^{\dag}$通讯作者. E-mail: \mbox{semhaqx@gmail.com}.\\
@@ -23,7 +23,7 @@ Major Program of Xiangjiang Laboratory (24XJ01001; 25XJ01001).}}
 \scriptsize 3. 湖南工商大学~计算机学院, 湖南~长沙~410205;\\
 \scriptsize 4. 湖南工商大学~前沿交叉学院, 湖南~长沙~410205) \\}
 \date{}
-\fancyhead[CO]{{\footnotesize 周新民等: 基于S5的人形机器人轻量级世界模型}}
+\fancyhead[CO]{{\footnotesize 周新民等: 基于MIMO-SSM的人形机器人轻量级世界模型}}
 \setlength{\abovedisplayskip}{1.5mm}
 \setlength{\belowdisplayskip}{1.5mm}
 \maketitle
@@ -36,7 +36,7 @@ Major Program of Xiangjiang Laboratory (24XJ01001; 25XJ01001).}}
 \parbox{\textwidth}{\setlength{\parindent}{1em}
 {\footnotesize {\CJKfamily{hei} 摘要:}
 机器人的高维状态预测面临精度与实时性的双重挑战.
-本文提出基于S5的人形机器人轻量级世界模型MIMO-WM, 采用多输入多输出状态空间模型(MIMO-SSM)架构, 通过并行扫描算法实现高效序列建模, 并引入sigmoid门控机制增强表达能力.
+本文提出基于MIMO-SSM的人形机器人轻量级世界模型MIMO-WM, 采用多输入多输出状态空间模型(MIMO-SSM)架构, 通过并行扫描算法实现高效序列建模, 并引入sigmoid门控机制增强表达能力.
 在Gymnasium MuJoCo基准的Humanoid(348维)和HumanoidStandup(376维)两个人形机器人数据集上的多种子实验表明:
 MIMO-WM在Humanoid上取得最优精度, MSE为$19.87\times10^{-2}$, 比Mamba-WM降低1.5\%, 比Transformer-WM降低29.3\%;
 参数量仅0.138M, 为所有方法中最轻量.
@@ -44,7 +44,7 @@ MIMO-WM在Humanoid上取得最优精度, MSE为$19.87\times10^{-2}$, 比Mamba-WM
 
 {\CJKfamily{hei} 关键词:} 状态空间模型; 世界模型; 状态预测; 模型预测控制; 具身智能
 
-{\CJKfamily{hei}引用格式:} 周新民, 余焕杰, 张慧慧, 等. 基于S5的人形机器人轻量级世界模型. 控制理论与应用, xxxx, xx(x): xxx -- xxx\\\vspace*{-16pt}
+{\CJKfamily{hei}引用格式:} 周新民, 余焕杰, 张慧慧, 等. 基于MIMO-SSM的人形机器人轻量级世界模型. 控制理论与应用, xxxx, xx(x): xxx -- xxx\\\vspace*{-16pt}
 
 \textbf{DOI:} 10.7641/CTA.202x.xxxxx
 
@@ -57,7 +57,7 @@ MIMO-WM在Humanoid上取得最优精度, MSE为$19.87\times10^{-2}$, 比Mamba-WM
 \vspace{.1cm}
 \begin{center}
 \parbox{\textwidth}{\setlength{\parindent}{1em}
-{\centering\large\textbf{A Lightweight World Model Based on S5 for Humanoid Robot State Prediction\\}} \vspace{-1.2mm}
+{\centering\large\textbf{A Lightweight MIMO-SSM World Model for Humanoid Robot State Prediction\\}} \vspace{-1.2mm}
 \begingroup\centering
 ZHOU Xin-min$^{1,\,2}$,~~YU Huan-jie$^{3\dagger}$,~~ZHANG Hui-hui$^{4}$,~~WANG Wei$^{3}$,~~CHEN Lu$^{4}$\\[2pt]
 \scriptsize{(1. School of Artificial Intelligence and Robotics, Hunan University of Technology and Business, Changsha Hunan 410205, China;\\
@@ -67,7 +67,7 @@ ZHOU Xin-min$^{1,\,2}$,~~YU Huan-jie$^{3\dagger}$,~~ZHANG Hui-hui$^{4}$,~~WANG W
 \end{center}
 
 \vspace{-10pt}\footnotesize{\textbf{Abstract:}
-Humanoid robot state prediction faces the dual challenges of accuracy and real-time performance. This paper proposes MIMO-WM, a lightweight world model based on S5's multi-input multi-output state space model (MIMO-SSM) architecture, which achieves efficient sequence modeling through parallel scanning and enhances expressiveness via a sigmoid gating mechanism. Multi-seed experiments on Gymnasium MuJoCo Humanoid (348 dimensions) and HumanoidStandup (376 dimensions) benchmarks show that MIMO-WM achieves the best accuracy on Humanoid with MSE of $19.87\times10^{-2}$, 1.5\% lower than Mamba-WM and 29.3\% lower than Transformer-WM, with only 0.138M parameters---the most lightweight among all methods. MPC planning experiments demonstrate that CEM sampling-based MPC achieves 7.8Hz+ control frequency, meeting typical real-time control requirements.
+Humanoid robot state prediction faces the dual challenges of accuracy and real-time performance. This paper proposes MIMO-WM, a lightweight world model based on multi-input multi-output state space model (MIMO-SSM) architecture, which achieves efficient sequence modeling through parallel scanning and enhances expressiveness via a sigmoid gating mechanism. Multi-seed experiments on Gymnasium MuJoCo Humanoid (348 dimensions) and HumanoidStandup (376 dimensions) benchmarks show that MIMO-WM achieves the best accuracy on Humanoid with MSE of $19.87\times10^{-2}$, 1.5\% lower than Mamba-WM and 29.3\% lower than Transformer-WM, with only 0.138M parameters---the most lightweight among all methods. MPC planning experiments demonstrate that CEM sampling-based MPC achieves 7.8Hz+ control frequency, meeting typical real-time control requirements.
 
 \textbf{Key words:} state space model; world model; state prediction; model predictive control; embodied intelligence
 
@@ -315,9 +315,9 @@ K[t] = \sum_{n=1}^{N} C_n \cdot \bar{b}_n \cdot \bar{a}_n^t, \quad t = 0, 1, \ld
 
 \subsection{整体架构}
 
-本文提出的MIMO-WM(Multi-Input Multi-Output World Model)是一种基于S5\textsuperscript{\cite{30}}的MIMO-SSM架构的轻量级世界模型.
-S5提出将SSM扩展为多输入多输出结构, 通过并行扫描算法实现高效的序列建模.
-MIMO-WM在S5的基础上引入sigmoid门控机制, 使模型能够根据输入内容动态调整信息流动,
+本文提出的MIMO-WM(Multi-Input Multi-Output World Model)是一种基于MIMO-SSM架构的轻量级世界模型.
+MIMO-SSM将SSM扩展为多输入多输出结构, 每个输入通道独立维护状态空间, 通过并行扫描算法实现高效的序列建模.
+MIMO-WM在此基础上引入sigmoid门控机制, 使模型能够根据输入内容动态调整信息流动,
 从而在保持线性计算复杂度的同时实现更强的表达能力.
 MIMO-WM的整体架构如图~1所示, 主要包含三个模块: 状态-动作编码器、MIMO主干网络和状态解码器.
 
@@ -972,7 +972,6 @@ MPC规划实验表明CEM采样式MPC可将控制频率提升至7.8Hz(MIMO-WM), L
 
 \bibitem{29}BROCKMAN G, CHEUNG V, PETTERSSON L, et al. OpenAI Gym. {\it arXiv preprint arXiv:1606.01540}, 2016.
 
-\bibitem{30}SMITH J T, WARRINGTON A, LINDERMAN S W. Simplified state space layers for sequence modeling. {\it International Conference on Learning Representations}, 2023.
 
 \end{thebibliography}}
 
