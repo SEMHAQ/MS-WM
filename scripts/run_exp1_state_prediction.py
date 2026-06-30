@@ -8,7 +8,7 @@
 import torch, torch.nn as nn, numpy as np, sys, os, json, time, math
 sys.path.insert(0, '.')
 from src.models.ssm_world_model import SSMWorldModel, DiagSSM
-from src.models.baselines import LSTMWorldModel, GRUWorldModel, TransformerWorldModel
+from src.models.baselines import LSTMWorldModel, GRUWorldModel, TransformerWorldModel, SimpleSSMWorldModel, MLPWorldModel, TCNWorldModel
 from src.models.mamba_world_model import MambaWorldModel
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -156,7 +156,8 @@ if __name__ == '__main__':
         'GRU-WM':         (GRUWorldModel,        lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'hidden_dim': 96, 'n_layers': 2}),
         'Transformer-WM': (TransformerWorldModel,lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'd_model': 96, 'nhead': 4, 'n_layers': 2}),
         'Mamba-WM':       (MambaWorldModel,      lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'd_model': 96, 'n_layers': 2}),
-        'S4D-WM':         (SSMWorldModel,        lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'd_model': 96, 'd_state': 16, 'n_layers': 2}),
+        'MLP-WM':         (MLPWorldModel,        lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'hidden_dim': 96, 'n_layers': 2}),
+        'TCN-WM':         (TCNWorldModel,        lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'd_model': 96, 'n_layers': 2, 'kernel_size': 3}),
         'MIMO-WM':        (MIMOWorldModel,       lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'd_model': 96, 'd_state': 16, 'n_layers': 2}),
     }
 
