@@ -257,7 +257,10 @@ def evaluate_mpc_quality(model, episodes, mean, std, n_episodes=10, n_steps=20):
 # 主实验
 # ============================================================
 if __name__ == '__main__':
-    ds_cfg = {'dir': 'data/humanoid', 'sd': 348, 'ad': 17}
+    datasets = {
+        'humanoid': {'dir': 'data/humanoid', 'sd': 348, 'ad': 17},
+        'humanoid_standup': {'dir': 'data/humanoid_standup', 'sd': 348, 'ad': 17},
+    }
 
     models = {
         'LSTM-WM':        (LSTMWorldModel,       {'state_dim': 348, 'action_dim': 17, 'hidden_dim': 96, 'n_layers': 2}),
@@ -277,100 +280,84 @@ if __name__ == '__main__':
     else:
         results = {}
 
-    print(f'\n{"="*60}', flush=True)
-    print(f'数据集: humanoid', flush=True)
-    print(f'{"="*60}', flush=True)
+    for ds_name, ds_cfg in datasets.items():
+        print(f'\n{"="*60}', flush=True)
+        print(f'数据集: {ds_name}', flush=True)
+        print(f'{"="*60}', flush=True)
 
-    eps_tr = load_eps(ds_cfg['dir'], 'train')
-    eps_vl = load_eps(ds_cfg['dir'], 'val')
-    mean, std = stats(eps_tr)
-    Xs, Xa, Y = make_data(eps_tr, T, mean, std)
-    Xv, Xav, Yv = make_data(eps_vl, T, mean, std)
-    print(f'  Train: {len(Xs)}, Val: {len(Xv)}', flush=True)
+        eps_tr = load_eps(ds_cfg['dir'], 'train')
+        eps_vl = load_eps(ds_cfg['dir'], 'val')
+        mean, std = stats(eps_tr)
+        Xs, Xa, Y = make_data(eps_tr, T, mean, std)
+        Xv, Xav, Yv = make_data(eps_vl, T, mean, std)
+        print(f'  Train: {len(Xs)}, Val: {len(Xv)}', flush=True)
 
-    for model_name, (ModelClass, kwargs) in models.items():
-        # 检查是否所有 seed 都已完成
-        g_key = f'{model_name}_GradMPC'
-        c_key = f'{model_name}_CEMMPC'
-        q_key = f'{model_name}_Quality'
-        g_done = g_key in results and len(results[g_key]) >= len(SEEDS)
-        c_done = c_key in results and len(results[c_key]) >= len(SEEDS)
-        q_done = q_key in results and len(results[q_key]) >= len(SEEDS)
-        if g_done and c_done and q_done:
-            print(f'\n  [{model_name}]: 已有完整结果，跳过', flush=True)
-            continue
-
-        print(f'\n  [{model_name}]:', flush=True)
-        if g_key not in results: results[g_key] = {}
-        if c_key not in results: results[c_key] = {}
-        if q_key not in results: results[q_key] = {}
-
-        for seed in SEEDS:
-            sg_key = f'seed{seed}'
-            if sg_key in results[g_key] and sg_key in results[c_key] and sg_key in results[q_key]:
-                print(f'    seed={seed} 已有，跳过', flush=True)
+        for model_name, (ModelClass, kwargs) in models.items():
+            g_key = f'{model_name}_GradMPC_{ds_name}'
+            c_key = f'{model_name}_CEMMPC_{ds_name}'
+            q_key = f'{model_name}_Quality_{ds_name}'
+            g_done = g_key in results and len(results[g_key]) >= len(SEEDS)
+            c_done = c_key in results and len(results[c_key]) >= len(SEEDS)
+            q_done = q_key in results and len(results[q_key]) >= len(SEEDS)
+            if g_done and c_done and q_done:
+                print(f'\n  [{model_name}]: 已有完整结果，跳过', flush=True)
                 continue
 
-            print(f'    seed={seed} 训练模型...', flush=True)
-            model = train_world_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed=seed)
-            model.eval()
+            print(f'\n  [{model_name}]:', flush=True)
+            if g_key not in results: results[g_key] = {}
+            if c_key not in results: results[c_key] = {}
+            if q_key not in results: results[q_key] = {}
 
-            # 梯度MPC 速度
-            if sg_key not in results[g_key]:
-                print(f'    seed={seed} 评估梯度MPC速度...', flush=True)
-                grad_mpc = GradientMPC(model, horizon=10, n_iterations=30, lr=0.01)
-                r = evaluate_mpc_speed(grad_mpc, eps_vl, mean, std)
-                results[g_key][sg_key] = r
-                print(f'      {r["hz"]:.2f} Hz, {r["avg_step_time_ms"]:.1f} ms', flush=True)
+            for seed in SEEDS:
+                sg_key = f'seed{seed}'
+                if sg_key in results[g_key] and sg_key in results[c_key] and sg_key in results[q_key]:
+                    print(f'    seed={seed} 已有，跳过', flush=True)
+                    continue
 
-            # CEM-MPC 速度
-            if sg_key not in results[c_key]:
-                print(f'    seed={seed} 评估CEM-MPC速度...', flush=True)
-                cem_mpc = CEMMPC(model, horizon=10, n_samples=256, n_elite=32, n_iterations=5)
-                r = evaluate_mpc_speed(cem_mpc, eps_vl, mean, std)
-                results[c_key][sg_key] = r
-                print(f'      {r["hz"]:.2f} Hz, {r["avg_step_time_ms"]:.1f} ms', flush=True)
+                print(f'    seed={seed} 训练模型...', flush=True)
+                model = train_world_model(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed=seed)
+                model.eval()
 
-            # 闭环仿真质量
-            if sg_key not in results[q_key]:
-                print(f'    seed={seed} 评估闭环规划质量...', flush=True)
-                r = evaluate_mpc_quality(model, eps_vl, mean, std)
-                results[q_key][sg_key] = r
-                print(f'      tracking MSE={r["tracking_mse"]:.6f}', flush=True)
+                if sg_key not in results[g_key]:
+                    print(f'    seed={seed} 评估梯度MPC速度...', flush=True)
+                    grad_mpc = GradientMPC(model, horizon=10, n_iterations=30, lr=0.01)
+                    r = evaluate_mpc_speed(grad_mpc, eps_vl, mean, std)
+                    results[g_key][sg_key] = r
+                    print(f'      {r["hz"]:.2f} Hz, {r["avg_step_time_ms"]:.1f} ms', flush=True)
 
-            with open(RESULTS_FILE, 'w') as f:
-                json.dump(results, f, indent=2)
+                if sg_key not in results[c_key]:
+                    print(f'    seed={seed} 评估CEM-MPC速度...', flush=True)
+                    cem_mpc = CEMMPC(model, horizon=10, n_samples=256, n_elite=32, n_iterations=5)
+                    r = evaluate_mpc_speed(cem_mpc, eps_vl, mean, std)
+                    results[c_key][sg_key] = r
+                    print(f'      {r["hz"]:.2f} Hz, {r["avg_step_time_ms"]:.1f} ms', flush=True)
+
+                if sg_key not in results[q_key]:
+                    print(f'    seed={seed} 评估闭环规划质量...', flush=True)
+                    r = evaluate_mpc_quality(model, eps_vl, mean, std)
+                    results[q_key][sg_key] = r
+                    print(f'      tracking MSE={r["tracking_mse"]:.6f}', flush=True)
+
+                with open(RESULTS_FILE, 'w') as f:
+                    json.dump(results, f, indent=2)
 
     # 汇总
-    print('\n' + '='*90, flush=True)
-    print('实验4：MPC规划结果 — Humanoid', flush=True)
-    print('='*90)
-
-    # 速度对比
-    print('\n控制频率 (Hz):')
-    print('{:<18} {:<20} {:<20} {:<15}'.format(
-        '模型', '梯度MPC', 'CEM-MPC', 'CEM加速比'))
-    print('-'*75)
-    for model_name in models:
-        g_key = f'{model_name}_GradMPC'
-        c_key = f'{model_name}_CEMMPC'
-        if g_key in results and c_key in results:
-            g_hz = [r['hz'] for r in results[g_key].values()]
-            c_hz = [r['hz'] for r in results[c_key].values()]
-            g_mean, g_std = np.mean(g_hz), np.std(g_hz)
-            c_mean, c_std = np.mean(c_hz), np.std(c_hz)
-            speedup = c_mean / g_mean if g_mean > 0 else 0
-            print('{:<18} {:.2f}±{:<14.2f} {:.2f}±{:<14.2f} {:.1f}x'.format(
-                model_name, g_mean, g_std, c_mean, c_std, speedup))
-
-    # 规划质量
-    print('\n闭环规划质量 (MSE, 越低越好):')
-    print('{:<18} {:<20}'.format('模型', 'Tracking MSE'))
-    print('-'*40)
-    for model_name in models:
-        q_key = f'{model_name}_Quality'
-        if q_key in results:
-            mse_vals = [r['tracking_mse'] for r in results[q_key].values()]
-            print('{:<18} {:.6f}±{:.6f}'.format(model_name, np.mean(mse_vals), np.std(mse_vals)))
+    for ds_name in datasets:
+        print('\n' + '='*90, flush=True)
+        print(f'实验4：MPC规划结果 — {ds_name}', flush=True)
+        print('='*90)
+        print('{:<18} {:<20} {:<20} {:<15}'.format('模型', '梯度MPC', 'CEM-MPC', 'CEM加速比'))
+        print('-'*75)
+        for model_name in models:
+            g_key = f'{model_name}_GradMPC_{ds_name}'
+            c_key = f'{model_name}_CEMMPC_{ds_name}'
+            if g_key in results and c_key in results:
+                g_hz = [r['hz'] for r in results[g_key].values()]
+                c_hz = [r['hz'] for r in results[c_key].values()]
+                g_mean, g_std = np.mean(g_hz), np.std(g_hz)
+                c_mean, c_std = np.mean(c_hz), np.std(c_hz)
+                speedup = c_mean / g_mean if g_mean > 0 else 0
+                print('{:<18} {:.2f}±{:<14.2f} {:.2f}±{:<14.2f} {:.1f}x'.format(
+                    model_name, g_mean, g_std, c_mean, c_std, speedup))
 
     print('\nDone!', flush=True)

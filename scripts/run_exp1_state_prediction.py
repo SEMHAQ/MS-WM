@@ -148,6 +148,7 @@ def train_eval(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed):
 if __name__ == '__main__':
     datasets = {
         'humanoid': {'dir': 'data/humanoid', 'sd': 348, 'ad': 17},
+        'humanoid_standup': {'dir': 'data/humanoid_standup', 'sd': 348, 'ad': 17},
     }
 
     models = {
