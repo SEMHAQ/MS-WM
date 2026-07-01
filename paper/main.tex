@@ -371,277 +371,150 @@ ${\bm h}_t^{(d)} \in \mathbb{C}^N$为第$d$维的隐状态.
 
 \subsection{理论分析}
 
-本节给出MIMO-WM的严格理论分析, 包括离散化系统稳定性分析、双模式计算等价性证明、计算复杂度分析和CEM-MPC收敛性保证.
-
-\subsubsection{对角SSM稳定性分析}
-
-\begin{Def}[连续时间状态空间模型]
-\label{def:ssm_cont}
-设${\bm h}(t) \in \mathbb{C}^N$为$N$维隐状态向量, $x(t) \in \mathbb{R}$为标量输入, $y(t) \in \mathbb{R}$为标量输出. 连续时间对角SSM定义为
+首先考虑对角SSM的稳定性. 设${\bm h}(t) \in \mathbb{C}^N$为隐状态,
+$x(t) \in \mathbb{R}$, $y(t) \in \mathbb{R}$分别为输入和输出,
+对角SSM定义为
 \begin{eqnarray}
 \dot{{\bm h}}(t) = {\bm A}{\bm h}(t) + {\bm B}x(t), \quad
 y(t) = {\bm C}{\bm h}(t) + {\bm D}x(t),
 \end{eqnarray}
-其中${\bm A} = \diag(a_1, a_2, \ldots, a_N) \in \mathbb{C}^{N \times N}$为对角状态矩阵, $a_n = -\alpha_n + j\beta_n$, $\alpha_n > 0$, $\beta_n \in \mathbb{R}$; ${\bm B} \in \mathbb{C}^{N \times 1}$, ${\bm C} \in \mathbb{C}^{1 \times N}$, ${\bm D} \in \mathbb{R}$为系统参数.
-\end{Def}
+其中${\bm A} = \diag(a_1, \ldots, a_N) \in \mathbb{C}^{N \times N}$,
+$a_n = -\alpha_n + j\beta_n$为极点,
+$\alpha_n > 0$确保系统渐近稳定.
 
-\begin{Sup}[渐近稳定性]
-\label{sup:stability}
-假设对角SSM的所有极点满足$\Re(a_n) = -\alpha_n < 0$, $\forall n = 1, \ldots, N$, 即系统是渐近稳定的. 在此条件下, 系统矩阵${\bm A}$的矩阵指数满足
-\begin{eqnarray}
-\|\exp(t{\bm A})\| \leqslant Me^{-\mu t}, \quad \forall t \geqslant 0,
-\end{eqnarray}
-其中$M = 1$, $\mu = \min_n \alpha_n$.
-\end{Sup}
-
-\begin{Def}[零阶保持离散化]
-\label{def:zoh}
-设采样周期为$\Delta > 0$, 对连续时间SSM进行零阶保持(Zero-Order Hold, ZOH)离散化:
+经零阶保持离散化后, 系统变为
 \begin{eqnarray}
 {\bm h}_k = \bar{{\bm A}}{\bm h}_{k-1} + \bar{{\bm B}}x_k, \quad
 y_k = {\bm C}{\bm h}_k + {\bm D}x_k,
 \end{eqnarray}
-其中离散化系数为
-\begin{eqnarray}
-\bar{{\bm A}} = \exp(\Delta {\bm A}) = \diag(\exp(\Delta a_1), \ldots, \exp(\Delta a_N)),
-\end{eqnarray}
-\begin{eqnarray}
-\bar{{\bm B}} = \left(\int_{0}^{\Delta} \exp(s{\bm A}){\rm d}s\right) {\bm B}
-= \diag\left(\frac{\exp(\Delta a_1) - 1}{a_1}, \ldots, \frac{\exp(\Delta a_N) - 1}{a_N}\right){\bm B}.
-\end{eqnarray}
-由于${\bm A}$为对角矩阵, 离散化系数可逐元素解析计算:
-\begin{eqnarray}
-\bar{a}_n = \exp(\Delta a_n) = \exp(-\Delta\alpha_n + j\Delta\beta_n), \quad
-\bar{b}_n = \frac{\exp(\Delta a_n) - 1}{a_n}, \quad n = 1, \ldots, N.
-\end{eqnarray}
-
-由假设~\ref{sup:stability}, $\alpha_n > 0$, 因此$|\bar{a}_n| = \exp(-\Delta\alpha_n) < 1$, 离散化系统保持渐近稳定性.
-\end{Def}
-
-\subsubsection{双模式计算等价性}
+其中$\bar{{\bm A}} = \diag(\bar{a}_1, \ldots, \bar{a}_N)$,
+$\bar{a}_n = \exp(\Delta a_n)$, $\bar{b}_n = (\exp(\Delta a_n)-1)/a_n$.
+由于$\alpha_n > 0$, $|\bar{a}_n| = \exp(-\Delta\alpha_n) < 1$, 离散系统保持稳定.
 
 \begin{Def}
 \label{def:ssm_modes}
-给定输入序列$\{x_0, x_1, \ldots, x_{T-1}\}$和零初始隐状态${\bm h}_{-1} = {\bm 0}$,
-对角SSM可有两种等效的计算方式:
+对角SSM有两种等价计算模式:
 
-\textbf{递推模式}: 按时间顺序逐步计算
+\textbf{递推模式}: 逐步计算
 \begin{eqnarray}
 \label{eq:recurrent}
 {\bm h}_t = \bar{{\bm A}}{\bm h}_{t-1} + \bar{{\bm B}}x_t, \quad
-y_t = {\bm C}{\bm h}_t + {\bm D}x_t,
+y_t = {\bm C}{\bm h}_t + {\bm D}x_t.
 \end{eqnarray}
-其中$t = 0, 1, \ldots, T{-}1$.
 
-\textbf{卷积模式}: 定义全局卷积核
-\begin{eqnarray}
-K[t] \triangleq \sum_{n=1}^{N} C_n \bar{b}_n \bar{a}_n^t,
-\end{eqnarray}
-通过卷积运算并行计算全部输出
+\textbf{卷积模式}: 通过卷积核$K[t] = \sum_n C_n\bar{b}_n\bar{a}_n^t$并行计算
 \begin{eqnarray}
 \label{eq:convolution}
-y_t = \sum_{\tau=0}^{t} K[t{-}\tau] \cdot x_\tau + {\bm D}x_t,
+y_t = \sum_{\tau=0}^{t} K[t{-}\tau] \cdot x_\tau + {\bm D}x_t.
 \end{eqnarray}
-其中$t = 0, 1, \ldots, T{-}1$. 核函数$K[t]$本质上是离散化系统的脉冲响应.
+核函数$K[t]$即离散系统的脉冲响应.
 \end{Def}
 
 \begin{Site}
 \label{lem:state_expansion}
-在递推模式~\eqref{eq:recurrent}中, 隐状态向量${\bm h}_t$可展开为历史输入的线性组合:
-\begin{eqnarray}
-\label{eq:state_expansion}
-{\bm h}_t = \sum_{\tau=0}^{t} \bar{{\bm A}}^{t-\tau} \bar{{\bm B}} x_\tau.
-\end{eqnarray}
+递推模式的隐状态可显式展开:
+${\bm h}_t = \sum_{\tau=0}^{t} \bar{{\bm A}}^{t-\tau} \bar{{\bm B}} x_\tau$
+(归纳法可证).
 \end{Site}
-
-{\CJKfamily{hei}证}~~
-采用数学归纳法证明. 当$t=0$时,
-${\bm h}_0 = \bar{{\bm A}}{\bm h}_{-1} + \bar{{\bm B}}x_0 = \bar{{\bm B}}x_0$,
-式~\eqref{eq:state_expansion}成立. 假设$t = k$时成立, 则
-\begin{eqnarray}
-{\bm h}_{k+1} = \bar{{\bm A}}{\bm h}_k + \bar{{\bm B}}x_{k+1}
-= \bar{{\bm A}}\sum_{\tau=0}^{k} \bar{{\bm A}}^{k-\tau}\bar{{\bm B}} x_\tau
-+ \bar{{\bm B}}x_{k+1}
-= \sum_{\tau=0}^{k+1} \bar{{\bm A}}^{k+1-\tau}\bar{{\bm B}} x_\tau.
-\end{eqnarray}
-由归纳原理, 式~\eqref{eq:state_expansion}对所有$t \geqslant 0$成立. \hfill$\square$
 
 \begin{Thm}
 \label{thm:equiv}
-在假设~\ref{sup:stability}下, 对任意输入序列$\{x_0, x_1, \ldots, x_{T-1}\}$
-和零初始状态${\bm h}_{-1}={\bm 0}$, 递推模式~\eqref{eq:recurrent}
-与卷积模式~\eqref{eq:convolution}产生完全相同的输出序列.
+递推模式~\eqref{eq:recurrent}与卷积模式~\eqref{eq:convolution}产生完全相同的输出序列.
 \end{Thm}
 
 {\CJKfamily{hei}证}~~
-由引理~\ref{lem:state_expansion}, 递推模式的输出为
-\begin{eqnarray}
-y_t = {\bm C}{\bm h}_t + {\bm D}x_t
-= {\bm C}\sum_{\tau=0}^{t} \bar{{\bm A}}^{t-\tau}\bar{{\bm B}} x_\tau
-+ {\bm D}x_t.
-\end{eqnarray}
-由于$\bar{{\bm A}}$为对角矩阵, 其幂次仍为对角形式:
-\begin{eqnarray}
-\bar{{\bm A}}^{t-\tau} = \diag(\bar{a}_1^{t-\tau}, \ldots, \bar{a}_N^{t-\tau}).
-\end{eqnarray}
-代入上式得
-\begin{eqnarray}
-{\bm C}\bar{{\bm A}}^{t-\tau}\bar{{\bm B}}
-= \sum_{n=1}^{N} C_n \bar{a}_n^{t-\tau} \bar{b}_n
-= K[t{-}\tau].
-\end{eqnarray}
-因此$y_t = \sum_{\tau=0}^{t} K[t{-}\tau] x_\tau + {\bm D}x_t$, 与卷积模式完全一致.
-两种模式在数值精度上等价, 区别仅在于计算顺序. \hfill$\square$
-
-\subsubsection{计算复杂度分析}
+由引理, $y_t = {\bm C}{\bm h}_t + {\bm D}x_t
+= {\bm C}\sum_{\tau=0}^{t} \bar{{\bm A}}^{t-\tau}\bar{{\bm B}} x_\tau + {\bm D}x_t$.
+$\bar{{\bm A}}$为对角, 故$\bar{{\bm A}}^{t-\tau} = \diag(\bar{a}_n^{t-\tau})$,
+${\bm C}\bar{{\bm A}}^{t-\tau}\bar{{\bm B}} = \sum_n C_n\bar{a}_n^{t-\tau}\bar{b}_n = K[t{-}\tau]$.
+因此$y_t = \sum_{\tau=0}^{t} K[t{-}\tau]x_\tau + {\bm D}x_t$, 与卷积模式一致. \hfill$\square$
 
 \begin{Thm}
 \label{thm:complexity}
-设输入序列长度为$T$, 隐状态维度为$N$, 模型隐空间维度为$D$,
-MIMO块层数为$L$, 状态维度为$d_s$, 动作维度为$d_a$.
+设输入长度$T$, 隐状态$N$, 隐空间$D$, 层数$L$,
+状态$d_s$, 动作$d_a$. 则:
 
-(1) \textbf{对角SSM单层}: 递推模式时间$T_{\text{r}} = O(TN)$,
-卷积模式时间$T_{\text{c}} = O(T\log T)$.
-当$N > \log_2 T$时, 卷积模式更高效.
+(1) SSM单层: 递推$O(TN)$, 卷积$O(T\log T)$.
+$N > \log_2 T$时卷积更优.
 
-(2) \textbf{MIMO-WM整体}: 卷积模式下总时间复杂度为
-\begin{eqnarray}
-T_{\text{total}} = O\big(LTD\log T + LTD^2 + TD(d_s+d_a)\big),
-\end{eqnarray}
-总空间复杂度为$S_{\text{total}} = O\big(LTD + T(d_s+d_a)\big)$.
+(2) MIMO-WM总复杂度: $O(LTD\log T + LTD^2 + TD(d_s+d_a))$.
 
-(3) \textbf{对比分析}: LSTM的时间复杂度为$O(TLD^2)$,
-Transformer为$O(T^2LD + TLD^2)$.
-当$T > D/\log D$时, MIMO-WM具有显著计算优势.
+(3) 对比: LSTM$O(TLD^2)$, Transformer$O(T^2LD+TLD^2)$.
+MIMO-WM在长序列下更优.
 \end{Thm}
 
 {\CJKfamily{hei}证}~~
-(1) 递推模式每步执行一次$N$维向量点乘和一次标量乘法,
-共$T$步, 时间$O(TN)$; 空间仅需存储当前隐状态, 空间$O(N)$.
-卷积模式通过FFT计算$T$点循环卷积, 时间$O(T\log T)$,
-空间$O(T)$.
-当$N > \log_2 T$时, $T\log T < TN$, 卷积模式更高效.
-
-(2) MIMO-WM各模块复杂度: 编码器$O(TD(d_s+d_a))$,
-每层MIMO块$O(TD\log T + TD^2)$,
-$L$层总计$O(LTD\log T + LTD^2)$,
-解码器$O(TDd_s)$.
-总时间$O(LTD\log T + LTD^2 + TD(d_s+d_a))$.
-
-(3) LSTM每层每步需$4$组$O(D^2)$矩阵向量乘法, 共$O(TLD^2)$.
-Transformer每层自注意力$O(T^2D)$, FFN$O(TD^2)$.
-MIMO-WM的$O(TD\log T)$在$T$较大时远优于Transformer的$O(T^2D)$.
-对本文$T=32$, $D=96$, 约6倍加速. \hfill$\square$
+(1) 递推每步$N$维向量点乘+标量乘, 时间$O(TN)$, 空间$O(N)$.
+卷积$O(T\log T)$, 空间$O(T)$. (2) 编码$O(TD(d_s+d_a))$,
+每MIMO块$O(TD\log T+TD^2)$, $L$层$O(LTD\log T+LTD^2)$,
+解码$O(TDd_s)$. (3) LSTM每步$4$组$O(D^2)$运算,
+Transformer自注意力$O(T^2D)$. 本文$T=32$, $D=96$, 约6倍加速. \hfill$\square$
 
 \begin{Rem}{\fontsize{9.3pt}{11.6pt}\selectfont
-递推模式适合低延迟单步预测, 卷积模式适合批量训练和长序列规划.
-MIMO-WM可在这两种模式之间动态切换.}\end{Rem}
-
-\subsubsection{CEM-MPC收敛性分析}
+递推模式适合低延迟单步预测, 卷积模式适合批量训练.
+MIMO-WM可在两种模式间动态切换.}\end{Rem}
 
 \begin{Def}
 \label{def:cem_cost}
-设目标参考状态${\bm s}_{\text{ref}} \in \mathbb{R}^{d_s}$, 预测时域$H > 0$,
-权重矩阵${\bm Q} \succ 0$, ${\bm R} \succ 0$.
-定义动作序列${\bm a} = ({\bm a}_0, \ldots, {\bm a}_{H-1})^{\rm T} \in \mathbb{R}^{Hd_a}$的代价泛函
+定义动作序列${\bm a} \in \mathbb{R}^{Hd_a}$的代价函数
 \begin{eqnarray}
-\label{eq:cost}
-J({\bm a}) = \sum_{h=1}^{H}\Big[\|\hat{{\bm s}}_{h}({\bm a}) - {\bm s}_{\text{ref}}\|_{{\bm Q}}^2
-+ \|{\bm a}_{h-1}\|_{{\bm R}}^2\Big],
+J({\bm a}) = \sum_{h=1}^{H}\big[\|\hat{{\bm s}}_{h} - {\bm s}_{\text{ref}}\|_{{\bm Q}}^2
++ \|{\bm a}_{h-1}\|_{{\bm R}}^2\big],
 \end{eqnarray}
-其中$\hat{{\bm s}}_{h}({\bm a})$为MIMO-WM的第$h$步状态预测.
-MPC在每个控制时刻求解$\min_{{\bm a} \in \mathcal{A}} J({\bm a})$并执行第一个动作.
+其中$\hat{{\bm s}}_{h}$为MIMO-WM的第$h$步预测.
+MPC在每个时刻求解$\min_{\|{\bm a}\|_\infty \leqslant a_{\max}} J({\bm a})$.
 \end{Def}
 
 \begin{Sup}
 \label{sup:cost}
-假设$J({\bm a})$在紧集$\mathcal{A} = \{{\bm a} : \|{\bm a}\|_\infty \leqslant a_{\max}\}$上连续可微,
-且存在$L_J > 0$使得$\|\nabla J({\bm a})\| \leqslant L_J$, $\forall {\bm a} \in \mathcal{A}$.
-若$J$在${\bm a}^*$附近$\mu$-强凸, 则
-\begin{eqnarray}
-J({\bm a}) \geqslant J({\bm a}^*) + \frac{\mu}{2}\|{\bm a} - {\bm a}^*\|^2.
-\end{eqnarray}
+假设$J$在紧集$\mathcal{A}$上连续可微,
+$\|\nabla J({\bm a})\| \leqslant L_J$,
+且在${\bm a}^*$附近$\mu$-强凸:
+$J({\bm a}) \geqslant J^* + \frac{\mu}{2}\|{\bm a} - {\bm a}^*\|^2$.
 \end{Sup}
 
 \begin{Site}
 \label{lem:elite}
-设第$k$轮从$\mathcal{N}({\bm \mu}^{(k)}, {\bm \Sigma}^{(k)})$采$K$个样本,
-$E^{(k)}$为代价最小的$N_e$个精英样本. 则精英方差满足
-\begin{eqnarray}
-\|{\bm \Sigma}^{(k+1)}\|_F \leqslant \left(1 - \frac{N_e}{K}\right) \|{\bm \Sigma}^{(k)}\|_F,
-\end{eqnarray}
-其中$\|\cdot\|_F$为Frobenius范数.
+设第$k$轮采$K$个样本, $E^{(k)}$为$N_e$个精英集.
+则精英方差满足$\|{\bm \Sigma}^{(k+1)}\|_F \leqslant (1 - \frac{N_e}{K})\|{\bm \Sigma}^{(k)}\|_F$.
 \end{Site}
 
 {\CJKfamily{hei}证}~~
-令$\mathcal{S}^{(k)}$为全样本集, $\bar{{\bm \mu}}^{(k)}$为全样本均值.
-全样本方差的估计为
-\begin{eqnarray}
-{\bm \Sigma}_{\mathcal{S}}^{(k)} = \frac{1}{K-1}\sum_{{\bm a} \in \mathcal{S}^{(k)}}
-({\bm a} - \bar{{\bm \mu}}^{(k)})({\bm a} - \bar{{\bm \mu}}^{(k)})^{\rm T}.
-\end{eqnarray}
-精英集$E^{(k)} \subset \mathcal{S}^{(k)}$的方差是${\bm \Sigma}_{\mathcal{S}}^{(k)}$的子集估计,
-其Frobenius范数以概率$1 - \frac{N_e}{K}$比例缩减. \hfill$\square$
+全样本方差${\bm \Sigma}_{\mathcal{S}}^{(k)} = \frac{1}{K-1}\sum({\bm a} - \bar{{\bm \mu}})({\bm a} - \bar{{\bm \mu}})^{\rm T}$.
+精英方差是其子集估计, 以概率$1-N_e/K$缩减. \hfill$\square$
 
 \begin{Thm}
 \label{thm:cem}
-在假设~\ref{sup:cost}下, CEM-MPC具有以下性质:
+在假设~\ref{sup:cost}下:
 
-(1) \textbf{单调性}: 精英样本的期望代价单调非增
-\begin{eqnarray}
-\label{eq:monotone}
-\mathbb{E}[J({\bm a}_{\text{best}}^{(k)})] \leqslant \mathbb{E}[J({\bm a}_{\text{best}}^{(k-1)})].
-\end{eqnarray}
+(1) \textbf{单调性}: $\mathbb{E}[J({\bm a}_{\text{best}}^{(k)})] \leqslant \mathbb{E}[J({\bm a}_{\text{best}}^{(k-1)})]$.
 
-(2) \textbf{收敛速率}: 在$\mu$-强凸假设下, 期望代价以指数速率收敛
-\begin{eqnarray}
-\label{eq:rate}
-\mathbb{E}[J({\bm a}_{\text{best}}^{(k)})] - J^*
-\leqslant \frac{\mu}{2} \|\Sigma^{(0)}\|_F^2 \exp\left(-\frac{N_e}{K}k\right).
-\end{eqnarray}
+(2) \textbf{收敛速率}: $\mathbb{E}[J({\bm a}_{\text{best}}^{(k)})] - J^*
+\leqslant \frac{\mu}{2}\|\Sigma^{(0)}\|_F^2 \exp(-\frac{N_e}{K}k)$.
 
-(3) \textbf{分布收敛}: 采样分布$\mathcal{N}({\bm \mu}^{(k)}, {\bm \Sigma}^{(k)})$
-弱收敛到退化分布$\delta_{{\bm a}^*}$.
+(3) \textbf{分布收敛}: $\mathcal{N}({\bm \mu}^{(k)}, {\bm \Sigma}^{(k)})$弱收敛到$\delta_{{\bm a}^*}$.
 \end{Thm}
 
 {\CJKfamily{hei}证}~~
-(1) 由引理~\ref{lem:elite}, 精英方差递减, 采样分布集中,
-故期望代价单调非增.
-
-(2) 由强凸性, $J({\bm a}) \geqslant J^* + \frac{\mu}{2}\|{\bm a} - {\bm a}^*\|^2$.
-设$\|{\bm \Sigma}^{(0)}\|_F^2 = \sigma_0^2$, 由引理递推得
-\begin{eqnarray}
-\|{\bm \Sigma}^{(k)}\|_F^2 \leqslant \sigma_0^2 (1 - \frac{N_e}{K})^{2k}
-\leqslant \sigma_0^2 \exp(-2\frac{N_e}{K}k).
-\end{eqnarray}
-代入强凸不等式取期望即得式~\eqref{eq:rate}.
-
-(3) 由(2), ${\bm \Sigma}^{(k)} \to {\bm 0}$, ${\bm \mu}^{(k)} \to {\bm a}^*$,
-故$\mathcal{N}({\bm \mu}^{(k)}, {\bm \Sigma}^{(k)})$弱收敛到$\delta_{{\bm a}^*}$.
-\hfill$\square$
+(1) 由引理, 精英方差递减, 采样集中, 代价单调非增.
+(2) 由强凸性和方差递推得指数收敛.
+(3) ${\bm \Sigma}^{(k)} \to {\bm 0}$, ${\bm \mu}^{(k)} \to {\bm a}^*$,
+故弱收敛到$\delta_{{\bm a}^*}$. \hfill$\square$
 
 \begin{Rem}{\fontsize{9.3pt}{11.6pt}\selectfont
-本文$K{=}256$, $N_e{=}32$, 方差缩减比例$1 - \frac{32}{256} = 0.875$.
-经$M{=}5$轮迭代, 方差缩小至初始值的$0.875^5 \approx 0.51$.}\end{Rem}
+本文$K{=}256$, $N_e{=}32$, 方差每轮缩减$1{-}32/256{=}0.875$,
+$M{=}5$轮后缩小至$0.875^5{\approx}0.51$.}\end{Rem}
 
 \begin{Cor}
 \label{cor:gate}
-设门控输出${\bm o}_t = {\bm h}_t \odot \sigma({\bm W}_g\tilde{{\bm z}}_t + {\bm b}_g)$,
-则当$\sigma \to {\bm 1}$时, MIMO-WM退化为无门控的SSM模型;
-当$\sigma \to {\bm 0}$时, SSM分支被抑制, 模型转变为编解码器结构.
-门控参数的梯度$\partial \mathcal{L} / \partial {\bm W}_g$受SSM输出${\bm h}_t$调控,
-使门控能自适应学习"何时信任SSM预测".
+门控输出${\bm o}_t = {\bm h}_t \odot \sigma({\bm W}_g\tilde{{\bm z}}_t + {\bm b}_g)$.
+当$\sigma \to {\bm 0}$时SSM被抑制; 当$\sigma \to {\bm 1}$时退化为无门控SSM.
+梯度$\partial \mathcal{L}/\partial {\bm W}_g$通过SSM输出调控门控学习.
 \end{Cor}
 
-\subsubsection{参数量分析}
-
-MIMO-WM的参数量分三部分:
-编码器$N_{\text{enc}} = O(D(d_s+d_a) + D^2)$;
-每个MIMO块: 层归一化$2D$, SSM分支$4DN$, 门控$D^2+D$, 输出投影$D^2+D$,
-$L$层总计$O(LDN + LD^2)$;
-解码器$N_{\text{dec}} = O(D^2 + Dd_s)$.
+\textbf{参数量分析.}
 总参数量$N_{\text{total}} = O(LD^2 + D(d_s+d_a))$.
-默认配置($D=96$, $N=16$, $L=2$)参数量约0.14M, 与实际值0.138M一致.
+默认$D=96$, $N=16$, $L=2$时约0.14M, 与实际值一致.
 
 \subsection{训练目标}
 
