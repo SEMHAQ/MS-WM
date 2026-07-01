@@ -7,8 +7,9 @@
 """
 import torch, torch.nn as nn, numpy as np, sys, os, json, time, math
 sys.path.insert(0, '.')
-from src.models.ssm_world_model import SSMWorldModel, DiagSSM
+from src.models.ssm_world_model import SSMWorldModel
 from src.models.baselines import LSTMWorldModel, GRUWorldModel, TransformerWorldModel, SimpleSSMWorldModel, TCNWorldModel
+from src.models.mimo_world_model import MIMOWorldModel
 from src.models.mamba_world_model import MambaWorldModel
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -47,47 +48,6 @@ def make_data(eps, T, mean, std):
             Xs.append(sn[j:j+T]); Xa.append(ac[j:j+T-1]); Y.append(sn[j+T])
     return np.array(Xs), np.array(Xa), np.array(Y)
 
-# ============================================================
-# MIMO-WM 模型
-# ============================================================
-class MIMOLayer(nn.Module):
-    def __init__(self, d_model, d_state=16):
-        super().__init__()
-        self.norm = nn.LayerNorm(d_model)
-        self.ssm = DiagSSM(d_model, d_state)
-        self.gate = nn.Linear(d_model, d_model)
-        self.output = nn.Linear(d_model, d_model)
-
-    def forward(self, x):
-        residual = x
-        x = self.norm(x)
-        x = self.ssm(x)
-        x = self.output(x) * torch.sigmoid(self.gate(x))
-        return residual + x
-
-class MIMOWorldModel(nn.Module):
-    def __init__(self, state_dim, action_dim, d_model=128, d_state=16, n_layers=2):
-        super().__init__()
-        self.encoder = nn.Sequential(
-            nn.Linear(state_dim + action_dim, d_model), nn.GELU(), nn.Linear(d_model, d_model)
-        )
-        self.backbone = nn.ModuleList([MIMOLayer(d_model, d_state) for _ in range(n_layers)])
-        self.decoder = nn.Sequential(
-            nn.Linear(d_model, d_model), nn.GELU(), nn.Linear(d_model, state_dim)
-        )
-
-    def forward(self, states, actions):
-        if actions.shape[1] < states.shape[1]:
-            pad = torch.zeros(states.shape[0], states.shape[1] - actions.shape[1], actions.shape[-1], device=actions.device)
-            actions = torch.cat([pad, actions], dim=1)
-        x = torch.cat([states, actions], dim=-1)
-        h = self.encoder(x)
-        for block in self.backbone:
-            h = block(h)
-        return states[:, -1, :] + self.decoder(h[:, -1, :])
-
-# ============================================================
-# 训练+评估
 # ============================================================
 def train_eval(ModelClass, kwargs, Xs, Xa, Y, Xv, Xav, Yv, seed):
     torch.manual_seed(seed); np.random.seed(seed)
@@ -156,7 +116,6 @@ if __name__ == '__main__':
         'GRU-WM':         (GRUWorldModel,        lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'hidden_dim': 96, 'n_layers': 2}),
         'Transformer-WM': (TransformerWorldModel,lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'd_model': 96, 'nhead': 4, 'n_layers': 2}),
         'Mamba-WM':       (MambaWorldModel,      lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'd_model': 96, 'n_layers': 2}),
-        'MLP-WM':         (MLPWorldModel,        lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'hidden_dim': 96, 'n_layers': 2}),
         'TCN-WM':         (TCNWorldModel,        lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'd_model': 96, 'n_layers': 2, 'kernel_size': 3}),
         'MIMO-WM':        (MIMOWorldModel,       lambda sd, ad: {'state_dim': sd, 'action_dim': ad, 'd_model': 96, 'd_state': 16, 'n_layers': 2}),
     }

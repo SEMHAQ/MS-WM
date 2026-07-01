@@ -7,9 +7,10 @@ MPC方法：梯度MPC (Adam), CEM-MPC (GPU并行采样)
 """
 import torch, torch.nn as nn, numpy as np, sys, os, json, time
 sys.path.insert(0, '.')
-from src.models.ssm_world_model import SSMWorldModel, DiagSSM
+from src.models.ssm_world_model import SSMWorldModel
 from src.models.baselines import LSTMWorldModel, GRUWorldModel, TransformerWorldModel
 from src.models.mamba_world_model import MambaWorldModel
+from src.models.mimo_world_model import MIMOWorldModel
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 T = 32
@@ -62,44 +63,6 @@ def make_data(eps, T, mean, std):
             if j+T >= len(st): break
             Xs.append(sn[j:j+T]); Xa.append(ac[j:j+T-1]); Y.append(sn[j+T])
     return np.array(Xs), np.array(Xa), np.array(Y)
-
-# ============================================================
-# MIMO-WM 模型（与exp1一致）
-# ============================================================
-class MIMOLayer(nn.Module):
-    def __init__(self, d_model, d_state=16):
-        super().__init__()
-        self.norm = nn.LayerNorm(d_model)
-        self.ssm = DiagSSM(d_model, d_state)
-        self.gate = nn.Linear(d_model, d_model)
-        self.output = nn.Linear(d_model, d_model)
-
-    def forward(self, x):
-        residual = x
-        x = self.norm(x)
-        x = self.ssm(x)
-        x = self.output(x) * torch.sigmoid(self.gate(x))
-        return residual + x
-
-class MIMOWorldModel(nn.Module):
-    def __init__(self, state_dim, action_dim, d_model=128, d_state=16, n_layers=2):
-        super().__init__()
-        self.encoder = nn.Sequential(
-            nn.Linear(state_dim + action_dim, d_model), nn.GELU(), nn.Linear(d_model, d_model)
-        )
-        self.backbone = nn.ModuleList([MIMOLayer(d_model, d_state) for _ in range(n_layers)])
-        self.decoder = nn.Sequential(
-            nn.Linear(d_model, d_model), nn.GELU(), nn.Linear(d_model, state_dim)
-        )
-
-    def forward(self, states, actions):
-        if actions.shape[1] < states.shape[1]:
-            pad = torch.zeros(states.shape[0], states.shape[1] - actions.shape[1], actions.shape[-1], device=actions.device)
-            actions = torch.cat([pad, actions], dim=1)
-        x = torch.cat([states, actions], dim=-1)
-        h = self.encoder(x)
-        for block in self.backbone:
-            h = block(h)
         return states[:, -1, :] + self.decoder(h[:, -1, :])
 
 # ============================================================
