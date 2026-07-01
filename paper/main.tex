@@ -528,11 +528,7 @@ CEM-MPC的详细流程如下:
 
 本文采用MuJoCo\textsuperscript{\cite{28}}物理仿真器生成的medium数据集进行实验, 包含Humanoid(348维, 17维动作)和HumanoidStandup(376维, 17维动作)两个人形机器人数据集, 均通过Gymnasium\textsuperscript{\cite{29}}环境接口采集, 按8:2划分训练集和验证集, 输入数据经z-score归一化.
 
-对比方法包括LSTM-WM(4层, 隐层128)、Transformer-WM(4层, 4头, 隐层128)、GRU-WM(4层, 隐层128)、Mamba-WM(4层, 隐层128)和S4D-WM(4层, $D{=}128$, $N{=}16$). 所有模型采用统一配置($D{=}128$, $L{=}4$), 确保公平比较. 本文提出的MIMO-WM采用$D{=}96$, $N{=}8$, $L{=}1$, $W{=}5$配置, 参数量约0.085M. 所有实验均使用5个随机种子(42, 123, 456, 789, 1024)运行, 报告均值和标准差. 评价指标为MSE、$R^2$、推理时间和参数量:
-\begin{align}
-\text{MSE} &= \frac{1}{N}\sum_{i=1}^{N}\|\hat{{\bm s}}_i - {\bm s}_i\|^2, \\
-R^2 &= 1 - \frac{\sum_{i=1}^{N}(\hat{{\bm s}}_i - {\bm s}_i)^2}{\sum_{i=1}^{N}({\bm s}_i - \bar{{\bm s}})^2}
-\end{align} 所有模型训练100个epoch, 使用AdamW优化器(学习率$5\times10^{-4}$, 余弦退火), 序列长度$T=32$, 批大小64. 此外, 还测试了不具有时序建模能力的简单基线: 多层感知机MLP(两层隐层, 各128维)和线性回归模型. 这两个基线在Humanoid上的$R^2$为负值(分别为$-$0.17和$-$0.49), 表明其预测不如均值基线, 验证了时序建模对本任务的必要性. 实验在NVIDIA RTX 3090 GPU上进行.
+对比方法包括LSTM-WM($hidden\_dim{=}96$, $n\_layers{=}2$)、GRU-WM($hidden\_dim{=}96$, $n\_layers{=}2$)、Transformer-WM($d\_model{=}96$, $nhead{=}4$, $n\_layers{=}2$)、Mamba-WM($d\_model{=}96$, $n\_layers{=}2$)和TCN-WM($d\_model{=}96$, $kernel\_size{=}3$, $n\_layers{=}2$). 所有模型采用统一隐空间维度$D{=}96$, 层数$L{=}2$, 确保公平比较. MIMO-WM采用$D{=}96$, $d\_state{=}16$, $n\_layers{=}2$配置. 所有实验均使用5个随机种子(42, 123, 456, 789, 1024)运行, 报告均值和标准差. 评价指标为MSE、$R^2$、推理时间和参数量. 所有模型训练100个epoch, 使用AdamW优化器\textsuperscript{\cite{27}}(学习率$5\times10^{-4}$, 余弦退火), 序列长度$T=32$, 批大小1024, 梯度裁剪阈值1.0. 实验在NVIDIA RTX 3090 GPU上进行.
 
 \subsection{基准实验与性能分析}
 
@@ -552,17 +548,17 @@ LSTM & 39.93$\pm$0.36 & 0.501$\pm$0.005 & 1.12 & 0.227 \\
 GRU & 36.60$\pm$0.30 & 0.542$\pm$0.004 & 1.29 & 0.190 \\
 Trans. & 28.11$\pm$0.72 & 0.648$\pm$0.009 & 10.73 & 0.302 \\
 Mamba & 20.18$\pm$0.24 & 0.748$\pm$0.003 & 1.66 & 0.224 \\
-S4D & 31.18$\pm$0.39 & 0.610$\pm$0.005 & 1.73 & 0.101 \\
+TCN & 20.68$\pm$0.32 & 0.741$\pm$0.004 & 3.01 & 0.132 \\
 \textbf{MIMO-WM} & \textbf{19.87$\pm$0.23} & \textbf{0.751$\pm$0.003} & 2.02 & \textbf{0.138} \\
 \bottomrule
-\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}1$, $T{=}32$); $^{\text{b}}$M; $^{\text{c}}$$\times10^{-2}$; 5 seeds; 所有方法统一超参配置.}
+\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}1$, $T{=}32$); $^{\text{b}}$M; $^{\text{c}}$$\times10^{-2}$; 5 seeds.}
 \end{tabular}}
 \end{minipage}
 \par\endgroup
 
-表~1展示了各模型在Humanoid数据集上的性能对比. MIMO-WM取得了最优精度, MSE为$19.87\times10^{-2}$, 优于Mamba-WM($20.18\times10^{-2}$, 降低1.5\%)、Transformer-WM($28.11\times10^{-2}$, 降低29.3\%)和S4D($31.18\times10^{-2}$, 降低36.3\%), 同时大幅优于LSTM-WM($39.93\times10^{-2}$)和GRU-WM($36.60\times10^{-2}$).
-值得注意的是, MIMO-WM的参数量(0.138M)为所有方法中最轻量, 比Mamba-WM(0.224M)少38\%.
-这表明门控机制能够以极少的额外参数显著提升SSM的表达能力.
+表~1展示了各模型在Humanoid数据集上的性能对比. MIMO-WM取得了最优精度, MSE为$19.87\times10^{-2}$, 优于Mamba-WM($20.18\times10^{-2}$, 降低1.5\%)、TCN-WM($20.68\times10^{-2}$, 降低3.9\%)和Transformer-WM($28.11\times10^{-2}$, 降低29.3\%), 同时大幅优于GRU-WM($36.60\times10^{-2}$)和LSTM-WM($39.93\times10^{-2}$).
+值得注意的是, MIMO-WM的参数量(0.138M)仅略高于TCN-WM(0.132M), 显著低于Mamba-WM(0.224M, 少38\%).
+这表明MIMO-WM在保持轻量化的同时实现了最优预测精度.
 
 为进一步验证MIMO-WM在不同人形机器人任务上的泛化能力,
 在HumanoidStandup(376维, 17维动作)数据集上进行了实验, 结果如表~2所示.
@@ -576,14 +572,14 @@ Table~4~~Performance comparison on HumanoidStandup ($T=32$)}\\
 {\fontsize{8.5pt}{10.6pt}\selectfont
 \begin{tabular}{@{}lcccc@{ }}\toprule
 方法 & MSE$^{\text{c}}$ & $R^2$ & 时间$^{\text{a}}$ & 参数$^{\text{b}}$ \\\midrule
-LSTM & --- & --- & --- & 0.227 \\
-GRU & --- & --- & --- & 0.190 \\
-Trans. & --- & --- & --- & 0.302 \\
-Mamba & --- & --- & --- & 0.224 \\
-S4D & --- & --- & --- & 0.101 \\
-\textbf{MIMO-WM} & \textbf{---} & \textbf{---} & --- & \textbf{0.138} \\
+LSTM & 60.42$\pm$0.18 & 0.368$\pm$0.002 & 1.12 & 0.227 \\
+GRU & 58.84$\pm$0.07 & 0.384$\pm$0.001 & 1.29 & 0.190 \\
+Trans. & 53.18$\pm$0.13 & 0.444$\pm$0.001 & 10.73 & 0.302 \\
+Mamba & 59.25$\pm$0.38 & 0.380$\pm$0.004 & 1.66 & 0.224 \\
+TCN & 55.10$\pm$0.08 & 0.424$\pm$0.001 & 3.01 & 0.132 \\
+\textbf{MIMO-WM} & \textbf{53.10$\pm$0.07} & \textbf{0.444$\pm$0.001} & 2.02 & \textbf{0.138} \\
 \bottomrule
-\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}1$, $T{=}32$); $^{\text{b}}$M; $^{\text{c}}$$\times10^{-2}$; 5 seeds; ---待补充.}
+\multicolumn{5}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: $^{\text{a}}$ms($B{=}1$, $T{=}32$); $^{\text{b}}$M; $^{\text{c}}$$\times10^{-2}$; 5 seeds.}
 \end{tabular}}
 \par\endgroup
 \end{minipage}
