@@ -418,12 +418,9 @@ y_t = \sum_{\tau=0}^{t} K[t{-}\tau] \cdot x_\tau + {\bm D}x_t.
 核函数$K[t]$即离散系统的脉冲响应.
 \end{Def}
 
-\begin{Site}
-\label{lem:state_expansion}
-递推模式的隐状态可显式展开:
-${\bm h}_t = \sum_{\tau=0}^{t} \bar{{\bm A}}^{t-\tau} \bar{{\bm B}} x_\tau$
-(归纳法可证).
-\end{Site}
+递推模式的隐状态可显式展开为
+${\bm h}_t = \sum_{\tau=0}^{t} \bar{{\bm A}}^{t-\tau} \bar{{\bm B}} x_\tau$,
+该式可由归纳法直接验证.
 
 \begin{Thm}
 \label{thm:equiv}
@@ -485,12 +482,8 @@ $\|\nabla J({\bm a})\| \leqslant L_J$,
 $J({\bm a}) \geqslant J^* + \frac{\mu}{2}\|{\bm a} - {\bm a}^*\|^2$.
 \end{Sup}
 
-\begin{Site}
-\label{lem:elite}
-设第$k$轮采$K$个样本, $E^{(k)}$为$N_e$个精英集.
-则精英方差满足$\|{\bm \Sigma}^{(k+1)}\|_F \leqslant (1 - \frac{N_e}{K})\|{\bm \Sigma}^{(k)}\|_F$.
-\end{Site}
-
+设第$k$轮采$K$个样本, $E^{(k)}$为$N_e$个精英集, 则精英方差满足
+$\|{\bm \Sigma}^{(k+1)}\|_F \leqslant (1 - \frac{N_e}{K})\|{\bm \Sigma}^{(k)}\|_F$.
 {\CJKfamily{hei}证}~~
 全样本方差为
 \begin{eqnarray}
