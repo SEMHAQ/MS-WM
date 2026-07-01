@@ -375,20 +375,24 @@ ${\bm h}_t^{(d)} \in \mathbb{C}^N$为第$d$维的隐状态.
 
 \subsection{理论分析}
 
-首先考虑对角SSM的稳定性. 设${\bm h}(t) \in \mathbb{C}^N$为隐状态,
-$x(t) \in \mathbb{R}$, $y(t) \in \mathbb{R}$分别为输入和输出,
-对角SSM定义为
+本节分析MIMO-SSM（即D通道并行对角SSM）的理论性质.
+MIMO-SSM为每个输入维度$d=1,\ldots,D$分配一个独立的$N$维对角SSM,
+其参数为$({\bm A}^{(d)}, {\bm B}^{(d)}, {\bm C}^{(d)})$,
+其中${\bm A}^{(d)} = \diag(a_1^{(d)}, \ldots, a_N^{(d)}) \in \mathbb{C}^{N \times N}$.
+因此MIMO-SSM的稳定性、离散化和计算模式均可归约为单通道对角SSM的分析,
+但需在$D$个通道上并行重复.
+
+设单通道对角SSM的隐状态${\bm h}(t) \in \mathbb{C}^N$,
+输入$x(t) \in \mathbb{R}$, 输出$y(t) \in \mathbb{R}$, 其连续时间形式为
 \begin{equation}
 \left\{\begin{aligned}
 \dot{{\bm h}}(t) &= {\bm A}{\bm h}(t) + {\bm B}x(t), \\
 y(t) &= {\bm C}{\bm h}(t) + {\bm D}x(t).
 \end{aligned}\right.
 \end{equation}
-其中${\bm A} = \diag(a_1, \ldots, a_N) \in \mathbb{C}^{N \times N}$,
-$a_n = -\alpha_n + j\beta_n$为极点,
-$\alpha_n > 0$确保系统渐近稳定.
-
-经零阶保持离散化后, 系统变为
+其中${\bm A} = \diag(a_1, \ldots, a_N)$,
+$a_n = -\alpha_n + j\beta_n$, $\alpha_n > 0$确保渐近稳定.
+经零阶保持离散化后,
 \begin{equation}
 \left\{\begin{aligned}
 {\bm h}_k &= \bar{{\bm A}}{\bm h}_{k-1} + \bar{{\bm B}}x_k, \\
@@ -396,49 +400,39 @@ y_k &= {\bm C}{\bm h}_k + {\bm D}x_k.
 \end{aligned}\right.
 \end{equation}
 其中$\bar{{\bm A}} = \diag(\bar{a}_1, \ldots, \bar{a}_N)$,
-$\bar{a}_n = \exp(\Delta a_n)$, $\bar{b}_n = (\exp(\Delta a_n)-1)/a_n$.
-由于$\alpha_n > 0$, $|\bar{a}_n| = \exp(-\Delta\alpha_n) < 1$, 离散系统保持稳定.
+$\bar{a}_n = \exp(\Delta a_n)$, $|\bar{a}_n| < 1$保证离散系统稳定.
+MIMO-SSM将上述结构在$D$个通道上并行复制, 总参数量为$D$倍单通道参数量.
 
 \begin{Def}
 \label{def:ssm_modes}
-对角SSM有两种等价计算模式:
+单通道对角SSM有两种等价计算模式, MIMO-SSM在$D$个通道上并行执行:
 
-\textbf{递推模式}: 逐步计算
+\textbf{递推模式}: 每个通道$d$逐步计算
 \begin{eqnarray}
 \label{eq:recurrent}
-{\bm h}_t = \bar{{\bm A}}{\bm h}_{t-1} + \bar{{\bm B}}x_t, \quad
-y_t = {\bm C}{\bm h}_t + {\bm D}x_t.
+{\bm h}_t^{(d)} = \bar{{\bm A}}^{(d)}{\bm h}_{t-1}^{(d)} + \bar{{\bm B}}^{(d)}x_t^{(d)}, \quad
+y_t^{(d)} = {\bm C}^{(d)}{\bm h}_t^{(d)} + {\bm D}x_t^{(d)}.
 \end{eqnarray}
 
-\textbf{卷积模式}: 通过卷积核$K[t] = \sum_n C_n\bar{b}_n\bar{a}_n^t$并行计算
+\textbf{卷积模式}: 通过核$K^{(d)}[t] = \sum_n C_n^{(d)}\bar{b}_n^{(d)}(\bar{a}_n^{(d)})^t$并行计算
 \begin{eqnarray}
 \label{eq:convolution}
-y_t = \sum_{\tau=0}^{t} K[t{-}\tau] \cdot x_\tau + {\bm D}x_t.
+y_t^{(d)} = \sum_{\tau=0}^{t} K^{(d)}[t{-}\tau] x_\tau^{(d)} + {\bm D}x_t^{(d)}.
 \end{eqnarray}
-核函数$K[t]$即离散系统的脉冲响应.
+$D$个通道的$K^{(d)}$可组合为张量, 通过批处理FFT一次性完成全部计算.
 \end{Def}
-
-递推模式的隐状态可显式展开为
-${\bm h}_t = \sum_{\tau=0}^{t} \bar{{\bm A}}^{t-\tau} \bar{{\bm B}} x_\tau$,
-该式可由归纳法直接验证.
 
 \begin{Thm}
 \label{thm:equiv}
-递推模式~\eqref{eq:recurrent}与卷积模式~\eqref{eq:convolution}产生完全相同的输出序列.
+对每个通道$d$, 递推模式~\eqref{eq:recurrent}与卷积模式~\eqref{eq:convolution}产生相同输出.
+MIMO-SSM的$D$个通道并行运行, 输出为各通道结果拼接.
 \end{Thm}
 
 {\CJKfamily{hei}证}~~
-由隐状态展开式,
-\begin{eqnarray}
-y_t = {\bm C}{\bm h}_t + {\bm D}x_t
-= {\bm C}\sum_{\tau=0}^{t} \bar{{\bm A}}^{t-\tau}\bar{{\bm B}} x_\tau + {\bm D}x_t.
-\end{eqnarray}
-因$\bar{{\bm A}}$对角, 故$\bar{{\bm A}}^{t-\tau} = \diag(\bar{a}_n^{t-\tau})$, 代入得
-\begin{eqnarray}
-{\bm C}\bar{{\bm A}}^{t-\tau}\bar{{\bm B}} = \sum_n C_n\bar{a}_n^{t-\tau}\bar{b}_n = K[t{-}\tau].
-\end{eqnarray}
-因此$y_t = \sum_{\tau=0}^{t} K[t{-}\tau]x_\tau + {\bm D}x_t$, 与卷积模式一致.
-证毕.
+对任意通道$d$, 由隐状态展开${\bm h}_t^{(d)} = \sum_{\tau=0}^{t} (\bar{{\bm A}}^{(d)})^{t-\tau} \bar{{\bm B}}^{(d)} x_\tau^{(d)}$,
+代入输出得
+$y_t^{(d)} = \sum_{\tau=0}^{t} K^{(d)}[t{-}\tau] x_\tau^{(d)} + {\bm D}x_t^{(d)}$,
+与卷积模式一致. $D$个通道相互独立, 同时成立. 证毕.
 \begin{Thm}
 \label{thm:complexity}
 设输入序列长度$T$, SSM隐状态维度$N$, MIMO-WM隐空间维度$D$,
