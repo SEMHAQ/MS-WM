@@ -294,7 +294,6 @@ $\alpha_n > 0$确保系统的渐近稳定性.
 K[t] = \sum_{n=1}^{N} C_n \cdot \bar{b}_n \cdot \bar{a}_n^t,
 \end{equation}
 其中$K \in \mathbb{R}^T$为卷积核.
-其中$K \in \mathbb{R}^T$为卷积核.
 该卷积可通过FFT在$O(T\log T)$时间内计算.
 
 \section{MIMO-WM方法}
@@ -624,13 +623,11 @@ TCN & 20.68$\pm$0.32 & 0.741$\pm$0.004 & 3.01 & 0.132 \\
 \end{minipage}
 \par\endgroup
 
-表~1展示了各模型在Humanoid数据集上的性能对比. MIMO-WM取得了最优精度, MSE为$19.87\times10^{-2}$, 优于Mamba-WM($20.18\times10^{-2}$, 降低1.5\%)、TCN-WM($20.68\times10^{-2}$, 降低3.9\%)和Transformer-WM($28.11\times10^{-2}$, 降低29.3\%), 同时大幅优于GRU-WM($36.60\times10^{-2}$)和LSTM-WM($39.93\times10^{-2}$).
-值得注意的是, MIMO-WM的参数量(0.138M)仅略高于TCN-WM(0.132M), 显著低于Mamba-WM(0.224M, 少38\%).
+表~1展示了各模型在Humanoid数据集上的性能对比. MIMO-WM取得了最优精度, MSE为$19.87\times10^{-2}$, 优于Mamba-WM的$20.18\times10^{-2}$, 相对降低1.5\%; 优于TCN-WM的$20.68\times10^{-2}$, 降低3.9\%; 优于Transformer-WM的$28.11\times10^{-2}$, 降低29.3\%; 同时大幅优于GRU-WM的$36.60\times10^{-2}$和LSTM-WM的$39.93\times10^{-2}$.
+值得注意的是, MIMO-WM的参数量仅0.138M, 略高于TCN-WM的0.132M, 但显著低于Mamba-WM的0.224M, 减少38\%.
 这表明MIMO-WM在保持轻量化的同时实现了最优预测精度.
 
-为进一步验证MIMO-WM在不同人形机器人任务上的泛化能力,
-在HumanoidStandup(376维, 17维动作)数据集上进行了实验, 结果如表~2所示.
-HumanoidStandup要求机器人从地面站起, 涉及更大幅度的姿态变化和更强的非线性动力学.
+为进一步验证MIMO-WM在不同人形机器人任务上的泛化能力, 在HumanoidStandup数据集上进行了实验, 结果如表~2所示. HumanoidStandup要求机器人从地面站起, 涉及更大幅度的姿态变化和更强的非线性动力学.
 
 \noindent\begin{minipage}{\columnwidth}
 \begingroup\centering
@@ -692,7 +689,7 @@ $N{=}8$ & 18.77$\pm$0.22 & 0.765$\pm$0.003 & 0.200\\
 \par\endgroup
 \end{minipage}
 
-表~3的消融结果表明: 门控机制贡献显著, 移除后MSE增加8.9\%(18.69$\to$20.36). 残差连接至关重要, 移除后MSE剧增39.8\%(18.69$\to$26.14). SSM骨干显著优于循环骨干, SSM$\to$LSTM导致MSE增加103.9\%(18.69$\to$38.10), SSM$\to$GRU导致MSE增加76.2\%(18.69$\to$32.94). 隐空间维度$D$对性能影响最大, $D{=}256$时MSE降至18.15但参数量增至0.613M. 层数$L$和状态维度$N$的影响较小. 默认配置($D{=}128$, $N{=}16$, $L{=}2$)在精度和参数量之间取得较好平衡.
+表~3的消融结果表明: 门控机制贡献显著, 移除后MSE增加8.9\%(18.69$\to$20.36). 残差连接至关重要, 移除后MSE剧增39.8\%(18.69$\to$26.14). SSM骨干显著优于循环骨干, SSM$\to$LSTM导致MSE增加103.9\%(18.69$\to$38.10), SSM$\to$GRU导致MSE增加76.2\%(18.69$\to$32.94). 隐空间维度$D$对性能影响最大, $D{=}256$时MSE降至18.15但参数量增至0.613M. 层数$L$和状态维度$N$的影响较小. 默认配置$D{=}128$, $N{=}16$, $L{=}2$在精度和参数量之间取得较好平衡.
 
 \begingroup\centering
 \includegraphics[width=0.95\columnwidth]{figures/ablation_results.pdf}\\
