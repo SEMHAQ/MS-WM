@@ -86,6 +86,7 @@ Thumbs.db
 !paper/ssm_architecture_redraw_bundle/*.svg
 !paper/version/*.pdf
 !references/*.pdf
+!references/format_ref/*.pdf
 .claude/
 refs/
 site/
