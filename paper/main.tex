@@ -134,7 +134,7 @@ Mamba}的选择性扫描机制虽然具有输入自适应能力, 但其参数量
 
 3)~~在机器人世界模型状态预测任务上系统比较了长短期记忆网络（long short-term memory, LSTM）、门控循环单元（gated recurrent unit, GRU）、Transformer、Mamba、时间卷积网络（temporal convolutional network, TCN）和MIMO-WM六种序列模型, 揭示了门控机制对SSM表达能力的显著提升;
 
-4)~~理论分析证明了对角SSM递推与卷积模式的等价性（定理1）、计算复杂度优势（定理2）和交叉熵方法采样式MPC收敛性保证.
+4)~~理论分析证明了对角SSM递推与卷积模式的等价性、计算复杂度优势和交叉熵方法采样式MPC收敛性保证.
 
 本文其余部分组织如下: 第2节回顾相关工作; 第3节介绍问题描述与预备知识; 第4节详述所提方法; 第5节给出实验结果与分析; 第6节总结全文并展望未来工作.
 
@@ -519,8 +519,10 @@ Frobenius范数以概率$1-N_e/K$缩减.
 由$\mu$-强凸性, $J({\bm a}) \geqslant J^* + \frac{\mu}{2}\|{\bm a} - {\bm a}^*\|^2$.
 设$\|{\bm \Sigma}^{(0)}\|_F^2 = \sigma_0^2$, 由方差递推得
 \begin{equation}
-\|{\bm \Sigma}^{(k)}\|_F^2 \leqslant \sigma_0^2 \Big(1 - \frac{N_e}{K}\Big)^{2k}
-\leqslant \sigma_0^2 \exp\Big(-2\frac{N_e}{K}k\Big),
+\begin{aligned}
+\|{\bm \Sigma}^{(k)}\|_F^2 &\leqslant \sigma_0^2 \Big(1 - \frac{N_e}{K}\Big)^{2k} \\
+&\leqslant \sigma_0^2 \exp\Big(-2\frac{N_e}{K}k\Big),
+\end{aligned}
 \end{equation}
 代入强凸不等式取期望即得指数收敛速率.
 
