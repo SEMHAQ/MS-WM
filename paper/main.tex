@@ -296,7 +296,7 @@ K[t] = \sum_{n=1}^{N} C_n \cdot \bar{b}_n \cdot \bar{a}_n^t,
 
 \subsection{整体架构}
 
-MIMO-WM的核心是\textbf{MIMO-SSM}（多输入多输出状态空间模型, multi-input multi-output state space model）架构. 传统SSM为单输入单输出（single-input single-output, SISO）结构,
+MIMO-WM的核心是\textbf多输入多输出状态空间模型（multi-input multi-output state space model, MIMO-SSM）架构. 传统SSM为单输入单输出（single-input single-output, SISO）结构,
 每个隐藏维度独立维护一个标量状态.
 MIMO-SSM将SSM扩展为多输入多输出结构:
 设输入序列为${\bm z}_t \in \mathbb{R}^D$, MIMO-SSM为每个输入维度$d=1,\ldots,D$分配一个
@@ -589,22 +589,28 @@ N_{\text{total}} = O\big(LD^2 + D(d_s+d_a)\big),
 
 本文实现两种MPC求解方法.
 
-\textbf{梯度MPC.}
+梯度MPC.
 使用Adam优化器对动作序列进行$I$次梯度下降迭代.
 每次迭代通过MIMO-WM前向展开计算代价$J({\bm a})$, 反向传播更新动作序列.
 预实验表明$I{=}50$在跟踪精度和计算时间之间取得较好平衡.
 
-\textbf{CEM采样式MPC.}
+CEM采样式MPC.
 梯度MPC需要反向传播, 在SSM类模型中计算开销较大.
 CEM-MPC仅需前向传播评估候选动作序列, 天然适合GPU并行计算.
-CEM-MPC的具体流程如下:
-\begin{Ste}初始化分布参数${\bm \mu} \leftarrow {\bm 0}_{H \times d_a}$, ${\bm \sigma} \leftarrow {\bm 1}_{H \times d_a}$, $\epsilon \leftarrow 10^{-6}$.\end{Ste}
-\begin{Ste}对迭代轮数$m = 1, 2, \ldots, M$执行:
-采样$K$个候选动作序列$\{{\bm a}^{(k)}\}_{k=1}^K \sim \mathcal{N}({\bm \mu}, \diag({\bm \sigma}^2))$, 截断至$[-1, 1]$;
-对每个候选序列${\bm a}^{(k)}$, 用MIMO-WM前向展开$H$步, 计算代价$J^{(k)}$;
-选取代价最小的$N_e$个精英样本构成精英集$E$, 更新
-${\bm \mu} \leftarrow \frac{1}{N_e}\sum_{{\bm a} \in E} {\bm a}$,
-${\bm \sigma} \leftarrow \sqrt{\frac{1}{N_e}\sum_{{\bm a} \in E} ({\bm a} - {\bm \mu})^2} + \epsilon$.\end{Ste}
+CEM-MPC首先初始化采样分布, 然后通过多轮迭代优化动作序列, 最终输出最优动作, 具体流程如下:
+\setcounter{Ste}{0}
+\begin{Ste}初始化采样分布的均值和方差:
+${\bm \mu} \leftarrow {\bm 0}_{H \times d_a}$, ${\bm \sigma} \leftarrow {\bm 1}_{H \times d_a}$, $\epsilon \leftarrow 10^{-6}$.\end{Ste}
+\begin{Ste}对迭代轮数$m = 1, 2, \ldots, M$执行以下步骤:
+从高斯分布采样$K$个候选动作序列
+$\{{\bm a}^{(k)}\}_{k=1}^K \sim \mathcal{N}({\bm \mu}, \diag({\bm \sigma}^2))$, 截断至$[-1, 1]$;
+对每个候选序列, 用MIMO-WM前向展开$H$步计算代价$J^{(k)}$;
+选取代价最小的$N_e$个精英样本构成精英集$E$,
+用精英样本的均值和方差更新分布参数:
+\begin{equation}
+{\bm \mu} \leftarrow \frac{1}{N_e}\sum_{{\bm a} \in E} {\bm a},\qquad
+{\bm \sigma} \leftarrow \sqrt{\frac{1}{N_e}\sum_{{\bm a} \in E} ({\bm a} - {\bm \mu})^2} + \epsilon.
+\end{equation}\end{Ste}
 \begin{Ste}输出${\bm a}_T^* \leftarrow {\bm \mu}[0]$作为当前控制时刻的最优动作.\end{Ste}
 
 其中$K$个候选序列的评估通过GPU批量并行实现,
@@ -764,7 +770,7 @@ GRU & 1.44 & 20.79 & 0.261 \\
 Trans. & 0.62 & 7.48 & 0.190 \\
 Mamba & 0.60 & 9.79 & 0.231 \\
 TCN & 1.06 & 15.26 & 0.210 \\
-\textbf{MIMO-WM} & 0.51 & \textbf{7.99} & \textbf{0.216} \\
+\textbf{MIMO-WM} & \textbf{0.51} & \textbf{7.99} & \textbf{0.216} \\
 \bottomrule
 \multicolumn{4}{@{}l@{}}{\fontsize{7pt}{8.5pt}\selectfont 注: CEM参数$K{=}256$, $N_e{=}32$, $M{=}5$; seed=42.}
 \end{tabular}}
