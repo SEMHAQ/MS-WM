@@ -34,82 +34,88 @@ def gen_ablation():
         ('$N$=8',          18.77, 0.22, 0.765, 0.200),
     ]
 
+    n = len(configs)
     labels = [c[0] for c in configs]
     mses = [c[1] for c in configs]
     mse_stds = [c[2] for c in configs]
     r2s = [c[3] for c in configs]
     params = [c[4] for c in configs]
 
-    bar_color = '#5B9BD5'
-    highlight = '#C0392B'
+    BAR = '#4A90D9'
+    HL = '#E74C3C'
+    # 显式逐个赋色
+    colors = []
+    for i in range(n):
+        colors.append(HL if i == 0 else BAR)
 
-    fig, axes = plt.subplots(1, 3, figsize=(9.5, 4.0),
-                              gridspec_kw={'width_ratios': [3, 2, 1.5]})
+    # 打印验证
+    for i in range(n):
+        print(f'  {labels[i]:>15s} -> color={colors[i]}', flush=True)
+
+    fig, (ax_mse, ax_r2, ax_params) = plt.subplots(3, 1, figsize=(5.5, 7.5))
     fig.patch.set_facecolor('white')
-    ax_mse, ax_r2, ax_params = axes
 
-    y = np.arange(len(labels))
+    y = np.arange(n)
     h = 0.6
-    colors = [highlight if i == 0 else bar_color for i in range(len(labels))]
 
-    # === 左图: MSE ===
+    # === 上图: MSE ===
     ax_mse.barh(y, mses, height=h, color=colors, edgecolor='white', linewidth=0.5, zorder=3)
     ax_mse.errorbar(mses, y, xerr=mse_stds, fmt='none', ecolor='#333', capsize=2, linewidth=0.7, zorder=4)
-    for i, v in enumerate(mses):
+    for i in range(n):
         fw = 'bold' if i == 0 else 'normal'
-        ax_mse.text(v + mse_stds[i] + 0.5, y[i], f'{v:.1f}', fontsize=7, va='center', color='#222', fontweight=fw)
+        ax_mse.text(mses[i] + mse_stds[i] + 0.5, y[i], f'{mses[i]:.1f}',
+                    fontsize=7, va='center', color='#222', fontweight=fw)
     ax_mse.set_xlabel('MSE ($\\times 10^{-2}$)', fontsize=9)
     ax_mse.set_xlim(0, 44)
-    ax_mse.set_title('(a) MSE', fontsize=9, fontweight='bold')
+    ax_mse.set_title('(a) MSE', fontsize=9, fontweight='bold', loc='left')
     ax_mse.spines['top'].set_visible(False)
     ax_mse.spines['right'].set_visible(False)
     ax_mse.grid(axis='x', linewidth=0.3, alpha=0.2)
-    ax_mse.tick_params(axis='x', labelsize=7)
+    ax_mse.invert_yaxis()
 
     # === 中图: R² ===
     ax_r2.barh(y, r2s, height=h, color=colors, edgecolor='white', linewidth=0.5, zorder=3)
-    for i, v in enumerate(r2s):
+    for i in range(n):
         fw = 'bold' if i == 0 else 'normal'
-        ax_r2.text(v + 0.003, y[i], f'{v:.3f}', fontsize=7, va='center', color='#222', fontweight=fw)
+        ax_r2.text(r2s[i] + 0.003, y[i], f'{r2s[i]:.3f}',
+                   fontsize=7, va='center', color='#222', fontweight=fw)
     ax_r2.set_xlabel('$R^2$', fontsize=9)
     ax_r2.set_xlim(0.48, 0.80)
-    ax_r2.set_title('(b) $R^2$', fontsize=9, fontweight='bold')
+    ax_r2.set_title('(b) $R^2$', fontsize=9, fontweight='bold', loc='left')
     ax_r2.spines['top'].set_visible(False)
     ax_r2.spines['right'].set_visible(False)
     ax_r2.grid(axis='x', linewidth=0.3, alpha=0.2)
-    ax_r2.tick_params(axis='x', labelsize=7)
+    ax_r2.invert_yaxis()
 
-    # === 右图: 参数量 (气泡图) ===
-    # 气泡大小映射参数量, 颜色统一
-    bubble_sizes = [p * 800 for p in params]
+    # === 下图: 参数量 ===
+    bubble_sizes = [p * 600 for p in params]
     ax_params.scatter(params, y, s=bubble_sizes, c=colors, edgecolors='white',
                       linewidth=0.8, zorder=3, alpha=0.85)
-    for i, p in enumerate(params):
+    for i in range(n):
         fw = 'bold' if i == 0 else 'normal'
-        ax_params.text(p, y[i], f'{p:.1f}', fontsize=6, va='center', ha='center',
-                       color='white', fontweight=fw, zorder=4)
-    ax_params.set_xlabel('Params (M)', fontsize=9)
-    ax_params.set_xlim(0, 0.75)
-    ax_params.set_title('(c) Parameters', fontsize=9, fontweight='bold')
+        ax_params.text(params[i] + 0.02, y[i], f'{params[i]:.1f}M',
+                       fontsize=7, va='center', color='#222', fontweight=fw)
+    ax_params.set_xlabel('Parameters (M)', fontsize=9)
+    ax_params.set_xlim(0, 0.72)
+    ax_params.set_title('(c) Parameters', fontsize=9, fontweight='bold', loc='left')
     ax_params.spines['top'].set_visible(False)
     ax_params.spines['right'].set_visible(False)
     ax_params.grid(axis='x', linewidth=0.3, alpha=0.2)
-    ax_params.tick_params(axis='x', labelsize=7)
+    ax_params.invert_yaxis()
 
-    # Y轴标签 (只在最左图)
+    # Y轴标签只在最上图
     ax_mse.set_yticks(y)
     ax_mse.set_yticklabels(labels, fontsize=8)
     for i, tick in enumerate(ax_mse.get_yticklabels()):
         if i == 0:
             tick.set_fontweight('bold')
-            tick.set_color(highlight)
-    ax_mse.invert_yaxis()
+            tick.set_color(HL)
 
-    # 隐藏中右图的Y轴
-    for ax in [ax_r2, ax_params]:
-        ax.set_yticks([])
+    # 中下图隐藏Y轴
+    ax_r2.set_yticks([])
+    ax_params.set_yticks([])
 
-    plt.subplots_adjust(wspace=0.08)
+    plt.tight_layout(pad=0.5, h_pad=0.8)
     plt.savefig('paper/figures/ablation_results.pdf', bbox_inches='tight', pad_inches=0.1)
     plt.savefig('paper/figures/ablation_results.png', dpi=300, bbox_inches='tight', pad_inches=0.1)
     print('Done: ablation_results.pdf')
