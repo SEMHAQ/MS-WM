@@ -20,10 +20,9 @@ plt.rcParams.update({
 # 图4: 消融实验 (水平条形图, 上下分组结构)
 # ============================================================
 def gen_ablation():
-    zh = FontProperties(fname='/mnt/c/Windows/Fonts/simhei.ttf', size=7)
+    zh = FontProperties(fname='/mnt/c/Windows/Fonts/simhei.ttf', size=8)
 
     configs = [
-        # (label, MSE, std, R2, params, group)
         ('MIMO-WM',       18.69, 0.31, 0.766, 0.208, 0),
         ('w/o gate',      20.36, 0.10, 0.745, 0.142, 0),
         ('w/o residual',  26.14, 0.26, 0.673, 0.208, 0),
@@ -41,69 +40,69 @@ def gen_ablation():
     mses = [c[1] for c in configs]
     mse_stds = [c[2] for c in configs]
     r2s = [c[3] for c in configs]
-    params = [c[4] for c in configs]
 
-    # 颜色: MIMO-WM红色高亮, 其余统一灰蓝
     bar_color = '#5B9BD5'
-    highlight = '#E74C3C'
+    highlight = '#C0392B'
 
-    fig, (ax_mse, ax_r2) = plt.subplots(1, 2, figsize=(7.5, 4.2), sharey=True)
+    fig, (ax_mse, ax_r2) = plt.subplots(1, 2, figsize=(7.5, 4.0), sharey=True)
     fig.patch.set_facecolor('white')
 
     y = np.arange(len(labels))
-    h = 0.55
+    h = 0.6
 
-    # === 左图: MSE (越低越好) ===
-    colors_mse = [highlight if i == 0 else bar_color for i in range(len(labels))]
-    bars1 = ax_mse.barh(y, mses, height=h, color=colors_mse, edgecolor='white', linewidth=0.6, zorder=3)
+    # === 左图: MSE ===
+    colors = [highlight if i == 0 else bar_color for i in range(len(labels))]
+    ax_mse.barh(y, mses, height=h, color=colors, edgecolor='white', linewidth=0.5, zorder=3)
     ax_mse.errorbar(mses, y, xerr=mse_stds, fmt='none', ecolor='#333', capsize=2, linewidth=0.7, zorder=4)
     for i, v in enumerate(mses):
         fw = 'bold' if i == 0 else 'normal'
-        ax_mse.text(v + 0.5, y[i], f'{v:.1f}', fontsize=6.5, va='center', color='#333', fontweight=fw)
-    ax_mse.set_xlabel('MSE ($\\times 10^{-2}$, lower is better)', fontsize=8)
-    ax_mse.set_xlim(0, 44)
+        ax_mse.text(v + 0.3, y[i], f'{v:.1f}', fontsize=7, va='center', color='#222', fontweight=fw)
+    ax_mse.set_xlabel('MSE ($\\times 10^{-2}$)', fontsize=9)
+    ax_mse.set_xlim(0, 42)
     ax_mse.set_title('(a) MSE', fontsize=9, fontweight='bold')
     ax_mse.spines['top'].set_visible(False)
     ax_mse.spines['right'].set_visible(False)
     ax_mse.grid(axis='x', linewidth=0.3, alpha=0.2)
     ax_mse.tick_params(axis='x', labelsize=7)
 
-    # === 右图: R² (越高越好) ===
-    colors_r2 = [highlight if i == 0 else bar_color for i in range(len(labels))]
-    bars2 = ax_r2.barh(y, r2s, height=h, color=colors_r2, edgecolor='white', linewidth=0.6, zorder=3)
+    # === 右图: R² ===
+    ax_r2.barh(y, r2s, height=h, color=colors, edgecolor='white', linewidth=0.5, zorder=3)
     for i, v in enumerate(r2s):
         fw = 'bold' if i == 0 else 'normal'
-        ax_r2.text(v + 0.005, y[i], f'{v:.3f}', fontsize=6.5, va='center', color='#333', fontweight=fw)
-    ax_r2.set_xlabel('$R^2$ (higher is better)', fontsize=8)
-    ax_r2.set_xlim(0.45, 0.82)
+        ax_r2.text(v + 0.003, y[i], f'{v:.3f}', fontsize=7, va='center', color='#222', fontweight=fw)
+    ax_r2.set_xlabel('$R^2$', fontsize=9)
+    ax_r2.set_xlim(0.48, 0.80)
     ax_r2.set_title('(b) $R^2$', fontsize=9, fontweight='bold')
     ax_r2.spines['top'].set_visible(False)
     ax_r2.spines['right'].set_visible(False)
     ax_r2.grid(axis='x', linewidth=0.3, alpha=0.2)
     ax_r2.tick_params(axis='x', labelsize=7)
 
-    # Y轴标签 (只在左图)
+    # Y轴标签
     ax_mse.set_yticks(y)
-    ax_mse.set_yticklabels(labels, fontsize=7.5)
+    ax_mse.set_yticklabels(labels, fontsize=8)
     for i, tick in enumerate(ax_mse.get_yticklabels()):
         if i == 0:
             tick.set_fontweight('bold')
+            tick.set_color(highlight)
     ax_mse.invert_yaxis()
 
     # 分组分隔线
     for ax in [ax_mse, ax_r2]:
-        ax.axhline(y=3.5, color='#aaa', linewidth=0.6, linestyle='-')
-        ax.axhline(y=5.5, color='#aaa', linewidth=0.6, linestyle='-')
-        ax.axhline(y=10.5, color='#aaa', linewidth=0.6, linestyle='-')
+        ax.axhline(y=3.5, color='#bbb', linewidth=0.7)
+        ax.axhline(y=5.5, color='#bbb', linewidth=0.7)
 
-    # 中文组标签 (右侧图外)
-    ax_r2.text(0.91, 1.5, '组件消融', fontproperties=zh, color='#555', va='center', rotation=90)
-    ax_r2.text(0.91, 4.5, '骨干替换', fontproperties=zh, color='#555', va='center', rotation=90)
-    ax_r2.text(0.91, 8, '超参数', fontproperties=zh, color='#555', va='center', rotation=90)
+    # 组标签放在Y轴左侧
+    ax_mse.text(-0.35, 1.5, '组件\n消融', fontproperties=zh, color='#555',
+                va='center', ha='center', transform=ax_mse.get_yaxis_transform())
+    ax_mse.text(-0.35, 4.5, '骨干\n替换', fontproperties=zh, color='#555',
+                va='center', ha='center', transform=ax_mse.get_yaxis_transform())
+    ax_mse.text(-0.35, 8, '超\n参数', fontproperties=zh, color='#555',
+                va='center', ha='center', transform=ax_mse.get_yaxis_transform())
 
-    plt.subplots_adjust(wspace=0.08)
-    plt.savefig('paper/figures/ablation_results.pdf', bbox_inches='tight', pad_inches=0.15)
-    plt.savefig('paper/figures/ablation_results.png', dpi=300, bbox_inches='tight', pad_inches=0.15)
+    plt.subplots_adjust(wspace=0.12)
+    plt.savefig('paper/figures/ablation_results.pdf', bbox_inches='tight', pad_inches=0.1)
+    plt.savefig('paper/figures/ablation_results.png', dpi=300, bbox_inches='tight', pad_inches=0.1)
     print('Done: ablation_results.pdf')
 
 # ============================================================
