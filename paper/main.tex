@@ -128,7 +128,7 @@ Mamba}的选择性扫描机制虽然具有输入自适应能力, 但其参数量
 
 本文的主要贡献如下:
 
-1)~~提出MIMO世界模型MIMO-WM, 通过对角SSM与sigmoid门控机制的结合, 在保持线性计算复杂度的同时实现更强的表达能力. 门控机制使模型能够根据输入内容动态调节信息流动, 参数量仅0.138M;
+1)~~提出多输入多输出世界模型（Multi-Input Multi-Output World Model, MIMO-WM）, 通过对角SSM与sigmoid门控机制的结合, 在保持线性计算复杂度的同时实现更强的表达能力. 门控机制使模型能够根据输入内容动态调节信息流动, 参数量仅0.138M;
 
 2)~~在Gymnasium MuJoCo基准的Humanoid和HumanoidStandup两个人形机器人数据集上进行了多种子实验. 结果表明MIMO-WM在Humanoid上取得最优精度, 均方误差为$19.87\times10^{-2}$, 比Mamba-WM降低1.5\%, 比Transformer-WM降低29.3\%, 同时参数量最少;
 
@@ -296,8 +296,7 @@ K[t] = \sum_{n=1}^{N} C_n \cdot \bar{b}_n \cdot \bar{a}_n^t,
 
 \subsection{整体架构}
 
-MIMO-WM（Multi-Input Multi-Output World Model）的核心是
-\textbf{MIMO-SSM}架构. 传统SSM为单输入单输出（single-input single-output, SISO）结构,
+MIMO-WM的核心是\textbf{MIMO-SSM}（多输入多输出状态空间模型, multi-input multi-output state space model）架构. 传统SSM为单输入单输出（single-input single-output, SISO）结构,
 每个隐藏维度独立维护一个标量状态.
 MIMO-SSM将SSM扩展为多输入多输出结构:
 设输入序列为${\bm z}_t \in \mathbb{R}^D$, MIMO-SSM为每个输入维度$d=1,\ldots,D$分配一个
