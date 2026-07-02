@@ -559,8 +559,11 @@ $\mathcal{N}({\bm \mu}^{(k)}, {\bm \Sigma}^{(k)})$弱收敛到退化分布$\delt
 其中$\sigma'$为sigmoid的导数. 该梯度受SSM输出${\bm h}_t$调控, 使门控能自适应学习何时信任SSM预测.
 \end{Cor}
 
-MIMO-WM的总参数量为$N_{\text{total}} = O(LD^2 + D(d_s+d_a))$,
-默认配置$D=96$, $N=16$, $L=2$时约0.14M, 与实际值一致.
+综合以上分析, MIMO-WM通过MIMO-SSM的并行结构实现高效序列建模, 通过门控机制增强表达能力, 同时保持了较低的计算复杂度. 其总参数量为
+\begin{equation}
+N_{\text{total}} = O\big(LD^2 + D(d_s+d_a)\big),
+\end{equation}
+默认配置$D=96$, $N=16$, $L=2$时约0.14M, 在所有对比方法中最为轻量.
 
 \subsection{训练目标}
 
