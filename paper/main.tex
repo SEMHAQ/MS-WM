@@ -545,9 +545,18 @@ $\mathcal{N}({\bm \mu}^{(k)}, {\bm \Sigma}^{(k)})$弱收敛到退化分布$\delt
 
 \begin{Cor}
 \label{cor:gate}
-门控输出${\bm o}_t = {\bm h}_t \odot \sigma({\bm W}_g\tilde{{\bm z}}_t + {\bm b}_g)$,
-当$\sigma \to {\bm 0}$时SSM输出被抑制, $\sigma \to {\bm 1}$时退化为无门控SSM.
-门控参数的梯度$\partial \mathcal{L}/\partial {\bm W}_g$受SSM输出${\bm h}_t$调控.
+门控输出为
+\begin{equation}
+{\bm o}_t = {\bm h}_t \odot \sigma({\bm W}_g\tilde{{\bm z}}_t + {\bm b}_g).
+\end{equation}
+当$\sigma \to {\bm 0}$时SSM输出被完全抑制, 当$\sigma \to {\bm 1}$时退化为无门控SSM.
+门控参数的梯度为
+\begin{equation}
+\frac{\partial \mathcal{L}}{\partial {\bm W}_g}
+= \frac{\partial \mathcal{L}}{\partial {\bm o}_t}
+\odot {\bm h}_t \odot \sigma'(\cdot) \tilde{{\bm z}}_t^{\rm T},
+\end{equation}
+其中$\sigma'$为sigmoid的导数. 该梯度受SSM输出${\bm h}_t$调控, 使门控能自适应学习何时信任SSM预测.
 \end{Cor}
 
 MIMO-WM的总参数量为$N_{\text{total}} = O(LD^2 + D(d_s+d_a))$,
