@@ -680,6 +680,7 @@ TCN & 55.10$\pm$0.08 & 0.424$\pm$0.001 & 0.76 & 0.189 \\
 \end{minipage}
 
 综合实验结果, MIMO-WM在Humanoid上取得最优精度, MSE为$19.87\times10^{-2}$, 比Mamba-WM降低1.5\%, 比Transformer-WM降低29.3\%, 同时参数量最少(0.138M).
+各方法在精度、参数量和推理速度三个维度的综合对比如图~2所示.
 
 \begingroup\centering
 \includegraphics[width=0.95\columnwidth]{figures/radar_comparison.pdf}\\
@@ -723,8 +724,8 @@ $N{=}8$ & 18.77$\pm$0.22 & 0.765$\pm$0.003 & 0.200\\
 
 \begingroup\centering
 \includegraphics[width=0.95\columnwidth]{figures/ablation_results.pdf}\\
-{\fontsize{8.5pt}{10.6pt}\selectfont 图~4~~消融实验结果可视化\\
-Fig.~4~~Ablation study results visualization}
+{\fontsize{8.5pt}{10.6pt}\selectfont 图~3~~消融实验结果可视化\\
+Fig.~3~~Ablation study results visualization}
 \par\endgroup
 
 \subsection{序列长度敏感性分析}
@@ -751,7 +752,13 @@ $T$ & MSE$(\times10^{-2})$ & $R^2$ \\
 \par\endgroup
 \end{minipage}
 
-表~4表明, MIMO-WM在$T{=}16$时取得最优精度, MSE为19.23. 当$T$增至32及以上时, 精度逐步下降, $T{=}128$时MSE增至41.13, R²降至0.448. 这表明对于Humanoid高维动力学系统, 较短的序列长度更有利于预测, 推荐$T \in [8, 32]$.
+表~4表明, MIMO-WM在$T{=}16$时取得最优精度, MSE为19.23. 当$T$增至32及以上时, 精度逐步下降, $T{=}128$时MSE增至41.13, R²降至0.448. 这表明对于Humanoid高维动力学系统, 较短的序列长度更有利于预测, 推荐$T \in [8, 32]$. 序列长度对预测精度的影响如图~4所示.
+
+\begingroup\centering
+\includegraphics[width=0.95\columnwidth]{figures/seqlen_sensitivity.pdf}\\
+{\fontsize{8.5pt}{10.6pt}\selectfont 图~4~~序列长度敏感性分析\\
+Fig.~4~~Sequence length sensitivity analysis}
+\par\endgroup
 
 \subsection{MPC规划实验}
 
